@@ -1,0 +1,16 @@
+* Viele Anwendungsbereiche für das Problem: Multithreading, Bildverarbeitung, Routenplanung, etc.
+* Bisektion (2-balancierte Partitionierung) ist NP-Hard -> evtl. nachlesen
+* k-balancierte Partitionierung auf Bäumen ist polynomiell für konstantes $k$, quadratisch für $k = 2$
+* Approximation der Lösung für $k$ Teile mit Größe maximal $\left\lceil n/k \right\rceil$ ist NP-schwer -> [[AR06]]
+    - Deswegen Lösen des Problems für $k$ Teile mit Größe maximal $(1 + \epsilon) * \left\lceil n/k \right\rceil$
+    - Für den Fall $\epsilon = 1$ ist der Approximationsfaktor alpha elem $O(\sqrt{log(n) * log(k)})$
+        => nicht attraktiv für Parallelrechner, da die langsamste Maschine die Fertigstellungszeit bestimmt
+    - $0 \leq \epsilon \leq 1$ wird fast balanciert genannt
+        * [[AR06]] zeigte, dass $ \alpha \in O(log^{1.5}(n) / \epsilon^2) $
+        * Verteilen der Schnitte in Behälter kann nicht mit einem Greedy-Algorithmus gelöst werden
+        * Kompliziertere Schnittphase
+* Es gibt einige Algorithmen für spezielle Graphen und Werte von $\alpha$ und $\epsilon$ 
+* Approximationsalgorithmus mit fast balancierten Schnitten => funktioniert deutlich besser auf Bäumen als auf generellen Graphen
+    - Algorithmus für gewichtete Bäume berechnet fast balancierte Partition für jedes konstante $\epsilon > 0$ mit $\alpha = 1$
+    - Für generelle Graphen ist $\alpha \in O(log(n))$ => Faktor entsteht durch Dekomposition von Graphen in Bäume
+    - Verbesserung gegenüber [[AR06]]
