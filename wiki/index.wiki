@@ -1,0 +1,8 @@
+= Bachelorarbeit =
+== Quellen ==
+* [[FF13]] -- Algorithmus in Kapitel 3
+* [[AR06]] -- Beweis der NP-Vollständigkeit in Kapitel 2
+
+== Arbeit == 
+
+== Code ==
