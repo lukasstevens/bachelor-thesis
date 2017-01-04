@@ -1,0 +1,108 @@
+\documentclass[hidelinks]{article}
+
+%% Deutsche Silbentrennung und Sprache (neue Rechtschreibung)
+\usepackage[ngerman]{babel}
+%% Verwende Umlaute direkt
+\usepackage[utf8x]{inputenc}
+%% Hyperlinks für interne Referenzen
+\usepackage{hyperref}
+%% Grafiken einbinden
+\usepackage{graphicx}
+\usepackage{float}
+%% Paket für Unterabbildungen pro Abbildung
+\usepackage{subfig}
+
+\usepackage{forloop}
+
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\newcommand*\Let[2]{\State #1 $\gets$ #2}
+\algrenewcomment[1]{\(\qquad \triangleright\) #1}
+\algrenewcommand\algorithmicrequire{\textbf{Precondition:}}
+
+\usepackage{mathtools}
+% Proof system
+\usepackage{amsthm}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Satz}[section]
+\newtheorem{lem}[thm]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{bsp}[thm]{Beispiel}
+
+\newtheoremstyle{rem} % name
+    {\topsep}                    % Space above
+    {\topsep}                    % Space below
+    {}                   % Body font
+    {}                           % Indent amount
+    {\bf}                   % Theorem head font
+    {:}                          % Punctuation after theorem head
+    {.5em}                       % Space after theorem head
+    {}  % Theorem head spec (can be left empty, meaning ‘normal’)
+
+\theoremstyle{rem}
+\newtheorem*{remark}{Bemerkung}
+
+% Seitenränder
+\usepackage[margin=1.5in]{geometry}
+% Zitate
+\usepackage{cite}
+% Tabellen
+\usepackage[table]{xcolor}
+\definecolor{lightblue}{HTML}{8ADAF2}
+\definecolor{lightred}{HTML}{F2A28A}
+\definecolor{lightgreen}{HTML}{A6F28A}
+\definecolor{darkgreen}{HTML}{43A822}
+\definecolor{grey}{HTML}{AAAAAA}
+
+
+% Graphs
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{pgfplots}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=1.12,
+    every axis/.append style={
+                    axis x line=middle,    % put the x axis in the middle
+                    axis y line=middle,    % put the y axis in the middle
+                    axis line style={->,color=black}, % arrows on the axis
+                    xlabel={$x$},          % default put x on x-axis
+                    ylabel={$y$},          % default put y on y-axis
+				}}
+            
+
+\setlength{\parindent}{0pt}
+
+%Rename of Literatur to Literaturverzeichnis
+\addto{\captionsngerman}{\renewcommand{\refname}{Literaturverzeichnis}}
+
+% Titel der Arbeit
+\title{Graphpartitionierung}
+% Angaben zum Author
+\author{Lukas Stevens}
+\pagestyle{plain}
+
+%------------------------------------------------------------------------------
+\begin{document}
+
+\maketitle
+\newpage
+\pagenumbering{Roman}
+\tableofcontents % Inhaltsverzeichnis
+\newpage
+\listoffigures % Abbildungsverzeichnis
+\newpage
+\listoftables % Tabellenverzeichnis 
+\newpage
+\pagenumbering{arabic}
+
+
+\newpage
+\bibliographystyle{plain}
+\bibliography{sources}
+\end{document}
