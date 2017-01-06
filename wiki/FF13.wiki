@@ -1,16 +1,60 @@
+== Allgemeines ==
 * Viele Anwendungsbereiche für das Problem: Multithreading, Bildverarbeitung, Routenplanung, etc.
 * Bisektion (2-balancierte Partitionierung) ist NP-Hard -> evtl. nachlesen
 * k-balancierte Partitionierung auf Bäumen ist polynomiell für konstantes $k$, quadratisch für $k = 2$
 * Approximation der Lösung für $k$ Teile mit Größe maximal $\left\lceil n/k \right\rceil$ ist NP-schwer -> [[AR06]]
     - Deswegen Lösen des Problems für $k$ Teile mit Größe maximal $(1 + \epsilon) * \left\lceil n/k \right\rceil$
-    - Für den Fall $\epsilon = 1$ ist der Approximationsfaktor alpha elem $O(\sqrt{log(n) * log(k)})$
+    - Für den Fall $\epsilon = 1$ ist der Approximationsfaktor alpha elem $\mathcal{O}(\sqrt{log(n) * log(k)})$
         => nicht attraktiv für Parallelrechner, da die langsamste Maschine die Fertigstellungszeit bestimmt
     - $0 \leq \epsilon \leq 1$ wird fast balanciert genannt
-        * [[AR06]] zeigte, dass $ \alpha \in O(log^{1.5}(n) / \epsilon^2) $
+        * [[AR06]] zeigte, dass $ \alpha \in \mathcal{O}(log^{1.5}(n) / \epsilon^2) $
         * Verteilen der Schnitte in Behälter kann nicht mit einem Greedy-Algorithmus gelöst werden
         * Kompliziertere Schnittphase
 * Es gibt einige Algorithmen für spezielle Graphen und Werte von $\alpha$ und $\epsilon$ 
 * Approximationsalgorithmus mit fast balancierten Schnitten => funktioniert deutlich besser auf Bäumen als auf generellen Graphen
     - Algorithmus für gewichtete Bäume berechnet fast balancierte Partition für jedes konstante $\epsilon > 0$ mit $\alpha = 1$
-    - Für generelle Graphen ist $\alpha \in O(log(n))$ => Faktor entsteht durch Dekomposition von Graphen in Bäume
+    - Für generelle Graphen ist $\alpha \in \mathcal{O}(log(n))$ => Faktor entsteht durch Dekomposition von Graphen in Bäume
     - Verbesserung gegenüber [[AR06]]
+
+== Algorithmus ==
+==== Definitionen ====
+    - Baum $T = (V, E, \omega)$ mit $\omega : E \mapsto \mathbb{R}^+$.
+    - Wurzel $r \in V$.
+    - $L_v \subset V$ enthält alle Knoten von an linken Geschwisterknoten gewurzelten Unterbäumen von $v$ und $v$ selbst ($v \neq r$).
+    - $\mathcal{F}$ ist eine untere Grenze von $L_v$, wenn alle Komponenten in $\mathcal{F}$ in $L_v$ enthalten sind und die Knoten in $V$, die nicht von $\mathcal{F}$ überdeckt werden, einen Zusammenhangskomponente $Z$ mit $r \in Z$ formen.
+    - $\vec{g}$: Sei $\mathcal{S}$ eine Menge von disjunkten Zusammenhangskomponenten von $T$ und $\epsilon > 0$. 
+    Ein Vektor $\vec{g} = (g_0, \ldots, g_t)$ wobei $t = \left\lceil log_{1+\epsilon}(1/\epsilon) \right\rceil + 1$ wird Signatur von $\mathcal{S}$ gennannt,  wenn in $\mathcal{S}$ $g_0$ Komponenten mit Größe in$\left[ 1, \epsilon * \left\lceil n/k \right\rceil \right)$ enthalten sind und $g_i$ Komponenten mit Größe in $\left[ (1 + \epsilon)^{i-1} * \epsilon * \left\lceil n/k \right\rceil, {(1+\epsilon)}^{i} * \epsilon * \left\lceil n/k \right\rceil \right)$ für jedes $i \in \{1, \ldots, t\}$
+    enthalten sind.
+    - $C_v(\vec{g}, m)$ sind die optimalen Schnittkosten über $L_v$ mit Signatur $\vec{g}$, deren Zusammenhangskomponenten insgesamt $m$ Knoten überdecken.
+    - $\mu := (1 + \epsilon) * \left\lceil n/k \right\rceil$.
+    - $\vec{e}(x)$ ist für jeden Integer $x < \mu$ eine Signatur, die nur eine Zusammenhangskomponente der Größe $x$ enthält. 
+    - $\mathcal{F}^*$ ist die optimale untere Grenze im Bezug auf $C_v(\vec{g}, m)$.
+    - $\mathbb{S}$ ist die Lösungsmenge im Bezug auf $\epsilon$.
+
+=== Schnittphase ===
+Sei $\mathcal{F}^*$ eine optimale untere Grenze im Bezug auf $C_v(\vec{g}, m)$. Vier Fälle resultieren aus der Tatsache, dass $v$ ein Blatt ist oder nicht und dass $v$ der linkeste Knoten unter seinen Geschwisterknoten ist oder nicht:
+    1) $v$ ist ein Blatt und der linkeste Knoten unter seinen Geschwisterknoten:
+        * Dann gilt $L_v = \{v\}$ und damit gilt auch, dass $\mathcal{F}^*$ entweder ${v}$ als eine Komponente enthält oder $\mathcal{F}$ ist leer.
+            a) Wenn $\mathcal{F}$ leer ist, dann sind die Schnittkosten $0$.
+            b) Wenn $\mathcal{F}$ $\{v\}$ als Komponente enthält, dann sind die Schnittkosten gleich dem Kantengewicht $\omega(e)$, wobei $e$ die Kante inzident zu $v$ ist. Diese Kante ist eindeutig, da $v$ ein Blatt ist.
+        * Es folgt, dass entweder $C_v((0, \ldots, 0), 0) = 0$ oder $C_v(\vec{e}(1), 1) = \omega(e)$, wobei alle anderen Funktionswerte unendlich sind.
+    2) $v$ ist kein Blatt und nicht der linkeste Knoten unter seinen Geschwisterknoten:
+        * Sei $w$ der Vorgänger von $v$ unter den Geschwisterknoten von $v$ und sei $u$ das rechteste Kind von $v$.
+        * In $\mathcal{F}^*$ wird entweder die Kante von $v$ zu seinem Elternknoten geschnitten oder nicht.
+            a) Wenn die Kante von $v$ zu seinem Eltern Knoten nicht geschnitten wird, dann enthalten die $m$ Knoten, die von $\mathcal{F}^*$ überdeckt werden, $v$ nicht. 
+                - Diese $m$ Knoten sind über $L_w$ und $L_v$ verteilt, da $L_v = L_w \cup L_u \cup \{v\}$ gilt. 
+                - $\{v\}$ kann nicht enthalten sein, da $\mathcal{F}^*$ sonst einen Knoten enthalten würde, der nicht in $L_v$ ist.
+                - Wenn $x$ der Knoten in $L_u$ durch $\mathcal{F}^*$ überdeckt werden, dann müssen $m - x$ von $\mathcal{F}^*$ in $L_w$ überdeckt werden. 
+                - Der Vektor $\vec{g}$ muss die Summe der Signaturen $\vec{g}_u$ und $\vec{g}_w$ sein, sodass die untere Grenze von $L_u$ (bzw. $L_w$) minimale Schnittkosten von denen mit Signatur $\vec{g}_u$ (bzw. $\vec{g}_w$) hat und $x$ (bzw. $m - x$) Knoten überdeckt.
+                - Sonst könnte man die untere Grenze von $L_u$ (bzw. $L_w$) mit einer unteren Grenze mit geringeren Schnittkosten austauschen, was ein Widerspruch zur Optimalität von $\mathcal{F}^*$ wäre.
+                - In diesem Fall gilt: $C_v(\vec{g}, m) = min\left\{C_w(\vec{g}_w, m - x) + C_u(\vec{g}_u, x) \mid 0 \leq x \leq m \land \vec{g}_w + \vec{g}_u = \vec{g} \right\}$.
+            b) Wenn die Kante $e$ von $v$ zu seinem Elternknoten in $\mathcal{F}^*$ geschnitten wird, dann werden alle $n_v$ Knoten im Unterbaum gewurzelt bei $v$ von $\mathcal{F}^*$ überdeckt.
+                - Dies ist der Fall, da $v$ dann in $\mathcal{F}^*$ sein muss und somit auch alle Knoten unterhalb von $v$ enthalten sein müssen (es würde sich sonst nicht um einen Teil einer unteren Grenze handeln).
+                - Alle anderen $m - n_v$ Knoten, die von $\mathcal{F}^*$ überdeckt werden, müssen in $L_w$ enthalten sein.
+                - Sei $x$ die Größe der Komponente $S \in \mathcal{F}^*$, die $v$ enthält. Dann gilt analog zum vorherigen Fall, dass die unteren Grenzen von $L_u$ und $L_w$ mit Signaturen $\vec{g}_u$ und $\vec{g}_w$ in $\mathcal{F}^* \setminus \{S\}$ minimale Schnittkosten haben.
+                - Der Vektor $\vec{g}$ ist also die summe von $\vec{g}_u$, $\vec{g}_w$ und $\vec{e}(x)$
+                - Es gilt also: $C_v(\vec{g}, m) = \omega(e) + min \left\{ C_w(\vec{g}_w, m - n_v) + C_u(\vec{g}_u, n_v - x) \mid 1 \leq x \leq \mu \land \vec{g}_w + \vec{g}_u + \vec{e}(x) = \vec{g} \right\}$.
+    3) Folgt durch Anwendung der oben gegebenen Formeln, indem man $C_u(\vec{g}, x)$ und $C_w(\vec{g}, x)$ von einem nicht existierendem Knoten $u$ oder $w$ auf $0$ setzt, wenn $\vec{g} = (0, \ldots, 0)$ und $x = 0$,  und auf $\infty$ sonst.
+    4) Analog zu 3.
+    
+=== Packphase ===
