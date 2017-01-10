@@ -1,6 +1,6 @@
 == Allgemeines ==
 * Viele Anwendungsbereiche für das Problem: Multithreading, Bildverarbeitung, Routenplanung, etc.
-* Bisektion (2-balancierte Partitionierung) ist NP-Hard -> evtl. nachlesen
+* Bisektion (2-balancierte Partitionierung) auf generellen Graphen ist NP-Hard -> evtl. nachlesen
 * k-balancierte Partitionierung auf Bäumen ist polynomiell für konstantes $k$, quadratisch für $k = 2$
 * Approximation der Lösung für $k$ Teile mit Größe maximal $\left\lceil n/k \right\rceil$ ist NP-schwer -> [[AR06]]
     - Deswegen Lösen des Problems für $k$ Teile mit Größe maximal $(1 + \epsilon) * \left\lceil n/k \right\rceil$
@@ -43,7 +43,7 @@ Sei $\mathcal{F}^*$ eine optimale untere Grenze im Bezug auf $C_v(\vec{g}, m)$. 
         * In $\mathcal{F}^*$ wird entweder die Kante von $v$ zu seinem Elternknoten geschnitten oder nicht.
             a) Wenn die Kante von $v$ zu seinem Eltern Knoten nicht geschnitten wird, dann enthalten die $m$ Knoten, die von $\mathcal{F}^*$ überdeckt werden, $v$ nicht. 
                 - Diese $m$ Knoten sind über $L_w$ und $L_v$ verteilt, da $L_v = L_w \cup L_u \cup \{v\}$ gilt. 
-                - $\{v\}$ kann nicht enthalten sein, da $\mathcal{F}^*$ sonst einen Knoten enthalten würde, der nicht in $L_v$ ist.
+                - $v \notin L_v$ , da $\mathcal{F}^*$ sonst einen Knoten enthalten würde, der nicht in $L_v$ ist.
                 - Wenn $x$ der Knoten in $L_u$ durch $\mathcal{F}^*$ überdeckt werden, dann müssen $m - x$ von $\mathcal{F}^*$ in $L_w$ überdeckt werden. 
                 - Der Vektor $\vec{g}$ muss die Summe der Signaturen $\vec{g}_u$ und $\vec{g}_w$ sein, sodass die untere Grenze von $L_u$ (bzw. $L_w$) minimale Schnittkosten von denen mit Signatur $\vec{g}_u$ (bzw. $\vec{g}_w$) hat und $x$ (bzw. $m - x$) Knoten überdeckt.
                 - Sonst könnte man die untere Grenze von $L_u$ (bzw. $L_w$) mit einer unteren Grenze mit geringeren Schnittkosten austauschen, was ein Widerspruch zur Optimalität von $\mathcal{F}^*$ wäre.
