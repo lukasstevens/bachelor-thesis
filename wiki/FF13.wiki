@@ -2,8 +2,8 @@
 * Viele Anwendungsbereiche für das Problem: Multithreading, Bildverarbeitung, Routenplanung, etc.
 * Bisektion (2-balancierte Partitionierung) auf generellen Graphen ist NP-Hard -> evtl. nachlesen
 * k-balancierte Partitionierung auf Bäumen ist polynomiell für konstantes $k$, quadratisch für $k = 2$
-* Approximation der Lösung für $k$ Teile mit Größe maximal $\left\lceil n/k \right\rceil$ ist NP-schwer -> [[AR06]]
-    - Deswegen Lösen des Problems für $k$ Teile mit Größe maximal $(1 + \epsilon) * \left\lceil n/k \right\rceil$
+* Approximation der Lösung für $k$ Partitionen mit Größe maximal $\left\lceil n/k \right\rceil$ ist NP-schwer -> [[AR06]]
+    - Deswegen Lösen des Problems für $k$ Partitionen mit Größe maximal $(1 + \epsilon) * \left\lceil n/k \right\rceil$
     - Für den Fall $\epsilon = 1$ ist der Approximationsfaktor alpha elem $\mathcal{O}(\sqrt{log(n) * log(k)})$
         => nicht attraktiv für Parallelrechner, da die langsamste Maschine die Fertigstellungszeit bestimmt
     - $0 \leq \epsilon \leq 1$ wird fast balanciert genannt
@@ -32,7 +32,7 @@
     - $\mathbb{S}$ ist die Lösungsmenge im Bezug auf $\epsilon$.
 
 === Schnittphase ===
-Sei $\mathcal{F}^*$ eine optimale untere Grenze im Bezug auf $C_v(\vec{g}, m)$. Vier Fälle resultieren aus der Tatsache, dass $v$ ein Blatt ist oder nicht und dass $v$ der linkeste Knoten unter seinen Geschwisterknoten ist oder nicht:
+Sei $\mathcal{F}^*$ eine optimale untere Grenze im Bezug auf $C_v(\vec{g}, m)$. Vier Fälle resultieren aus der Tatsache, dass $v$ ein Blatt sein kann oder nicht und dass $v$ der linkeste Knoten unter seinen Geschwisterknoten sein kann oder nicht:
     1) $v$ ist ein Blatt und der linkeste Knoten unter seinen Geschwisterknoten:
         * Dann gilt $L_v = \{v\}$ und damit gilt auch, dass $\mathcal{F}^*$ entweder ${v}$ als eine Komponente enthält oder $\mathcal{F}$ ist leer.
             a) Wenn $\mathcal{F}$ leer ist, dann sind die Schnittkosten $0$.
@@ -58,3 +58,16 @@ Sei $\mathcal{F}^*$ eine optimale untere Grenze im Bezug auf $C_v(\vec{g}, m)$. 
     4) Analog zu 3.
     
 === Packphase ===
+In der Packphase müssen die Zusammenhangskomponenten, die in der Schnittphase berechnet wurden, in $k$ Behälter der Größe $(1+\epsilon)\left\lceil n/k \right\rceil$ gepackt werden. Dieses Problem wird als Bin Packing bezeichnet und ist generall NP-schwer. Das Problem kann jedoch in polynomieller Zeit für konstantes $\epsilon$ gelöst werden. 
+
+* Sei $\mathcal{S} \in \mathbb{S}$ die Menge der Zusammenhangskomponenten mit Signatur $\vec{g} = (g_0, \ldots, g_t)$.
+* Konstruiere eine Bin Packing Instanz mit nur diesen Komponenten deren Größe größer als $\epsilon \left\lceil n/k \right\rceil$ ist.
+* Setze die Kapazität der Behälter auf $\left\lceil n/k \right\rceil$.
+* Runde die Größe jeder Komponente auf die untere Intervallgrenze des Intervalls, in der sie enthalten ist.
+    - Die Anzahl der Elemente ist höchstens $\frac{n}{\epsilon\left\lceil n/k \right\rceil} \leq k/\epsilon$, da jede Komponente mindestens Größe $\epsilon \left\lceil n/k \right\rceil$ hat und es $n$ Knoten gibt.
+    - Die Größe einer Komponente wird um höchstens $1+\epsilon$ unterschätzt.
+* Eine optimale Lösung kann in $\mathcal{O}((\frac{k}{\epsilon})^{2t})$ gefunden werden.
+* Die gefundene Lösung kann als Packing für die Originalgrößen verwendet werden, wobei man in einem Behälter durch Überschätzen höchstens $(1+\epsilon) \left\lceil n/k \right\rceil$ Platz verbraucht.
+* Danach werden die Komponenten der Größe kleiner $\epsilon \left\lceil n/k \right\rceil$ greedy in die Behälter verteilt. Dies kann nicht dazu führen, dass mehr Behälter verwendet werden als in der optimalen Lösung des Bin Packings mit exakten Größen und Behältergröße $\left\lceil n/k \right\rceil$.
+* Die Signatur mit den minimalen Schnittkosten, die in $k$ Behälter gepackt werden kann, ist die Ausgabe des Algorithmus.
+* Die gesamte Laufzeit ist $\mathcal{O}\left(n^4 (k/\epsilon)^{1+3 \left\lceil \frac{1}{\epsilon} log(\frac{1}{\epsilon})\right\rceil}\right)$.
