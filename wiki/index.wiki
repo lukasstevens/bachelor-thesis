@@ -7,5 +7,7 @@ Fragen:
 * Welcher Packing Algorithmus?
 
 == Arbeit == 
+=== Rust ===
+* Library: https://github.com/saschagrunert/indextree
 
 == Code ==
