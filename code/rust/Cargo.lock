@@ -1,0 +1,14 @@
+[root]
+name = "graph"
+version = "0.1.0"
+dependencies = [
+ "indextree 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "indextree"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[metadata]
+"checksum indextree 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e43c0dad5e931bbc0319ddf6d350e2ce0f4fe5d8d041487628a0ac36906a6264"
