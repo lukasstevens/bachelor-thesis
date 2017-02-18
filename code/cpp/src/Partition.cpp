@@ -22,6 +22,10 @@ struct Node {
         Node() : id(0), parent(nullptr), children(nullptr), children_cnt(0) {}
         Node(u32 i, Node* p, i32 w): id(i), parent(p), parent_edge_weight(w), children(nullptr), children_cnt(0) {}
 
+        ~Node() {
+            delete[] children;
+        }
+
         static Node* build_tree(std::unordered_map<u32, std::unordered_map<u32, i32>>& graph) {
             Node* root = new Node(graph.begin()->first, nullptr, 0);
 
@@ -44,7 +48,7 @@ struct Node {
                 u32 idx = 0;
                 for (auto neighbor : graph[curr_node->id]) {
                     if (visited.find(neighbor.first) == visited.end()) {
-                        (curr_node->children)[idx] = Node(neighbor.first, curr_node, neighbor.second);
+                        curr_node->children[idx] = Node(neighbor.first, curr_node, neighbor.second);
                         queue.push_back(std::make_pair(idx, curr_node->children));
                         idx += 1;
                     }
@@ -63,8 +67,8 @@ struct Node {
                 queue.pop_front();
 
                 for (u32 child_idx = 0; child_idx < curr_node->children_cnt; ++child_idx) {
-                    stream << curr_node->id << " -> " << (curr_node->children)[child_idx].id << "[label=\"" << (curr_node->children)[child_idx].parent_edge_weight << "\"]\n";
-                    queue.push_back(&(curr_node->children)[child_idx]);
+                    stream << curr_node->id << " -> " << curr_node->children[child_idx].id << "[label=\"" << curr_node->children[child_idx].parent_edge_weight << "\"]\n";
+                    queue.push_back(&curr_node->children[child_idx]);
                 }
             }
             return stream.str();
@@ -87,5 +91,6 @@ int main() {
     }
 
     Node* root = Node::build_tree(graph);
-    std::cerr << root->to_string();
+    std::cerr << root->to_string() << std::endl;
+    delete(root);
 }
