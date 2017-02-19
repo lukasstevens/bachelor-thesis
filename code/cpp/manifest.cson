@@ -1,0 +1,8 @@
+name: "bachelorthesis"
+version: "1.0.0"
+author: "Lukas Stevens"
+url: ""
+dependencies: 
+    "craftr.lang.cxx": "*"
+    "craftr.lib.googletest" : "*"
+options: {}

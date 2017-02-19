@@ -1,0 +1,21 @@
+# bachelorthesis
+cxx = load('craftr.lang.cxx')
+googletest = load('craftr.lib.googletest').googletest
+
+mylib = Framework(
+  include = [local('src/include')]
+)
+
+mylib_lib = cxx.static_library(
+  inputs = cxx.compile_cpp(sources = glob('src/main/*.cpp'), frameworks = [mylib]),
+  output = 'mylib'
+)
+cxx.extend_framework(mylib, mylib_lib)
+
+test_bin = cxx.executable(
+  inputs = cxx.compile_cpp(sources = glob('src/test/*.cpp'), frameworks = [googletest, mylib]),
+  output = 'test'
+)
+
+test = runtarget(test_bin)
+
