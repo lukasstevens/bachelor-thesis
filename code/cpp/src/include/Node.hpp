@@ -12,7 +12,7 @@ struct Node {
     public:
         IdType id;
         Node* parent;
-        std::shared_ptr<std::vector<Node>> children;
+        std::vector<Node> children;
         EdgeWeightType parent_edge_weight;
 
         Node(IdType, Node*, EdgeWeightType);
@@ -20,5 +20,10 @@ struct Node {
         static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>&);
 
         std::string to_string();
+
+        Node(Node&&) = default;
+        Node& operator=(Node&&) = default;
+        Node(Node const&) = delete;
+        Node& operator=(Node const&) = delete;
 };
 
