@@ -17,12 +17,14 @@ struct Node {
 
         Node(IdType, Node*, EdgeWeightType);
 
-        static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>&);
+        static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree);
+        static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id);
 
         std::string to_string();
 
         Node(Node&&) = default;
         Node& operator=(Node&&) = default;
+        // Delete copy constructor and copy-assignment so that no accidental copies happen
         Node(Node const&) = delete;
         Node& operator=(Node const&) = delete;
 };

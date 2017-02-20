@@ -11,8 +11,8 @@
 
 Node::Node(IdType i, Node* p, EdgeWeightType w) : id(i), parent(p), parent_edge_weight(w) {}
 
-Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree) {
-    Node root(tree.begin()->first, nullptr, 0);
+Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id) {
+    Node root(root_id, nullptr, 0);
     std::list<std::pair<size_t, Node*>> queue;
     std::unordered_set<IdType> visited;
     size_t child_idx = 0;
@@ -42,6 +42,11 @@ Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, Edge
 
     }
     return root;
+}
+
+
+Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree) {
+    return build_tree(tree, tree.begin()->first);
 }
 
 std::string Node::to_string() {
