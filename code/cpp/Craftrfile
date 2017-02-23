@@ -6,6 +6,7 @@ mylib = Framework(
   include = [local('src/include')],
   std = 'c++14',
   warn = 'all',
+  debug = True
 )
 
 mylib_lib = cxx.static_library(
@@ -21,3 +22,4 @@ test_bin = cxx.executable(
 
 test = runtarget(test_bin)
 
+gdb = gentarget([['gdb', '--args', test_bin]], pool='console', explicit=True)
