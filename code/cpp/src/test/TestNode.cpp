@@ -2,7 +2,7 @@
 
 #include<gtest/gtest.h>
 
-#include<Node.hpp>
+#include "Partition.hpp"
 
 TEST(BuildTreeTest, TwoNodes) {
     std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree; 
