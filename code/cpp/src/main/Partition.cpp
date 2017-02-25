@@ -7,7 +7,7 @@
 #include<memory>
 #include<list>
 
-#include "Node.hpp"
+#include "Partition.hpp"
 
 Node::Node(IdType i, Node* p, EdgeWeightType w) : id(i), parent(p), parent_edge_weight(w) {}
 
