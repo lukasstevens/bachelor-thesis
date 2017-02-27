@@ -32,9 +32,7 @@ namespace part {
     }
 
     Signature operator+(Signature lhs, const Signature& rhs) {
-        Signature lhs_copy(lhs.sig);
-        lhs_copy += rhs;
-        return lhs_copy; 
+        return lhs += rhs;
     }
 }
 
