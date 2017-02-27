@@ -4,6 +4,8 @@
 
 #include "Partition.hpp"
 
+using namespace part;
+
 TEST(BuildTreeTest, TwoNodes) {
     std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree; 
     tree[1][2] = 3;

@@ -23,10 +23,6 @@ namespace part {
         return true;
     }
 
-    bool operator!=(const Signature& lhs, const Signature& rhs) {
-        return !(lhs == rhs);
-    }
-
     Signature& Signature::operator+=(const Signature& rhs) {
         assert(this->sig.size() == rhs.sig.size());
         for (size_t i = 0; i < this->sig.size(); ++i) {
@@ -40,19 +36,29 @@ namespace part {
         lhs_copy += rhs;
         return lhs_copy; 
     }
+}
 
-    size_t hash(const Signature& signature) {
-        std::stringstream stream;
-        for (Signature::CountType const& value : signature.sig) {
+namespace std {
+    using part::Signature;
+
+    size_t hash<Signature>::operator()(const Signature& s) const {
+        using std::hash;
+        using std::string;
+
+        string stream;
+        for (Signature::CountType const& value : s.sig) {
             char const* value_as_chars = static_cast<char const*>(static_cast<void const*>(&value));
             for (size_t i = 0; i < sizeof(Signature::CountType); ++i) {
-                stream << value_as_chars[i];
+                stream.push_back(value_as_chars[i]);
             }
         }
 
-        std::hash<std::string> hash_fn;
-        return hash_fn(stream.str());
+        hash<string> hash_fn;
+        return hash_fn(stream);
     }
+}
+
+namespace part {
 
     Node::Node(IdType i, Node* p, EdgeWeightType w) : id(i), parent(p), parent_edge_weight(w) {}
 
