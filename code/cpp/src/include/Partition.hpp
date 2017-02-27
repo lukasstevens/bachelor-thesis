@@ -6,6 +6,7 @@
 #include<string>
 #include<vector>
 
+
 namespace part {
 
     struct Signature {
@@ -15,21 +16,26 @@ namespace part {
         std::vector<CountType> sig;
 
         Signature(std::vector<CountType>);
-        Signature(Signature&&) = default;
-        Signature& operator=(Signature&&) = default;
-        // Delete copy constructor and copy-assignment so that no accidental copies happen
-        Signature(Signature const&) = delete;
-        Signature& operator=(Signature const&) = delete;
 
-        friend inline bool operator==(const Signature& lhs, const Signature& rhs);
-        friend inline bool operator!=(const Signature& lhs, const Signature& rhs);
+        friend bool operator==(const Signature& lhs, const Signature& rhs);
+        friend inline bool operator!=(const Signature& lhs, const Signature& rhs) {
+            return !(lhs == rhs);
+        }
 
         Signature& operator+=(const Signature& rhs);
         friend Signature operator+(Signature lhs, const Signature& rhs);
-
-        friend size_t hash(const Signature& signature);
     };
 
+}
+
+namespace std {
+    template <>
+    struct hash<part::Signature> {
+        size_t operator()(const part::Signature& s) const;
+    };
+}
+
+namespace part {
     struct Node {
         using IdType = uint32_t;
         using EdgeWeightType = uint32_t;
