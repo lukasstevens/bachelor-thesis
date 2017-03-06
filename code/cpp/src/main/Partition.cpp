@@ -6,6 +6,7 @@
 #include<sstream>
 #include<list>
 #include<cassert>
+#include<iostream>
 
 #include "Partition.hpp"
 
@@ -43,6 +44,8 @@ namespace std {
         using std::hash;
         using std::string;
 
+        // Interpret the underlying vector of the signature as a bytestream. Convert the bytestream
+        // to a std::string and then hash it with the default hash.
         string stream;
         for (Signature::CountType const& value : s.sig) {
             char const* value_as_chars = static_cast<char const*>(static_cast<void const*>(&value));
@@ -58,13 +61,20 @@ namespace std {
 
 namespace part {
 
-    Node::Node(IdType i, Node* p, EdgeWeightType w) : id(i), parent(p), parent_edge_weight(w) {}
+    Node::Node(IdType i, Node* p, EdgeWeightType w) : id(i), parent(p), parent_edge_weight(w), subtree_size(0) {}
 
     Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id) {
         Node root(root_id, nullptr, 0);
+        // This is the BFS queue. It contains the nodes only indirectly by a pointer to the parent node 
+        // and an index which is the corresponding index of the node in the child vector of the parent node.
+        // Only pointers to nodes can be in the queue since Nodes can't be copied. Furthermore we cannot save a 
+        // pointer directly since the children vectors may be moved to another memory location when resizing.
         std::list<std::pair<size_t, Node*>> queue;
         std::unordered_set<IdType> visited;
-        size_t child_idx = 0;
+
+        // All nodes which are in the queue have to be in the children vector of the parent. Therefore we
+        // have to handle the root seperately since it has no parent.
+        Node::IdType child_idx = 0;
         for (auto& child : tree[root.id]) {
             root.children.emplace_back(child.first, &root, child.second);
             queue.push_back(std::make_pair(child_idx, &root));
@@ -72,6 +82,8 @@ namespace part {
         }
         visited.insert(root.id);
 
+        // Do a BFS to discover all descendants of the root and attach children to the root and its 
+        // descendants accordingly.
         while (!queue.empty()) {
             Node* parent_node;
             size_t curr_idx;
@@ -90,6 +102,34 @@ namespace part {
             }
 
         }
+
+        // Visited set has to be cleared when reusing it.
+        visited.clear();
+        std::list<Node*> stack;
+        stack.push_back(&root);
+
+        // Do a post-order traversal to determine the size of the subtree rooted at each node.
+        while (!stack.empty()) {
+            Node* curr_node = stack.back();
+
+            if (visited.find(curr_node->id) != visited.end()) {
+                // Only pop the current node from the stack if it is the second time we
+                // encounter it.
+                stack.pop_back();
+                // Subtree size is initially 1 to account for the current node.
+                IdType subtree_size = 1;
+                for (auto& child : curr_node->children) {
+                    subtree_size += child.subtree_size;
+                }
+                curr_node->subtree_size = subtree_size;
+            } else {
+                visited.insert(curr_node->id);
+                for (auto& child : curr_node->children) {
+                    stack.push_back(&child);
+                }
+            }
+        }
+
         return root;
     }
 
