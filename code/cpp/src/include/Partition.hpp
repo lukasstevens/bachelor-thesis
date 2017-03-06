@@ -9,9 +9,9 @@
 namespace part {
 
     struct Signature {
+        public:
         using CountType = uint32_t;
 
-        public:
         std::vector<CountType> sig;
 
         Signature(std::vector<CountType>);
@@ -39,16 +39,15 @@ namespace std {
 namespace part {
 
     struct Node {
+        public:
         using IdType = uint32_t;
         using EdgeWeightType = int32_t;
 
-        public:
         IdType const id;
         Node* const parent;
         EdgeWeightType const parent_edge_weight;
         IdType subtree_size;
         std::vector<Node> children;
-        std::map<Signature::CountType, std::unordered_map<Signature, Signature::CountType>> signatures;
 
         Node(IdType, Node*, EdgeWeightType);
         Node(Node&&) = default;
@@ -60,10 +59,15 @@ namespace part {
         static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id);
         static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree);
 
-        static void partition_tree(Node& root, IdType k, double eps);
-
         std::string to_string();
     };
 
+    struct Tree {
+        public:
+        using SignatureMap = std::map<Signature::CountType, std::unordered_map<Signature, Signature::CountType>>;
+
+        std::vector<std::vector<Node>> levels;
+        std::vector<std::vector<SignatureMap>> signatures;
+    };
 }
 
