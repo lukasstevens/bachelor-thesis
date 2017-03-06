@@ -6,8 +6,8 @@
 #include<string>
 #include<vector>
 
-
 namespace part {
+
     struct Signature {
         using CountType = uint32_t;
 
@@ -28,13 +28,16 @@ namespace part {
 }
 
 namespace std {
+
     template <>
     struct hash<part::Signature> {
         size_t operator()(const part::Signature& s) const;
     };
+
 }
 
 namespace part {
+
     struct Node {
         using IdType = uint32_t;
         using EdgeWeightType = int32_t;
@@ -50,14 +53,14 @@ namespace part {
         Node(IdType, Node*, EdgeWeightType);
         Node(Node&&) = default;
         Node& operator=(Node&&) = default;
-        // Delete copy constructor and copy-assignment so that no accidental copies happen
+        // Delete copy constructor and copy-assignment so that no accidental copies happen.
         Node(Node const&) = delete;
         Node& operator=(Node const&) = delete;
 
         static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id);
         static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree);
 
-        static void partition_tree(Node& root, size_t k, double eps);
+        static void partition_tree(Node& root, IdType k, double eps);
 
         std::string to_string();
     };

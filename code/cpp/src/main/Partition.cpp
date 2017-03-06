@@ -1,12 +1,11 @@
+#include<cassert>
 #include<cstdint>
-#include<vector>
+#include<list>
+#include<sstream>
+#include<string>
 #include<unordered_map>
 #include<unordered_set>
-#include<string>
-#include<sstream>
-#include<list>
-#include<cassert>
-#include<iostream>
+#include<vector>
 
 #include "Partition.hpp"
 
@@ -35,9 +34,11 @@ namespace part {
     Signature operator+(Signature lhs, const Signature& rhs) {
         return lhs += rhs;
     }
+
 }
 
 namespace std {
+
     using part::Signature;
 
     size_t hash<Signature>::operator()(const Signature& s) const {
@@ -57,6 +58,7 @@ namespace std {
         hash<string> hash_fn;
         return hash_fn(stream);
     }
+
 }
 
 namespace part {
@@ -155,4 +157,5 @@ namespace part {
         }
         return stream.str();
     }
+
 }
