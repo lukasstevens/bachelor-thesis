@@ -14,15 +14,7 @@ namespace part {
     Signature::Signature(std::vector<Signature::CountType> s) : sig(s) {}
 
     bool operator==(const Signature& lhs, const Signature& rhs) {
-        if (lhs.sig.size() != rhs.sig.size()) {
-            throw std::logic_error("Signatures don't have same size.");
-        }
-        for (size_t i = 0; i < lhs.sig.size(); ++i) {
-            if (lhs.sig[i] != rhs.sig[i]) {
-                return false;
-            }
-        }
-        return true;
+        return lhs.sig == rhs.sig;
     }
 
     Signature& Signature::operator+=(const Signature& rhs) {
