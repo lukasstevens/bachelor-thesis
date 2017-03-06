@@ -68,7 +68,7 @@ namespace part {
     Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id) {
         Node root(root_id, nullptr, 0);
         // This is the BFS queue. It contains the nodes only indirectly by a pointer to the parent node 
-        // and an index which is the corresponding index of the node in the child vector of the parent node.
+        // and the index of the node in the children vector of the parent node.
         // Only pointers to nodes can be in the queue since Nodes can't be copied. Furthermore we cannot save a 
         // pointer directly since the children vectors may be moved to another memory location when resizing.
         std::list<std::pair<size_t, Node*>> queue;
