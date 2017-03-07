@@ -91,6 +91,7 @@ flags = [
 '-isystem',
 './tests/gmock/include',
 '-Isrc/include'
+'-Ideps/compact_optional/compact_optional.hpp'
 ]
 
 
