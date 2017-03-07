@@ -59,3 +59,30 @@ TEST(BuildTree, ThreeNodeChain) {
         ASSERT_FALSE(tree.has_left_sibling[idx][0]);
     }
 }
+
+TEST(BuildTree, ThreeNodes) {
+    std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree_map;
+    tree_map[1][2] = 4;
+    tree_map[1][3] = 5;
+    Tree tree = Tree::build_tree(tree_map, 1);
+    ASSERT_EQ(tree.levels.size(), 2);
+    ASSERT_EQ(tree.levels[0].size(), 1);
+    ASSERT_EQ(tree.levels[1].size(), 2);
+
+    Node root = tree.levels[0][0];
+    Node fst_child = tree.levels[1][0];
+    Node snd_child = tree.levels[1][1];
+
+    ASSERT_EQ(root.children_idx_range.first, 0);
+    ASSERT_EQ(root.children_idx_range.second, 2);
+
+    for (auto node : {fst_child, snd_child}) {
+        ASSERT_EQ(node.children_idx_range.first, 0);
+        ASSERT_EQ(node.children_idx_range.second, 0);
+        ASSERT_EQ(node.parent_idx, 0);
+        ASSERT_EQ(tree_map[root.id][node.id], node.parent_edge_weight);
+    }
+    ASSERT_TRUE(tree.has_left_sibling[1][1]);
+    ASSERT_FALSE(tree.has_left_sibling[0][0]);
+    ASSERT_FALSE(tree.has_left_sibling[0][1]);
+}
