@@ -59,99 +59,59 @@ namespace std {
 
 namespace part {
 
-    Node::Node(IdType i, Node* p, EdgeWeightType w) : id(i), parent(p), parent_edge_weight(w), subtree_size(0) {}
+    using EdgeWeightType = Node::EdgeWeightType;
+    using IdType = Node::IdType;
 
-    Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id) {
-        Node root(root_id, nullptr, 0);
-        // This is the BFS queue. It contains the nodes only indirectly by a pointer to the parent node 
-        // and the index of the node in the children vector of the parent node.
-        // Only pointers to nodes can be in the queue since Nodes can't be copied. Furthermore we cannot save a 
-        // pointer directly since the children vectors may be moved to another memory location when resizing.
-        std::list<std::pair<size_t, Node*>> queue;
-        std::unordered_set<IdType> visited;
-
-        // All nodes which are in the queue have to be in the children vector of the parent. Therefore we
-        // have to handle the root seperately since it has no parent.
-        Node::IdType child_idx = 0;
-        for (auto& child : tree[root.id]) {
-            root.children.emplace_back(child.first, &root, child.second);
-            queue.push_back(std::make_pair(child_idx, &root));
-            child_idx += 1;
-        }
-        visited.insert(root.id);
-
-        // Do a BFS to discover all descendants of the root and attach children to the root and its 
-        // descendants accordingly.
-        while (!queue.empty()) {
-            Node* parent_node;
-            size_t curr_idx;
-            std::tie(curr_idx, parent_node) = queue.front();
-            Node* curr_node = &parent_node->children[curr_idx];
-            queue.pop_front();
-            visited.insert(curr_node->id);
-
-            child_idx = 0;
-            for (auto& neighbor : tree[curr_node->id]) {
-                if (visited.find(neighbor.first) == visited.end()) {
-                    curr_node->children.emplace_back(neighbor.first, curr_node, neighbor.second);
-                    queue.push_back(std::make_pair(child_idx, curr_node));
-                    child_idx += 1;
-                }
-            }
-
-        }
-
-        // Visited set has to be cleared when reusing it.
-        visited.clear();
-        std::list<Node*> stack;
-        stack.push_back(&root);
-
-        // Do a post-order traversal to determine the size of the subtree rooted at each node.
-        while (!stack.empty()) {
-            Node* curr_node = stack.back();
-
-            if (visited.find(curr_node->id) != visited.end()) {
-                // Only pop the current node from the stack if it is the second time we
-                // encounter it.
-                stack.pop_back();
-                // Subtree size is initially 1 to account for the current node.
-                IdType subtree_size = 1;
-                for (auto& child : curr_node->children) {
-                    subtree_size += child.subtree_size;
-                }
-                curr_node->subtree_size = subtree_size;
-            } else {
-                visited.insert(curr_node->id);
-                for (auto& child : curr_node->children) {
-                    stack.push_back(&child);
-                }
-            }
-        }
-
-        return root;
-    }
+    Node::Node(IdType const id, EdgeWeightType const parent_edge_weight, 
+            size_t const parent_idx, std::pair<size_t const, size_t const> const children_idx_range) : 
+        id(id), parent_edge_weight(parent_edge_weight), parent_idx(parent_idx), children_idx_range(children_idx_range) {}
 
 
-    Node Node::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree) {
-        return build_tree(tree, tree.begin()->first);
-    }
+    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree_map, IdType root_id) {
+        Tree tree;
+        struct NodeStub {
+            IdType const id; 
+            EdgeWeightType const parent_edge_weight;
+            size_t const parent_idx;
+            bool const has_left_sibling;
+            size_t const level;
 
-    std::string Node::to_string() {
-        std::stringstream stream;
-        std::list<Node*> queue;
-        queue.push_back(this);
+            NodeStub(IdType const id, EdgeWeightType const p_e_w, size_t const p_i, bool const h_l_s, size_t const lvl) :
+                id(id), parent_edge_weight(p_e_w), parent_idx(p_i), has_left_sibling(h_l_s), level(lvl) {}
+        };
 
-        while (!queue.empty()) {
-            Node* curr_node = queue.front();
+        std::list<NodeStub> queue;
+        queue.push_back(NodeStub(root_id, 0, 0, false, 0));
+
+        size_t next_child_idx = 0;
+        while(!queue.empty()) {
+            NodeStub curr_node = queue.front();
             queue.pop_front();
 
-            for (auto& child : curr_node->children) {
-                stream << curr_node->id << " -> " << child.id;
-                stream << "[label=\"" << child.parent_edge_weight << "\"]\n";
-                queue.push_back(&child);
+            if (curr_node.level == tree.levels.size()) {
+                tree.levels.push_back(std::vector<Node>());
+                tree.has_left_sibling.push_back(std::vector<bool>());
+                next_child_idx = 0;
             }
+
+            size_t old_next_child_idx = next_child_idx;
+            for (auto neighbor : tree_map[curr_node.id]) {
+                if (curr_node.level == 0 || neighbor.first != tree.levels[curr_node.level - 1][curr_node.parent_idx].id) {
+                    bool has_left_sibling = !(old_next_child_idx == next_child_idx);
+                    queue.emplace_back(neighbor.first, neighbor.second, tree.levels[curr_node.level].size(), has_left_sibling, curr_node.level + 1); 
+                    ++next_child_idx;
+                }
+            }
+
+            tree.levels[curr_node.level].emplace_back(curr_node.id, curr_node.parent_edge_weight, 
+                    curr_node.parent_idx, std::make_pair(old_next_child_idx, next_child_idx));
+            tree.has_left_sibling[curr_node.level].push_back(curr_node.has_left_sibling);
         }
-        return stream.str();
+
+        return tree;
     }
 
+    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree_map) {
+        return build_tree(tree_map, tree_map.begin()->first);
+    }
 }

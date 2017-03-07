@@ -1,7 +1,9 @@
 #pragma once
 
 #include<cstdint>
+#include<limits>
 #include<map>
+#include<memory>
 #include<unordered_map>
 #include<string>
 #include<vector>
@@ -44,30 +46,21 @@ namespace part {
         using EdgeWeightType = int32_t;
 
         IdType const id;
-        Node* const parent;
         EdgeWeightType const parent_edge_weight;
-        IdType subtree_size;
-        std::vector<Node> children;
+        size_t const parent_idx;
+        std::pair<size_t const, size_t const> const children_idx_range;
 
-        Node(IdType, Node*, EdgeWeightType);
-        Node(Node&&) = default;
-        Node& operator=(Node&&) = default;
-        // Delete copy constructor and copy-assignment so that no accidental copies happen.
-        Node(Node const&) = delete;
-        Node& operator=(Node const&) = delete;
-
-        static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree, IdType root_id);
-        static Node build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree);
-
-        std::string to_string();
+        Node(IdType const id, EdgeWeightType const parent_edge_weight, 
+                size_t const parent_idx, std::pair<size_t const, size_t const> const children_idx_range);
     };
 
     struct Tree {
         public:
-        using SignatureMap = std::map<Signature::CountType, std::unordered_map<Signature, Signature::CountType>>;
-
         std::vector<std::vector<Node>> levels;
-        std::vector<std::vector<SignatureMap>> signatures;
+        std::vector<std::vector<bool>> has_left_sibling;
+
+        static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree, Node::IdType root_id);
+        static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree);
     };
 }
 
