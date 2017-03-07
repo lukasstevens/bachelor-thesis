@@ -1,0 +1,3 @@
+[submodule "code/cpp/deps/compact_optional"]
+	path = code/cpp/deps/compact_optional
+	url = git@github.com:akrzemi1/compact_optional
