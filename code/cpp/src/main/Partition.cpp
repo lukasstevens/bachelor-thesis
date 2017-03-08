@@ -1,3 +1,4 @@
+#include<cmath>
 #include<cstdint>
 #include<list>
 #include<sstream>
@@ -8,54 +9,6 @@
 #include<vector>
 
 #include "Partition.hpp"
-
-namespace part {
-
-    Signature::Signature(std::vector<Signature::CountType> s) : sig(s) {}
-
-    bool operator==(const Signature& lhs, const Signature& rhs) {
-        return lhs.sig == rhs.sig;
-    }
-
-    Signature& Signature::operator+=(const Signature& rhs) {
-        if (this->sig.size() != rhs.sig.size()) {
-            throw std::logic_error("Signatures don't have same size.");
-        }
-        for (size_t i = 0; i < this->sig.size(); ++i) {
-            this->sig[i] += rhs.sig[i]; 
-        }
-        return *this;
-    }
-
-    Signature operator+(Signature lhs, const Signature& rhs) {
-        return lhs += rhs;
-    }
-
-}
-
-namespace std {
-
-    using part::Signature;
-
-    size_t hash<Signature>::operator()(const Signature& s) const {
-        using std::hash;
-        using std::string;
-
-        // Interpret the underlying vector of the signature as a bytestream. Convert the bytestream
-        // to a std::string and then hash it with the default hash.
-        string stream;
-        for (Signature::CountType const& value : s.sig) {
-            char const* value_as_chars = static_cast<char const*>(static_cast<void const*>(&value));
-            for (size_t i = 0; i < sizeof(Signature::CountType); ++i) {
-                stream.push_back(value_as_chars[i]);
-            }
-        }
-
-        hash<string> hash_fn;
-        return hash_fn(stream);
-    }
-
-}
 
 namespace part {
 
@@ -114,4 +67,63 @@ namespace part {
     Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree_map) {
         return build_tree(tree_map, tree_map.begin()->first);
     }
+
+    Signature::Signature(std::vector<Signature::CountType> s) : sig(s) {}
+
+    Signature::Signature(long double eps) : 
+        sig(std::vector<Signature::CountType>(static_cast<size_t>(std::ceil(std::log2l(1.0L/eps) / std::log2l(1.0L+eps))) + 1 + 1)) {}
+
+    Signature::Signature(long double eps, size_t node_cnt, size_t part_cnt, Signature::CountType component_size) : Signature(eps) {
+        long double node_cnt_l = static_cast<long double>(node_cnt);
+        long double part_cnt_l = static_cast<long double>(part_cnt);
+        if (component_size < eps * std::ceil(node_cnt_l/part_cnt_l)) {
+            sig[0] = 1;
+        } else {
+            size_t idx = static_cast<size_t>(
+                    std::ceil(log2l( component_size / (eps * std::ceil(node_cnt_l/part_cnt_l)) ) / log2l(1.0L + eps) - 1));
+            sig[idx] = 1;
+        }
+    }
+
+    bool operator==(const Signature& lhs, const Signature& rhs) {
+        return lhs.sig == rhs.sig;
+    }
+
+    Signature& Signature::operator+=(const Signature& rhs) {
+        if (this->sig.size() != rhs.sig.size()) {
+            throw std::logic_error("Signatures don't have same size.");
+        }
+        for (size_t i = 0; i < this->sig.size(); ++i) {
+            this->sig[i] += rhs.sig[i]; 
+        }
+        return *this;
+    }
+
+    Signature operator+(Signature lhs, const Signature& rhs) {
+        return lhs += rhs;
+    }
+}
+
+namespace std {
+
+    using part::Signature;
+
+    size_t hash<Signature>::operator()(const Signature& s) const {
+        using std::hash;
+        using std::string;
+
+        // Interpret the underlying vector of the signature as a bytestream. Convert the bytestream
+        // to a std::string and then hash it with the default hash.
+        string stream;
+        for (Signature::CountType const& value : s.sig) {
+            char const* value_as_chars = static_cast<char const*>(static_cast<void const*>(&value));
+            for (size_t i = 0; i < sizeof(Signature::CountType); ++i) {
+                stream.push_back(value_as_chars[i]);
+            }
+        }
+
+        hash<string> hash_fn;
+        return hash_fn(stream);
+    }
+
 }
