@@ -23,14 +23,6 @@ namespace part {
                 size_t const parent_idx, std::pair<size_t const, size_t const> const children_idx_range);
     };
 
-    struct Tree {
-        public:
-        std::vector<std::vector<Node>> levels;
-        std::vector<std::vector<bool>> has_left_sibling;
-
-        static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree, Node::IdType root_id);
-        static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree);
-    };
 
     struct Signature {
         public:
@@ -49,6 +41,19 @@ namespace part {
 
         Signature& operator+=(const Signature& rhs);
         friend Signature operator+(Signature lhs, const Signature& rhs);
+    };
+
+    struct Tree {
+        public:
+        std::vector<std::vector<Node>> levels;
+        std::vector<std::vector<bool>> has_left_sibling;
+
+        static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree, Node::IdType root_id);
+        static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree);
+
+        using SignatureMap = std::map<Signature::CountType, std::unordered_map<Signature, Node::EdgeWeightType>>;
+
+        std::vector<std::vector<SignatureMap>> partition(long double eps, size_t part_cnt);
     };
 }
 
