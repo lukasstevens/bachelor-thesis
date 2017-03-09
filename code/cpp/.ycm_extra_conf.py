@@ -4,49 +4,49 @@ import subprocess
 import ycm_core
 
 myFlags = [
-        '-Wall',
-        '-Wextra',
-        '-Wfloat-equal',
-        '-Wundef',
-        '-Wshadow',
-        '-Wpointer-arith',
-        '-Wstrict-prototypes',
-        '-Wstrict-overflow=5',
-        '-Wwrite-strings',
-        '-Waggregate-return',
-        '-Wcast-qual',
-        '-Wswitch-default',
-        '-Wswitch-enum',
-        '-Wconversion',
-        '-Wunreachable-code',
-        '-Winit-self',
-        '-Werror-implicit-function-declaration',
-        '-Wmissing-prototypes',
-        '-Wno-unused-result',
-        '-std=c++14',
-        '-stdlib=libc++',
-        '-x','c++',
-        '-I','./src/include',
-        '-I','./deps/include',
-        '-I','./third-party/openssl-1.0.1i/include'
-        ]
+    '-Wall',
+    '-Wextra',
+    '-Wfloat-equal',
+    '-Wundef',
+    '-Wshadow',
+    '-Wpointer-arith',
+    '-Wstrict-prototypes',
+    '-Wstrict-overflow=5',
+    '-Wwrite-strings',
+    '-Waggregate-return',
+    '-Wcast-qual',
+    '-Wswitch-default',
+    '-Wswitch-enum',
+    '-Wconversion',
+    '-Wunreachable-code',
+    '-Winit-self',
+    '-Werror-implicit-function-declaration',
+    '-Wmissing-prototypes',
+    '-Wno-unused-result',
+    '-std=c++14',
+    '-stdlib=libc++',
+    '-x', 'c++',
+    '-I', './src/include',
+    '-I', './deps/include',
+    '-I', './third-party/openssl-1.0.1i/include'
+]
 
 database = None
 
 SOURCE_EXTENSIONS = ['.cpp']
 
 def LoadSystemIncludes():
-    regex = re.compile(ur'(?:\#include \<...\> search starts here\:)(?P<list>.*?)(?:End of search list)', re.DOTALL);
-    process = subprocess.Popen(['clang', '-v', '-E', '-x', 'c++', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE);
-    process_out, process_err = process.communicate('');
-    output = process_out + process_err;
-    includes = [];
+    regex = re.compile(r'(?:\#include \<...\> search starts here\:)(?P<list>.*?)(?:End of search list)', re.DOTALL)
+    process = subprocess.Popen(['clang', '-v', '-E', '-x', 'c++', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process_out, process_err = process.communicate('')
+    output = process_out + process_err
+    includes = []
     for p in re.search(regex, output).group('list').split('\n'):
-        p = p.strip();
+        p = p.strip()
         if len(p) > 0 and p.find('(framework directory)') < 0:
-            includes.append('-isystem');
-            includes.append(p);
-    return includes;
+            includes.append('-isystem')
+            includes.append(p)
+    return includes
 
 def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):
     if not working_directory:
