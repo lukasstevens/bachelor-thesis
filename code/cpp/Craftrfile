@@ -6,7 +6,8 @@ mylib = Framework(
   include = [local('src/include'), local('deps/include')],
   std = 'c++14',
   warn = 'all',
-  debug = True
+  debug = True,
+  libs = ['m']
 )
 
 mylib_lib = cxx.static_library(
