@@ -6,7 +6,7 @@
 
 using namespace part;
 
-TEST(SignatureHashTest, LengthOne) {
+TEST(SignatureHash, LengthOne) {
     std::hash<Signature> sig_hash_fn;
     std::hash<std::string> string_hash_fn;
 
@@ -22,7 +22,7 @@ TEST(SignatureHashTest, LengthOne) {
     ASSERT_EQ(string_hash_fn(s), sig_hash_fn(sig));
 }
 
-TEST(SignatureHashTest, LengthTwo) {
+TEST(SignatureHash, LengthTwo) {
     std::hash<Signature> sig_hash_fn;
     std::hash<std::string> string_hash_fn;
 
