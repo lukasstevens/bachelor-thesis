@@ -59,6 +59,21 @@ namespace part {
             tree.levels[curr_node.level].emplace_back(curr_node.id, curr_node.parent_edge_weight, 
                     curr_node.parent_idx, std::make_pair(old_next_child_idx, next_child_idx));
             tree.has_left_sibling[curr_node.level].push_back(curr_node.has_left_sibling);
+
+        }
+
+        for (auto& lvl : tree.levels) {
+            tree.tree_sizes.emplace_back(lvl.size(), 1);
+        }
+
+        for (size_t lvl_idx = tree.levels.size() - 2; lvl_idx < tree.levels.size(); --lvl_idx) {
+            size_t node_idx = 0;
+            for (auto& node : tree.levels[lvl_idx]) {
+                for (size_t child_idx = node.children_idx_range.first; child_idx < node.children_idx_range.second; ++child_idx) {
+                    tree.tree_sizes[lvl_idx][node_idx] += tree.tree_sizes[lvl_idx + 1][child_idx];
+                }
+                ++node_idx;
+            }
         }
 
         return tree;
@@ -68,52 +83,78 @@ namespace part {
         return build_tree(tree_map, tree_map.begin()->first);
     }
 
-    std::vector<std::vector<Tree::SignatureMap>> Tree::partition(long double eps, size_t part_cnt) {
+    std::vector<SizeType> Tree::calculate_component_size_bounds(Tree::RationalType eps, SizeType node_cnt, SizeType part_cnt) {
+        using Rational = Tree::RationalType;
+
+        std::vector<SizeType> comp_sizes;
+        Rational curr_upper_bound = eps * Rational(Rational(node_cnt, part_cnt).ceil_to_int());
+        Rational upper_bound = (Rational(1) + eps) * Rational(Rational(node_cnt, part_cnt).ceil_to_int());
+        while (curr_upper_bound < upper_bound) {
+            comp_sizes.push_back(static_cast<SizeType>(curr_upper_bound.ceil_to_int()));
+            curr_upper_bound *= (Rational(1) + eps);
+        }
+        comp_sizes.push_back(static_cast<SizeType>(upper_bound.floor_to_int()));
+        return comp_sizes;
+    }
+
+    std::vector<std::vector<Tree::SignatureMap>> Tree::partition(Tree::RationalType eps, SizeType part_cnt) {
         using CountType = Signature::CountType;
 
-        size_t node_cnt = 0;
         std::vector<std::vector<SignatureMap>> signatures;
-        for (size_t lvl_idx = 0; lvl_idx < levels.size(); ++lvl_idx) {
-            node_cnt += levels[lvl_idx].size();
-            signatures.push_back(std::vector<SignatureMap>(levels[lvl_idx].size()));
+        for (auto& lvl : this->levels) {
+            signatures.emplace_back(lvl.size());
         }
-        size_t const max_comp_size = static_cast<size_t>( std::ceil((1.0L + eps) * std::ceil(static_cast<long double>(node_cnt) / part_cnt) - 1.0L) );
+        
+        std::vector<SizeType> comp_size_bounds = calculate_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
 
-        for (size_t lvl_idx = levels.size() - 1; lvl_idx < levels.size(); --lvl_idx) {
-            std::vector<Node>& curr_level = levels[lvl_idx];
-            for (size_t node_idx = 0; node_idx < curr_level.size(); ++lvl_idx) {
-                Node& curr_node = curr_level[node_idx];
-                SignatureMap& curr_node_signatures = signatures[lvl_idx][node_idx];
-                bool curr_has_child = curr_node.children_idx_range.first < curr_node.children_idx_range.second; 
-                bool curr_has_left_sibling = has_left_sibling[lvl_idx][node_idx];
+        for (size_t lvl_idx = 0; lvl_idx < this->levels.size(); ++lvl_idx) {
+            for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
+                Node& node = this->levels[lvl_idx][node_idx];
+                bool node_has_left_sibling = this->has_left_sibling[lvl_idx][node_idx];
+                bool node_has_child = node.children_idx_range.first < node.children_idx_range.second;
+                SignatureMap empty_map;
+                empty_map[0][0] = 0;
+                SignatureMap& left_sibling_sigs = empty_map;
+                SignatureMap& child_sigs = empty_map;
 
-                if (!curr_has_child) {
-                    if (!curr_has_left_sibling) {
-                        curr_node_signatures[0][Signature(eps)] = 0;
-                        curr_node_signatures[1][Signature(eps, node_cnt, part_cnt, 1)] = curr_node.parent_edge_weight;
-                    } else {
-                        SignatureMap& left_sibling_signatures = signatures[lvl_idx][node_idx - 1];
-                        curr_node_signatures = left_sibling_signatures; 
-                        for (auto& sigs_size_m : left_sibling_signatures) {
-                            CountType m = sigs_size_m.first;
-                            for (CountType n_v = 0; n_v <= max_comp_size; ++n_v) {
-                                for (auto& sig_with_val : sigs_size_m.second) {
-                                    Signature sig = sig_with_val.first + Signature(eps, node_cnt, part_cnt, n_v);
-                                    if (curr_node_signatures[m + n_v].find(sig) != curr_node_signatures[m + n_v].end()) {
-                                        curr_node_signatures[m + n_v][sig] = 
-                                            std::min(curr_node_signatures[m + n_v][sig], sig_with_val.second + curr_node.parent_edge_weight);
+                if (node_has_left_sibling) {
+                    left_sibling_sigs = signatures[lvl_idx][node_idx - 1];
+                }
+                if (node_has_child) {
+                    child_sigs = signatures[lvl_idx + 1][node.children_idx_range.second - 1];
+                }
+
+                SignatureMap& node_sigs = signatures[lvl_idx][node_idx];
+                for (auto& left_sibling_sigs_with_size : left_sibling_sigs) {
+                    for (auto& child_sigs_with_size : child_sigs) {
+                        for (auto& left_sibling_sig : left_sibling_sigs_with_size.second) {
+                            for (auto& child_sig : child_sigs_with_size.second) {
+                                SizeType frontier_size = left_sibling_sigs_with_size.first + child_sigs_with_size.first;
+                                EdgeWeightType cut_cost = left_sibling_sig.second + child_sig.second;
+                                Signature sig = left_sibling_sig.first + child_sig.first;
+                                if (node_sigs[frontier_size].find(sig) == node_sigs[frontier_size].end()) {
+                                    node_sigs[frontier_size][sig] = cut_cost;
+                                } else {
+                                    node_sigs[frontier_size][sig] = std::min(node_sigs[frontier_size][sig], cut_cost);
+                                }
+
+                                SizeType node_comp_size = this->tree_sizes[lvl_idx][node_idx] - child_sigs_with_size.first;
+                                if (node_comp_size >= comp_size_bounds.back()) {
+                                    continue;
+                                } else {
+                                    frontier_size += node_comp_size;
+                                    cut_cost += node.parent_edge_weight;
+                                    size_t i = 0; 
+                                    while (node_comp_size >= comp_size_bounds[i]) { ++i; }
+                                    sig.sig[i] += 1;
+                                    if (node_sigs[frontier_size].find(sig) == node_sigs[frontier_size].end()) {
+                                        node_sigs[frontier_size][sig] = cut_cost;
                                     } else {
-                                        curr_node_signatures[m + n_v][sig] = sig_with_val.second + curr_node.parent_edge_weight;
+                                        node_sigs[frontier_size][sig] = std::min(node_sigs[frontier_size][sig], cut_cost);
                                     }
                                 }
                             }
                         }
-                    }
-                } else {
-                    if (!curr_has_left_sibling) {
-
-                    } else {
-
                     }
                 }
             }
@@ -124,20 +165,7 @@ namespace part {
 
     Signature::Signature(std::vector<Signature::CountType> s) : sig(s) {}
 
-    Signature::Signature(long double eps) : 
-        sig(std::vector<Signature::CountType>(static_cast<size_t>(std::ceil(std::log2l(1.0L/eps) / std::log2l(1.0L+eps))) + 1 + 1)) {}
-
-    Signature::Signature(long double eps, size_t node_cnt, size_t part_cnt, Signature::CountType component_size) : Signature(eps) {
-        long double node_cnt_l = static_cast<long double>(node_cnt);
-        long double part_cnt_l = static_cast<long double>(part_cnt);
-        if (component_size < eps * std::ceil(node_cnt_l/part_cnt_l)) {
-            sig[0] = 1;
-        } else {
-            size_t idx = static_cast<size_t>(
-                    std::ceil(log2l( component_size / (eps * std::ceil(node_cnt_l/part_cnt_l)) ) / log2l(1.0L + eps) - 1));
-            sig[idx] = 1;
-        }
-    }
+    Signature::Signature(size_t length) : sig(std::vector<Signature::CountType>(length)) {} 
 
     bool operator==(const Signature& lhs, const Signature& rhs) {
         return lhs.sig == rhs.sig;
