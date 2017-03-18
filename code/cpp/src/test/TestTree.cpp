@@ -1,4 +1,5 @@
 #include<unordered_map>
+#include<iostream>
 
 #include<gtest/gtest.h>
 
@@ -15,18 +16,23 @@ TEST(BuildTree, TwoNodes) {
     ASSERT_EQ(tree.levels.size(), 2);
     ASSERT_EQ(tree.levels[0].size(), 1);
     ASSERT_EQ(tree.levels[1].size(), 1);
+    ASSERT_EQ(tree.tree_sizes[0].size(), 1);
+    ASSERT_EQ(tree.tree_sizes[1].size(), 1);
     ASSERT_EQ(root.id, 1);
     ASSERT_EQ(root.parent_idx, 0);
     ASSERT_EQ(root.parent_edge_weight, 0);
     auto should_range_root = std::pair<size_t const, size_t const>(0, 1);
     ASSERT_EQ(root.children_idx_range, should_range_root);
     ASSERT_FALSE(tree.has_left_sibling[0][0]);
+    ASSERT_EQ(tree.tree_sizes[0][0], 2);
+
     ASSERT_EQ(child.id, 2);
     ASSERT_EQ(child.parent_edge_weight, tree_map[1][2]);
     ASSERT_EQ(child.parent_idx, 0);
     auto should_range_child = std::pair<size_t const, size_t const>(0, 0);
     ASSERT_EQ(child.children_idx_range, should_range_child);
     ASSERT_FALSE(tree.has_left_sibling[0][1]);
+    ASSERT_EQ(tree.tree_sizes[1][0], 1);
 }
 
 TEST(BuildTree, ThreeNodeChain) {
@@ -56,7 +62,9 @@ TEST(BuildTree, ThreeNodeChain) {
             ASSERT_EQ(node_arr[idx].parent_edge_weight, tree_map[node_arr[idx - 1].id][node_arr[idx].id]);
         }
         ASSERT_EQ(node_arr[idx].parent_idx, 0);
+        ASSERT_EQ(tree.tree_sizes[idx].size(), 1);
         ASSERT_FALSE(tree.has_left_sibling[idx][0]);
+        ASSERT_EQ(tree.tree_sizes[idx][0], 3 - idx);
     }
 }
 
@@ -75,6 +83,7 @@ TEST(BuildTree, ThreeNodes) {
 
     ASSERT_EQ(root.children_idx_range.first, 0);
     ASSERT_EQ(root.children_idx_range.second, 2);
+    ASSERT_EQ(tree.tree_sizes[0][0], 3);
 
     for (auto node : {fst_child, snd_child}) {
         ASSERT_EQ(node.children_idx_range.first, 0);
@@ -85,4 +94,6 @@ TEST(BuildTree, ThreeNodes) {
     ASSERT_TRUE(tree.has_left_sibling[1][1]);
     ASSERT_FALSE(tree.has_left_sibling[0][0]);
     ASSERT_FALSE(tree.has_left_sibling[0][1]);
+    ASSERT_EQ(tree.tree_sizes[1][0], 1);
+    ASSERT_EQ(tree.tree_sizes[1][1], 1);
 }
