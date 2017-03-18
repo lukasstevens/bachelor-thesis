@@ -105,28 +105,29 @@ namespace part {
         
         std::vector<SizeType> comp_size_bounds = calculate_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
 
-        for (size_t lvl_idx = 0; lvl_idx < this->levels.size(); ++lvl_idx) {
+        for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
             for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
-                Node& node = this->levels[lvl_idx][node_idx];
-                bool node_has_left_sibling = this->has_left_sibling[lvl_idx][node_idx];
-                bool node_has_child = node.children_idx_range.first < node.children_idx_range.second;
+                Node const& node = this->levels[lvl_idx][node_idx];
+                bool const node_has_left_sibling = this->has_left_sibling[lvl_idx][node_idx];
+                bool const node_has_child = node.children_idx_range.first < node.children_idx_range.second;
                 SignatureMap empty_map;
                 empty_map[0][Signature(comp_size_bounds.size())] = 0;
-                SignatureMap& left_sibling_sigs = empty_map;
-                SignatureMap& child_sigs = empty_map;
+                
+                SignatureMap const* left_sibling_sigs = &empty_map;
+                SignatureMap const* child_sigs = &empty_map;
 
                 if (node_has_left_sibling) {
-                    left_sibling_sigs = signatures[lvl_idx][node_idx - 1];
+                    left_sibling_sigs = &signatures[lvl_idx][node_idx - 1];
                 }
                 if (node_has_child) {
-                    child_sigs = signatures[lvl_idx + 1][node.children_idx_range.second - 1];
+                    child_sigs = &signatures[lvl_idx + 1][node.children_idx_range.second - 1];
                 }
 
                 SignatureMap& node_sigs = signatures[lvl_idx][node_idx];
-                for (auto& left_sibling_sigs_with_size : left_sibling_sigs) {
-                    for (auto& child_sigs_with_size : child_sigs) {
-                        for (auto& left_sibling_sig : left_sibling_sigs_with_size.second) {
-                            for (auto& child_sig : child_sigs_with_size.second) {
+                for (auto const& left_sibling_sigs_with_size : *left_sibling_sigs) {
+                    for (auto const& child_sigs_with_size : *child_sigs) {
+                        for (auto const& left_sibling_sig : left_sibling_sigs_with_size.second) {
+                            for (auto const& child_sig : child_sigs_with_size.second) {
                                 SizeType frontier_size = left_sibling_sigs_with_size.first + child_sigs_with_size.first;
                                 EdgeWeightType cut_cost = left_sibling_sig.second + child_sig.second;
                                 Signature sig = left_sibling_sig.first + child_sig.first;
@@ -136,7 +137,7 @@ namespace part {
                                     node_sigs[frontier_size][sig] = std::min(node_sigs[frontier_size][sig], cut_cost);
                                 }
 
-                                SizeType node_comp_size = this->tree_sizes[lvl_idx][node_idx] - child_sigs_with_size.first;
+                                SizeType const node_comp_size = this->tree_sizes[lvl_idx][node_idx] - child_sigs_with_size.first;
                                 if (node_comp_size >= comp_size_bounds.back()) {
                                     continue;
                                 } else {
@@ -152,6 +153,27 @@ namespace part {
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            SignatureMap& root_sigs = signatures[0][0];
+            SizeType const node_cnt = this->tree_sizes[0][0];
+            for (auto& sigs_with_size : signatures[1].back()) {
+                SizeType const node_comp_size = node_cnt - sigs_with_size.first;
+                if (node_comp_size >= comp_size_bounds.back()) {
+                    continue;
+                } else {
+                    for (auto& sig : sigs_with_size.second) {
+                        Signature root_sig(sig.first);
+                        size_t i = 0;
+                        while(node_comp_size >= comp_size_bounds[i]) { ++i; }
+                        root_sig.sig[i] += 1;
+                        if (root_sigs[node_cnt].find(root_sig) == root_sigs[node_cnt].end()) {
+                            root_sigs[node_cnt][root_sig] = sig.second;
+                        } else {
+                            root_sigs[node_cnt][root_sig] = std::min(root_sigs[node_cnt][root_sig], sig.second);
                         }
                     }
                 }
