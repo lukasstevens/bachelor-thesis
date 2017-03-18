@@ -111,7 +111,7 @@ namespace part {
                 bool node_has_left_sibling = this->has_left_sibling[lvl_idx][node_idx];
                 bool node_has_child = node.children_idx_range.first < node.children_idx_range.second;
                 SignatureMap empty_map;
-                empty_map[0][0] = 0;
+                empty_map[0][Signature(comp_size_bounds.size())] = 0;
                 SignatureMap& left_sibling_sigs = empty_map;
                 SignatureMap& child_sigs = empty_map;
 
