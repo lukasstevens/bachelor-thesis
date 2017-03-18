@@ -1,4 +1,5 @@
 #include<iostream>
+#include<sstream>
 #include<unordered_map>
 
 #include<gtest/gtest.h>
@@ -35,6 +36,27 @@ TEST(Run, DISABLED_FromStdinVerbose) {
             std::cerr << "[label=\"" << node.parent_edge_weight << "\"]\n";
         }
     }
+
+    int32_t invis_node = -1;
+    for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
+        std::vector<Node>& lvl = tree.levels[lvl_idx];
+        std::stringstream node_ordering; 
+        node_ordering << "{rank=same " << lvl[0].id;
+        for (size_t node_idx = 1; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
+            Node& node = lvl[node_idx];
+            std::cerr << "\t" << invis_node << "[label=\"\", width=0.1, style=invis]\n";
+            std::cerr << "\t" << tree.levels[lvl_idx - 1][node.parent_idx].id;
+            std::cerr << " -> " << invis_node << "[style=invis]\n";
+            node_ordering << " -> " << invis_node << " -> " << node.id;
+            --invis_node;
+        }
+        if (lvl.size() > 1) {
+            node_ordering << "[style=invis]";
+        }
+        node_ordering << "}\n";
+        std::cerr << node_ordering.str();
+    }
+
     std::cerr << "\n}\n" << std::endl;
 
     std::cerr << "comp_size_bounds:";
@@ -44,5 +66,21 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     std::cerr << "\n" << std::endl;
 
     auto signatures = tree.partition(Tree::RationalType(eps_num, eps_denom), part_cnt);
+
+    for (size_t lvl_idx = 0; lvl_idx < tree.levels.size(); ++lvl_idx) {
+        for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
+            std::cerr << "signatures of node " << tree.levels[lvl_idx][node_idx].id << ":\n";
+            for (auto& sigs_with_size : signatures[lvl_idx][node_idx]) {
+                std::cerr << "node_cnt " << sigs_with_size.first << ":\n";
+                for (auto& sig : sigs_with_size.second) {
+                    for (auto comp_size : sig.first.sig) {
+                        std::cerr << " " << comp_size;
+                    }
+                    std::cerr << " cut_cost: " << sig.second << "\n";
+                }
+            }
+        }
+    }
+    std::cerr << std::endl;
 }
 
