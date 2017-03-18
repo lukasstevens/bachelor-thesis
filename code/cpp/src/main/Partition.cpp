@@ -98,8 +98,6 @@ namespace part {
     }
 
     std::vector<std::vector<Tree::SignatureMap>> Tree::partition(Tree::RationalType eps, SizeType part_cnt) {
-        using CountType = Signature::CountType;
-
         std::vector<std::vector<SignatureMap>> signatures;
         for (auto& lvl : this->levels) {
             signatures.emplace_back(lvl.size());
