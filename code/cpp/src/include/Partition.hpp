@@ -7,11 +7,15 @@
 #include<string>
 #include<vector>
 
+#include "Rational.hpp"
+
 namespace part {
+
+    using SizeType = uint32_t;
 
     struct Node {
         public:
-        using IdType = uint32_t;
+        using IdType = SizeType;
         using EdgeWeightType = int32_t;
 
         IdType const id;
@@ -26,13 +30,12 @@ namespace part {
 
     struct Signature {
         public:
-        using CountType = uint32_t;
+        using CountType = SizeType;
 
         std::vector<CountType> sig;
 
-        Signature(std::vector<CountType>);
-        Signature(long double eps);
-        Signature(long double eps, size_t n, size_t k, CountType component_size);
+        Signature(std::vector<CountType> vec);
+        Signature(size_t length);
 
         friend bool operator==(const Signature& lhs, const Signature& rhs);
         friend inline bool operator!=(const Signature& lhs, const Signature& rhs) {
@@ -47,13 +50,17 @@ namespace part {
         public:
         std::vector<std::vector<Node>> levels;
         std::vector<std::vector<bool>> has_left_sibling;
+        std::vector<std::vector<SizeType>> tree_sizes;
 
         static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree, Node::IdType root_id);
         static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>>& tree);
 
         using SignatureMap = std::map<Signature::CountType, std::unordered_map<Signature, Node::EdgeWeightType>>;
+        using RationalType = rat::Rational<int64_t>;
 
-        std::vector<std::vector<SignatureMap>> partition(long double eps, size_t part_cnt);
+        std::vector<std::vector<SignatureMap>> partition(RationalType eps, SizeType part_cnt);
+
+        static std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
     };
 }
 
