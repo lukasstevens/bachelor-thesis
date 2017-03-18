@@ -20,7 +20,7 @@ namespace rat {
             public:
 
                 Rational(T num) : num(num), denom(1) {}
-                Rational(T num, T denom) : num(num), denom(denom) { this->simplify; }
+                Rational(T num, T denom) : num(num), denom(denom) { this->simplify(); }
                 T num, denom;
 
                 Rational& operator+=(const Rational& rhs) {
