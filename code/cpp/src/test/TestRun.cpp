@@ -71,7 +71,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
         for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
             std::cerr << "signatures of node " << tree.levels[lvl_idx][node_idx].id << ":\n";
             for (auto& sigs_with_size : signatures[lvl_idx][node_idx]) {
-                std::cerr << "node_cnt " << sigs_with_size.first << ":\n";
+                std::cerr << " node_cnt " << sigs_with_size.first << ":\n";
                 for (auto& sig : sigs_with_size.second) {
                     for (auto comp_size : sig.first.sig) {
                         std::cerr << " " << comp_size;
