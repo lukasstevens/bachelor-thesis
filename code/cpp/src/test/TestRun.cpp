@@ -14,7 +14,7 @@ using namespace part;
 // n is the number of nodes in the tree, r is the id of the root in the tree and k is the number
 // of parts in which the tree should be partitioned. e_n and e_d are the enumerator and the denominator
 // of the approximation parameter epsilon respectively.
-// n-1 follow which describe the edges of the tree. Each of this lines consists of 3 integers f, t, w.
+// n-1 lines follow which describe the edges of the tree. Each of these lines consists of 3 integers f, t, w.
 // (f, t) is an edge in the tree and w is the corresponding weight of the edge.
 TEST(Run, DISABLED_FromStdinVerbose) {
     SizeType node_cnt;     
