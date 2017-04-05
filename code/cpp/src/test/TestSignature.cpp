@@ -3,27 +3,12 @@
 #include<gtest/gtest.h>
 
 #include "Partition.hpp"
+#include "ValarrayUtils.hpp"
 
 using namespace part;
 
-TEST(SignatureHash, LengthOne) {
-    std::hash<Signature> sig_hash_fn;
-    std::hash<std::string> string_hash_fn;
-
-    std::string s("aaaa");
-    unsigned long s_as_int = 0;
-    for (auto c : s) {
-        s_as_int += static_cast<unsigned int>(c);
-        s_as_int <<= 8;
-    }
-    s_as_int >>= 8;
-
-    Signature sig(std::vector<Signature::CountType>({static_cast<unsigned int>(s_as_int)}));
-    ASSERT_EQ(string_hash_fn(s), sig_hash_fn(sig));
-}
-
 TEST(SignatureHash, LengthTwo) {
-    std::hash<Signature> sig_hash_fn;
+    valarrutils::ValarrayHasher<SizeType> sig_hash_fn;
     std::hash<std::string> string_hash_fn;
 
     std::string s;
@@ -34,21 +19,23 @@ TEST(SignatureHash, LengthTwo) {
         }
     }
 
-    Signature sig(std::vector<Signature::CountType>({97, 97}));
+    Signature sig({97, 97});
     ASSERT_EQ(string_hash_fn(s), sig_hash_fn(sig));
 }
 
 TEST(SignatureOperators, Equals) {
-    ASSERT_EQ(Signature({1, 2}), Signature({1, 2}));
-    ASSERT_EQ(Signature({1, 2, 3}), Signature({1, 2, 3}));
-    ASSERT_EQ(Signature({0, 0}), Signature({0, 0}));
-    ASSERT_NE(Signature({2, 1}), Signature({1, 2}));
+    valarrutils::ValarrayEqual<SizeType> eq;
+    ASSERT_TRUE(eq(Signature({1, 2}), Signature({1, 2})));
+    ASSERT_TRUE(eq(Signature({1, 2, 3}), Signature({1, 2, 3})));
+    ASSERT_TRUE(eq(Signature({0, 0}), Signature({0, 0})));
+    ASSERT_FALSE(eq(Signature({2, 1}), Signature({1, 2})));
 }
 
 TEST(SignatureOperators, Plus) {
+    valarrutils::ValarrayEqual<SizeType> eq;
     Signature sig({1, 2, 3});
     Signature old_sig({1, 2 , 3});
     sig += Signature({1, 2, 3});
-    ASSERT_EQ(sig, Signature({2, 4, 6}));
-    ASSERT_EQ(sig, old_sig + old_sig);
+    ASSERT_TRUE(eq(sig, Signature({2, 4, 6})));
+    ASSERT_TRUE(eq(sig, old_sig + old_sig));
 }

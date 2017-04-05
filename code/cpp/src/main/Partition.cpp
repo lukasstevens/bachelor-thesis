@@ -145,7 +145,7 @@ namespace part {
                                     cut_cost += node.parent_edge_weight;
                                     size_t i = 0; 
                                     while (node_comp_size >= comp_size_bounds[i]) { ++i; }
-                                    sig.sig[i] += 1;
+                                    sig[i] += 1;
                                     if (node_sigs[frontier_size].find(sig) == node_sigs[frontier_size].end()) {
                                         node_sigs[frontier_size][sig] = cut_cost;
                                     } else {
@@ -169,7 +169,7 @@ namespace part {
                         Signature root_sig(sig.first);
                         size_t i = 0;
                         while(node_comp_size >= comp_size_bounds[i]) { ++i; }
-                        root_sig.sig[i] += 1;
+                        root_sig[i] += 1;
                         if (root_sigs[node_cnt].find(root_sig) == root_sigs[node_cnt].end()) {
                             root_sigs[node_cnt][root_sig] = sig.second;
                         } else {
@@ -181,51 +181,6 @@ namespace part {
         }
 
         return signatures;
-    }
-
-    Signature::Signature(std::vector<Signature::CountType> s) : sig(s) {}
-
-    Signature::Signature(size_t length) : sig(std::vector<Signature::CountType>(length)) {} 
-
-    bool operator==(const Signature& lhs, const Signature& rhs) {
-        return lhs.sig == rhs.sig;
-    }
-
-    Signature& Signature::operator+=(const Signature& rhs) {
-        if (this->sig.size() != rhs.sig.size()) {
-            throw std::logic_error("Signatures don't have same size.");
-        }
-        for (size_t i = 0; i < this->sig.size(); ++i) {
-            this->sig[i] += rhs.sig[i]; 
-        }
-        return *this;
-    }
-
-    Signature operator+(Signature lhs, const Signature& rhs) {
-        return lhs += rhs;
-    }
-}
-
-namespace std {
-
-    using part::Signature;
-
-    size_t hash<Signature>::operator()(const Signature& s) const {
-        using std::hash;
-        using std::string;
-
-        // Interpret the underlying vector of the signature as a bytestream. Convert the bytestream
-        // to a std::string and then hash it with the default hash.
-        string stream;
-        for (Signature::CountType const& value : s.sig) {
-            char const* value_as_chars = static_cast<char const*>(static_cast<void const*>(&value));
-            for (size_t i = 0; i < sizeof(Signature::CountType); ++i) {
-                stream.push_back(value_as_chars[i]);
-            }
-        }
-
-        hash<string> hash_fn;
-        return hash_fn(stream);
     }
 
 }
