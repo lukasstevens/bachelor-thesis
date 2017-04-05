@@ -73,7 +73,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
             for (auto& sigs_with_size : signatures[lvl_idx][node_idx]) {
                 std::cerr << " node_cnt " << sigs_with_size.first << ":\n";
                 for (auto& sig : sigs_with_size.second) {
-                    for (auto comp_size : sig.first.sig) {
+                    for (auto comp_size : sig.first) {
                         std::cerr << " " << comp_size;
                     }
                     std::cerr << " cut_cost: " << sig.second << "\n";
