@@ -8,6 +8,14 @@
 
 using namespace part;
 
+// Run the algorithm by speifiying a tree via the standard input. 
+// The input format is the following:
+// In the first line there are 5 integers n, r, k, e_n, e_d. 
+// n is the number of nodes in the tree, r is the id of the root in the tree and k is the number
+// of parts in which the tree should be partitioned. e_n and e_d are the enumerator and the denominator
+// of the approximation parameter epsilon respectively.
+// n-1 lines follow which describe the edges of the tree. Each of these lines consists of 3 integers f, t, w.
+// (f, t) is an edge in the tree and w is the corresponding weight of the edge.
 TEST(Run, DISABLED_FromStdinVerbose) {
     SizeType node_cnt;     
     Node::IdType root_id;
