@@ -41,7 +41,7 @@ namespace pack {
                         bin_signature[idx] += comp_cnt;
                         T const bin_signature_component_size = old_bin_signature.second + component_sizes[idx];
                         if (bin_signature_component_size <= bin_capacity) {
-                            bin_signatures[bin_signature] = old_bin_signature.second + component_sizes[idx];
+                            bin_signatures[bin_signature] = bin_signature_component_size;
                         } 
                     }
                 }
