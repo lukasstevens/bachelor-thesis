@@ -6,12 +6,26 @@
 namespace pack {
 
     template<typename T>
-        std::vector<std::vector<T>> pack_perfect(std::vector<T> const& component_sizes, std::valarray<T> component_cnts, T const bin_capacity);
+        struct Packing {
+            public:
+                T const opt_bin_capacity;
+                T const approx_bin_capacity;
+                
+                using Signature = std::valarray<T>;
 
-    template<typename T>
-        std::vector<std::vector<T>> expand_packing(std::vector<std::vector<T>> const& packing, std::map<T, std::pair<T, T>> component_size_mapping);
+                Packing(T const opt_bin_capacity, T const approx_bin_capacity) : 
+                    opt_bin_capacity(opt_bin_capacity), approx_bin_capacity(approx_bin_capacity) {}
 
-    template<typename T>
-        std::vector<std::vector<T>> pack_first_fit(std::vector<std::vector<T>> const& packing, std::vector<T> components, T const bin_capacity);
+                void pack_perfect(std::map<T, T> const& components);
+                void expand_packing(std::map<T, std::vector<T>> const& component_size_mapping);
+                void pack_first_fit(std::vector<T> const& components);
+
+                std::vector<std::vector<T>> get_bins() {
+                    return this->bins;
+                }
+
+            private:
+                std::vector<std::vector<T>> bins;
+        };
 
 }
