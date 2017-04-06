@@ -3,7 +3,7 @@ cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
 mylib = Framework(
-  include = [local('src/include'), local('deps/include')],
+  include = [local('src/include'), local('deps/include'), local('src/main')],
   std = 'c++11',
   warn = 'all',
   debug = True,
