@@ -30,7 +30,7 @@ namespace pack {
             private:
                 std::vector<std::vector<T>> bins;
 
-                static std::vector<std::valarray<T>> calculate_bin_signatures(
+                static std::vector<Signature> calculate_bin_signatures(
                         std::vector<T> const& component_sizes, 
                         Signature const& component_cnts,
                         T const bin_capacity);
