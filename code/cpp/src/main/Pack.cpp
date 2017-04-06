@@ -104,7 +104,7 @@ namespace pack {
         void Packing<T>::expand_packing(std::map<T, std::vector<T>> const& component_size_mapping) {
             std::map<T, std::vector<T>> comp_size_mapping_cp(component_size_mapping);
 
-            for (auto const& bin : this->bins) {
+            for (auto& bin : this->bins) {
                 for (auto& comp : bin) {
                     auto old_comp = comp;
                     comp = comp_size_mapping_cp[old_comp].back(); 
