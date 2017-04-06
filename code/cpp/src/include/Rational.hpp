@@ -19,7 +19,7 @@ namespace rat {
         struct Rational {
             public:
 
-                Rational(T num) : num(num), denom(1) {}
+                explicit Rational(T num) : num(num), denom(1) {}
                 Rational(T num, T denom) : num(num), denom(denom) { this->simplify(); }
                 T num, denom;
 
