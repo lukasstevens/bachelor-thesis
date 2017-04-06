@@ -28,6 +28,7 @@ myFlags = [
     '-x', 'c++',
     '-I', './src/include',
     '-I', './deps/include',
+    '-I', './src/main',
     '-I', './third-party/openssl-1.0.1i/include'
 ]
 
