@@ -2,8 +2,10 @@
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
+includes = ['src/include', 'deps/include', 'src/main']
+
 mylib = Framework(
-  include = [local('src/include'), local('deps/include'), local('src/main')],
+  include = [local(x) for x in includes],
   std = 'c++11',
   warn = 'all',
   debug = True,
@@ -23,6 +25,6 @@ test_bin = cxx.executable(
 
 test = runtarget(test_bin)
 
-run = runtarget(test_bin, "--gtest_filter=Run.DISABLED_FromStdinVerbose" , "--gtest_also_run_disabled_tests")
+run = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinVerbose' , '--gtest_also_run_disabled_tests')
 
 gdb = gentarget([['gdb', '-tui', '--args', test_bin]], pool='console', explicit=True)
