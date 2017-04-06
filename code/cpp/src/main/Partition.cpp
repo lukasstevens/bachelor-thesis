@@ -16,11 +16,11 @@ namespace part {
     using IdType = Node::IdType;
 
     Node::Node(IdType const id, EdgeWeightType const parent_edge_weight, 
-            size_t const parent_idx, std::pair<size_t const, size_t const> const children_idx_range) : 
+            size_t const parent_idx, std::pair<size_t const, size_t const> const& children_idx_range) : 
         id(id), parent_edge_weight(parent_edge_weight), parent_idx(parent_idx), children_idx_range(children_idx_range) {}
 
 
-    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree_map, IdType root_id) {
+    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>const & tree_map, IdType const root_id) {
         Tree tree;
         // Use a struct to represent an incomplete node since the child_idx_range is not known.
         struct NodeStub {
@@ -51,7 +51,7 @@ namespace part {
 
             // Save the index of the first child.
             size_t old_next_child_idx = next_child_idx;
-            for (auto neighbor : tree_map[curr_node.id]) {
+            for (auto const neighbor : tree_map.at(curr_node.id)) {
                 // Check if neighbor is the parent.
                 if (curr_node.level == 0 || neighbor.first != tree.levels[curr_node.level - 1][curr_node.parent_idx].id) {
                     bool has_left_sibling = !(old_next_child_idx == next_child_idx);
@@ -84,11 +84,11 @@ namespace part {
         return tree;
     }
 
-    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>& tree_map) {
+    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>> const& tree_map) {
         return build_tree(tree_map, tree_map.begin()->first);
     }
 
-    std::vector<SizeType> Tree::calculate_component_size_bounds(Tree::RationalType eps, SizeType node_cnt, SizeType part_cnt) {
+    std::vector<SizeType> Tree::calculate_component_size_bounds(Tree::RationalType const& eps, SizeType const node_cnt, SizeType const part_cnt) {
         using Rational = Tree::RationalType;
 
         // Calculate the sizes of the components in a signature according to the paper FF13.
@@ -104,7 +104,7 @@ namespace part {
         return comp_sizes;
     }
 
-    std::vector<std::vector<Tree::SignatureMap>> Tree::partition(Tree::RationalType eps, SizeType part_cnt) {
+    std::vector<std::vector<Tree::SignatureMap>> Tree::partition(Tree::RationalType const& eps, SizeType const part_cnt) {
         std::vector<std::vector<SignatureMap>> signatures;
         for (auto& lvl : this->levels) {
             signatures.emplace_back(lvl.size());
