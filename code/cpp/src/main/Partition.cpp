@@ -20,7 +20,7 @@ namespace part {
         id(id), parent_edge_weight(parent_edge_weight), parent_idx(parent_idx), children_idx_range(children_idx_range) {}
 
 
-    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>>const & tree_map, IdType const root_id) {
+    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>> const& tree_map, IdType const root_id) {
         Tree tree;
         // Use a struct to represent an incomplete node since the child_idx_range is not known.
         struct NodeStub {
@@ -51,12 +51,14 @@ namespace part {
 
             // Save the index of the first child.
             size_t old_next_child_idx = next_child_idx;
-            for (auto const neighbor : tree_map.at(curr_node.id)) {
-                // Check if neighbor is the parent.
-                if (curr_node.level == 0 || neighbor.first != tree.levels[curr_node.level - 1][curr_node.parent_idx].id) {
-                    bool has_left_sibling = !(old_next_child_idx == next_child_idx);
-                    queue.emplace_back(neighbor.first, neighbor.second, tree.levels[curr_node.level].size(), has_left_sibling, curr_node.level + 1); 
-                    ++next_child_idx;
+            if (tree_map.find(curr_node.id) != tree_map.cend()) {
+                for (auto const neighbor : tree_map.at(curr_node.id)) {
+                    // Check if neighbor is the parent.
+                    if (curr_node.level == 0 || neighbor.first != tree.levels[curr_node.level - 1][curr_node.parent_idx].id) {
+                        bool has_left_sibling = !(old_next_child_idx == next_child_idx);
+                        queue.emplace_back(neighbor.first, neighbor.second, tree.levels[curr_node.level].size(), has_left_sibling, curr_node.level + 1); 
+                        ++next_child_idx;
+                    }
                 }
             }
 
@@ -109,7 +111,7 @@ namespace part {
         for (auto& lvl : this->levels) {
             signatures.emplace_back(lvl.size());
         }
-        
+
         // Calculate the size intervals of the connected components of a signature.
         std::vector<SizeType> comp_size_bounds = calculate_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
 
@@ -122,7 +124,7 @@ namespace part {
                 SignatureMap empty_map;
                 // The only signature which always has cut value smaller infinity(even if the node does not exist) is the 0-vector.
                 empty_map[0][Signature(comp_size_bounds.size())] = 0;
-                
+
                 SignatureMap const* left_sibling_sigs = &empty_map;
                 SignatureMap const* child_sigs = &empty_map;
 
