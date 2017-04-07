@@ -2,6 +2,7 @@
 
 #include<cstdint>
 #include<map>
+#include<set>
 #include<unordered_map>
 #include<valarray>
 #include<vector>
@@ -30,6 +31,7 @@ namespace cut {
     };
 
     using Signature = std::valarray<SizeType>;
+    using RationalType = rat::Rational<int64_t>;
 
     struct SignaturesForTree;
 
@@ -44,27 +46,25 @@ namespace cut {
 
             using SignatureMap = std::map<SizeType, std::unordered_map<Signature, Node::EdgeWeightType, 
                   valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
-            using RationalType = rat::Rational<int64_t>;
 
             SignaturesForTree cut(RationalType eps, SizeType part_cnt);
-
-        private:
-            FRIEND_TEST(Run, DISABLED_FromStdinVerbose);
-            static std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
     };
+    
+    
+    std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
 
+    // Recognize that the Tree object referenced in this object MUST outlive this object.
     struct SignaturesForTree {
         public:
             SizeType const part_cnt;
-            Tree::RationalType const eps;
+            RationalType const eps;
             Tree const& tree;
             std::vector<std::vector<Tree::SignatureMap>> const signatures;
 
-            SignaturesForTree(SizeType part_cnt, Tree::RationalType eps, Tree const& tree, std::vector<std::vector<Tree::SignatureMap>> signatures) :
+            SignaturesForTree(SizeType part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<Tree::SignatureMap>> signatures) :
                 part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures) {}
 
-            void cut_edges_for_signature(Signature const& signature);
-
+            std::map<SizeType, std::set<std::set<SizeType>>> components_for_signature(Signature const& signature);
     };
 }
 
