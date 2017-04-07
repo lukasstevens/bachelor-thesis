@@ -8,12 +8,15 @@ TEST(PackFirstFit, One) {
     Packing<int> packing(3, 3);
 
     std::map<int, int> components;
+
+    components[2] = 1;
+    packing.pack_first_fit(components);
+    ASSERT_EQ(packing.get_bins(), std::vector<std::vector<int>>({{2}}));
+
     components[1] = 2;
     components[2] = 3;
-
     packing.pack_first_fit(components);
-    auto bins = packing.get_bins();
-    ASSERT_EQ(bins, std::vector<std::vector<int>>({{1, 1}, {2}, {2}, {2}}));
+    ASSERT_EQ(packing.get_bins(), std::vector<std::vector<int>>({{2, 1}, {1, 2}, {2}, {2}}));
 }
 
 TEST(PackPerfect, One) {
