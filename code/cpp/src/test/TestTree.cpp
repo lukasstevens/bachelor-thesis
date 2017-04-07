@@ -5,7 +5,7 @@
 
 #include "Cut.hpp"
 
-using namespace part;
+using namespace cut;
 
 TEST(BuildTree, TwoNodes) {
     std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree_map;
