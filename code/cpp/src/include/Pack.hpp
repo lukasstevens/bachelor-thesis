@@ -21,7 +21,7 @@ namespace pack {
 
                 void pack_perfect(std::map<T, T> const& components);
                 void expand_packing(std::map<T, std::vector<T>> const& component_size_mapping);
-                void pack_first_fit(std::vector<T> const& components);
+                void pack_first_fit(std::map<T, T> const& components);
 
                 std::vector<std::vector<T>> get_bins() {
                     return this->bins;
