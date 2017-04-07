@@ -25,7 +25,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     std::cin >> node_cnt >> root_id >> part_cnt >> eps_num >> eps_denom;
 
     std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree_map;
-    for (size_t edge_idx = 0; edge_idx < node_cnt - 1; ++edge_idx) {
+    for (SizeType edge_idx = 0; edge_idx < node_cnt - 1; ++edge_idx) {
         Node::IdType from; 
         Node::IdType to; 
         Node::EdgeWeightType weight;
