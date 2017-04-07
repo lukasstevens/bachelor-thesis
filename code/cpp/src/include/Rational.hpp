@@ -23,70 +23,76 @@ namespace rat {
                 Rational(T num, T denom) : num(num), denom(denom) { this->simplify(); }
                 T num, denom;
 
-                Rational& operator+=(const Rational& rhs) {
+                Rational& operator+=(Rational const& rhs) {
                     this->num = this->num * rhs.denom + this->denom * rhs.num;
                     this->denom *= rhs.denom;
                     this->simplify();
                     return *this;
                 }
 
-                friend Rational operator-(const Rational& r) {
+                friend Rational operator-(Rational const& r) {
                     return Rational(-r.num, r.denom);
                 }
 
-                Rational& operator-=(const Rational& rhs) {
+                Rational& operator-=(Rational const& rhs) {
                     return *this += (-rhs);
                 }
 
-                Rational& operator*=(const Rational& rhs) {
+                Rational& operator*=(Rational const& rhs) {
                     this->num *= rhs.num;
                     this->denom *= rhs.denom;
                     this->simplify();
                     return *this;
                 }
 
-                Rational& operator/=(const Rational& rhs) {
+                Rational& operator/=(Rational const& rhs) {
                     return *this *= Rational(rhs.denom, rhs.num);
                 }
 
-                friend Rational operator+(Rational lhs, const Rational& rhs) {
+                friend Rational operator+(Rational lhs, Rational const& rhs) {
                     return lhs += rhs;
                 }
 
-                friend Rational operator-(Rational lhs, const Rational& rhs) {
+                friend Rational operator-(Rational lhs, Rational const& rhs) {
                     return lhs -= rhs;
                 }
 
-                friend Rational operator*(Rational lhs, const Rational& rhs) {
+                friend Rational operator*(Rational lhs, Rational const& rhs) {
                     return lhs *= rhs;
                 }
 
-                friend Rational operator/(Rational lhs, const Rational& rhs) {
+                friend Rational operator/(Rational lhs, Rational const& rhs) {
                     return lhs /= rhs;
                 }
 
-                friend Rational abs(const Rational& r) {
+                friend Rational abs(Rational const& r) {
                     return Rational(std::abs(r.num), std::abs(r.denom));
                 }
 
 
-                friend inline bool operator<(const Rational& lhs, const Rational& rhs){ 
-                    Rational diff = lhs - rhs;
-                    return diff.num < 0;
+                friend inline bool operator<(Rational const& lhs, Rational const& rhs){ 
+                    Rational lhs_copy(lhs);
+                    Rational rhs_copy(rhs);
+                    lhs_copy.num *= rhs.denom;
+                    lhs_copy.denom *= rhs.denom;
+                    rhs_copy.num *= lhs.denom;
+                    rhs_copy.denom *= lhs.denom;
+                    
+                    return lhs_copy.num < rhs_copy.num;
                 }
 
-                friend inline bool operator>(const Rational& lhs, const Rational& rhs){ return rhs < lhs; }
+                friend inline bool operator>(Rational const& lhs, Rational const& rhs){ return rhs < lhs; }
 
-                friend inline bool operator<=(const Rational& lhs, const Rational& rhs){ return !(lhs > rhs); }
+                friend inline bool operator<=(Rational const& lhs, Rational const& rhs){ return !(lhs > rhs); }
 
-                friend inline bool operator>=(const Rational& lhs, const Rational& rhs){ return !(lhs < rhs); }
+                friend inline bool operator>=(Rational const& lhs, Rational const& rhs){ return !(lhs < rhs); }
 
-                friend bool operator==(const Rational& lhs, const Rational& rhs){ 
+                friend bool operator==(Rational const& lhs, Rational const& rhs){ 
                     Rational diff = lhs - rhs;
                     return diff.num == 0;
                 }
 
-                friend bool operator!=(const Rational& lhs, const Rational& rhs){ return !(lhs == rhs); }
+                friend bool operator!=(Rational const& lhs, Rational const& rhs){ return !(lhs == rhs); }
 
                 T floor_to_int() {
                     return this->num / this->denom;
