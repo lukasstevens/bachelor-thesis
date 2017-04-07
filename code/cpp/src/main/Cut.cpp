@@ -65,12 +65,12 @@ namespace cut {
 
 
         // Calculate the sizes of the subtrees rooted at each vertex and store them in a two-dimensional vector.
-        for (auto& lvl : tree.levels) {
+        for (auto const& lvl : tree.levels) {
             tree.tree_sizes.emplace_back(lvl.size(), 1);
         }
         for (size_t lvl_idx = tree.levels.size() - 2; lvl_idx < tree.levels.size(); --lvl_idx) {
             size_t node_idx = 0;
-            for (auto& node : tree.levels[lvl_idx]) {
+            for (auto const& node : tree.levels[lvl_idx]) {
                 for (size_t child_idx = node.children_idx_range.first; child_idx < node.children_idx_range.second; ++child_idx) {
                     tree.tree_sizes[lvl_idx][node_idx] += tree.tree_sizes[lvl_idx + 1][child_idx];
                 }
@@ -85,8 +85,8 @@ namespace cut {
         return build_tree(tree_map, tree_map.begin()->first);
     }
 
-    std::vector<SizeType> Tree::calculate_component_size_bounds(Tree::RationalType eps, SizeType node_cnt, SizeType part_cnt) {
-        using Rational = Tree::RationalType;
+    std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
+        using Rational = RationalType;
 
         // Calculate the sizes of the components in a signature according to the paper FF13.
         // We use rationals here to prevent numerical instabilities.
@@ -101,9 +101,9 @@ namespace cut {
         return comp_sizes;
     }
 
-    SignaturesForTree Tree::cut(Tree::RationalType eps, SizeType part_cnt) {
+    SignaturesForTree Tree::cut(RationalType eps, SizeType part_cnt) {
         std::vector<std::vector<SignatureMap>> signatures;
-        for (auto& lvl : this->levels) {
+        for (auto const& lvl : this->levels) {
             signatures.emplace_back(lvl.size());
         }
 
@@ -182,12 +182,12 @@ namespace cut {
             // Signatures which contain less then the total amount of nodes are ignored.
             SignatureMap& root_sigs = signatures[0][0];
             SizeType const node_cnt = this->tree_sizes[0][0];
-            for (auto& sigs_with_size : signatures[1].back()) {
+            for (auto const& sigs_with_size : signatures[1].back()) {
                 SizeType const node_comp_size = node_cnt - sigs_with_size.first;
                 if (node_comp_size >= comp_size_bounds.back()) {
                     continue;
                 } else {
-                    for (auto& sig : sigs_with_size.second) {
+                    for (auto const& sig : sigs_with_size.second) {
                         Signature root_sig(sig.first);
                         size_t i = 0;
                         while(node_comp_size >= comp_size_bounds[i]) { ++i; }
@@ -204,5 +204,20 @@ namespace cut {
 
         return SignaturesForTree(part_cnt, eps, *this, std::move(signatures));
     }
+    
+    std::map<SizeType, std::set<std::set<SizeType>>> SignaturesForTree::components_for_signature(Signature const& signature) {
+        using Rational = RationalType;
+        Signature prev_signature(signature);
+        Rational const n_div_k_ceil = Rational(Rational(this->tree.tree_sizes[0][0], this->part_cnt).ceil_to_int());
+        SizeType const max_comp_size = ((Rational(1) + this->eps) * Rational(n_div_k_ceil)).floor_to_int();
 
+        std::map<SizeType, std::set<std::set<SizeType>>> components;
+
+        for (size_t lvl_idx = 1; lvl_idx < this->tree.levels.size(); ++lvl_idx) {
+            for (size_t node_idx = this->tree.levels[lvl_idx].size() - 1; node_idx < this->tree.levels[lvl_idx].size(); --lvl_idx) {
+            }
+        }
+
+        return components;
+    }
 }
