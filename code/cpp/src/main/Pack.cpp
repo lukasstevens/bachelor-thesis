@@ -6,7 +6,7 @@ namespace pack {
         std::vector<std::valarray<T>> Packing<T>::calculate_bin_signatures(
                 std::vector<T> const& component_sizes,
                 std::valarray<T> const& component_cnts,
-                T const bin_capacity) {
+                T bin_capacity) {
             using SignatureToTMap = std::unordered_map<Signature, T, valarrutils::ValarrayHasher<T>, valarrutils::ValarrayEqual<T>>;
 
             SignatureToTMap old_bin_signatures;
@@ -77,7 +77,7 @@ namespace pack {
                 }
             }
 
-            auto bin_signatures = calculate_bin_signatures(component_sizes, component_cnts, this->opt_bin_capacity);
+            auto const bin_signatures = calculate_bin_signatures(component_sizes, component_cnts, this->opt_bin_capacity);
 
             std::vector<std::unordered_map<Signature, Signature, valarrutils::ValarrayHasher<T>, valarrutils::ValarrayEqual<T>>> partial_packings(1);
             partial_packings[0][component_cnts] = component_cnts;
