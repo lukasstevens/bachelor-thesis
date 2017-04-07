@@ -94,7 +94,7 @@ namespace cut {
         using Rational = Tree::RationalType;
 
         // Calculate the sizes of the components in a signature according to the paper FF13.
-        // We use rationials here to prevent numerical instabilities.
+        // We use rationals here to prevent numerical instabilities.
         std::vector<SizeType> comp_sizes;
         Rational curr_upper_bound = eps * Rational(Rational(node_cnt, part_cnt).ceil_to_int());
         Rational upper_bound = (Rational(1) + eps) * Rational(Rational(node_cnt, part_cnt).ceil_to_int());
