@@ -2,7 +2,7 @@
 
 #include<gtest/gtest.h>
 
-#include "Partition.hpp"
+#include "Cut.hpp"
 #include "ValarrayUtils.hpp"
 
 using namespace part;
