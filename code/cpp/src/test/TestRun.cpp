@@ -73,7 +73,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     }
     std::cerr << "\n" << std::endl;
 
-    auto signatures = tree.partition(Tree::RationalType(eps_num, eps_denom), part_cnt);
+    auto signatures = tree.cut(Tree::RationalType(eps_num, eps_denom), part_cnt);
 
     for (size_t lvl_idx = 0; lvl_idx < tree.levels.size(); ++lvl_idx) {
         for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {

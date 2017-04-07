@@ -44,7 +44,7 @@ namespace cut {
                   valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
             using RationalType = rat::Rational<int64_t>;
 
-            std::vector<std::vector<SignatureMap>> partition(RationalType const& eps, SizeType const part_cnt);
+            std::vector<std::vector<SignatureMap>> cut(RationalType const& eps, SizeType const part_cnt);
 
             static std::vector<SizeType> calculate_component_size_bounds(RationalType const& eps, SizeType const node_cnt, SizeType const part_cnt);
     };
