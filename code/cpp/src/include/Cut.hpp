@@ -6,6 +6,8 @@
 #include<valarray>
 #include<vector>
 
+#include<gtest/gtest_prod.h>
+
 #include "Rational.hpp"
 #include "ValarrayUtils.hpp"
 
@@ -23,8 +25,8 @@ namespace cut {
             size_t const parent_idx;
             std::pair<size_t const, size_t const> const children_idx_range;
 
-            Node(IdType const id, EdgeWeightType const parent_edge_weight, 
-                    size_t const parent_idx, std::pair<size_t const, size_t const> const& children_idx_range);
+            Node(IdType id, EdgeWeightType parent_edge_weight, 
+                    size_t parent_idx, std::pair<size_t, size_t> children_idx_range);
     };
 
     using Signature = std::valarray<SizeType>;
@@ -42,9 +44,11 @@ namespace cut {
                   valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
             using RationalType = rat::Rational<int64_t>;
 
-            std::vector<std::vector<SignatureMap>> cut(RationalType const& eps, SizeType const part_cnt);
+            std::vector<std::vector<SignatureMap>> cut(RationalType eps, SizeType part_cnt);
 
-            static std::vector<SizeType> calculate_component_size_bounds(RationalType const& eps, SizeType const node_cnt, SizeType const part_cnt);
+        private:
+            FRIEND_TEST(Run, DISABLED_FromStdinVerbose);
+            static std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
     };
 }
 

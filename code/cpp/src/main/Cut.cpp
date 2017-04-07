@@ -10,12 +10,12 @@ namespace cut {
     using EdgeWeightType = Node::EdgeWeightType;
     using IdType = Node::IdType;
 
-    Node::Node(IdType const id, EdgeWeightType const parent_edge_weight, 
-            size_t const parent_idx, std::pair<size_t const, size_t const> const& children_idx_range) : 
+    Node::Node(IdType id, EdgeWeightType parent_edge_weight, 
+            size_t parent_idx, std::pair<size_t, size_t> children_idx_range) : 
         id(id), parent_edge_weight(parent_edge_weight), parent_idx(parent_idx), children_idx_range(children_idx_range) {}
 
 
-    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>> const& tree_map, IdType const root_id) {
+    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>> const& tree_map, IdType root_id) {
         Tree tree;
         // Use a struct to represent an incomplete node since the child_idx_range is not known.
         struct NodeStub {
@@ -25,7 +25,7 @@ namespace cut {
             bool const has_left_sibling;
             size_t const level;
 
-            NodeStub(IdType const id, EdgeWeightType const p_e_w, size_t const p_i, bool const h_l_s, size_t const lvl) :
+            NodeStub(IdType id, EdgeWeightType p_e_w, size_t p_i, bool h_l_s, size_t lvl) :
                 id(id), parent_edge_weight(p_e_w), parent_idx(p_i), has_left_sibling(h_l_s), level(lvl) {}
         };
 
@@ -85,7 +85,7 @@ namespace cut {
         return build_tree(tree_map, tree_map.begin()->first);
     }
 
-    std::vector<SizeType> Tree::calculate_component_size_bounds(Tree::RationalType const& eps, SizeType const node_cnt, SizeType const part_cnt) {
+    std::vector<SizeType> Tree::calculate_component_size_bounds(Tree::RationalType eps, SizeType node_cnt, SizeType part_cnt) {
         using Rational = Tree::RationalType;
 
         // Calculate the sizes of the components in a signature according to the paper FF13.
@@ -101,7 +101,7 @@ namespace cut {
         return comp_sizes;
     }
 
-    std::vector<std::vector<Tree::SignatureMap>> Tree::cut(Tree::RationalType const& eps, SizeType const part_cnt) {
+    std::vector<std::vector<Tree::SignatureMap>> Tree::cut(Tree::RationalType eps, SizeType part_cnt) {
         std::vector<std::vector<SignatureMap>> signatures;
         for (auto& lvl : this->levels) {
             signatures.emplace_back(lvl.size());

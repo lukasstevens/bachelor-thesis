@@ -16,7 +16,7 @@ namespace pack {
 
                 using Signature = std::valarray<T>;
 
-                Packing(T const opt_bin_capacity, T const approx_bin_capacity) : 
+                Packing(T opt_bin_capacity, T approx_bin_capacity) : 
                     opt_bin_capacity(opt_bin_capacity), approx_bin_capacity(approx_bin_capacity) {}
 
                 void pack_perfect(std::map<T, T> const& components);
