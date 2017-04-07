@@ -101,7 +101,7 @@ namespace cut {
         return comp_sizes;
     }
 
-    std::vector<std::vector<Tree::SignatureMap>> Tree::cut(Tree::RationalType eps, SizeType part_cnt) {
+    SignaturesForTree Tree::cut(Tree::RationalType eps, SizeType part_cnt) {
         std::vector<std::vector<SignatureMap>> signatures;
         for (auto& lvl : this->levels) {
             signatures.emplace_back(lvl.size());
@@ -202,7 +202,7 @@ namespace cut {
             }
         }
 
-        return signatures;
+        return SignaturesForTree(part_cnt, eps, *this, std::move(signatures));
     }
 
 }

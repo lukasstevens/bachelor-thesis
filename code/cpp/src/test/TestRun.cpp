@@ -77,7 +77,7 @@ namespace cut { // Have to use namespace here to have access to private members 
         for (size_t lvl_idx = 0; lvl_idx < tree.levels.size(); ++lvl_idx) {
             for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
                 std::cerr << "signatures of node " << tree.levels[lvl_idx][node_idx].id << ":\n";
-                for (auto& sigs_with_size : signatures[lvl_idx][node_idx]) {
+                for (auto& sigs_with_size : signatures.signatures[lvl_idx][node_idx]) {
                     std::cerr << " node_cnt " << sigs_with_size.first << ":\n";
                     for (auto& sig : sigs_with_size.second) {
                         for (auto comp_size : sig.first) {
