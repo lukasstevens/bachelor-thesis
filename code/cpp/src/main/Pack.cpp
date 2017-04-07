@@ -114,7 +114,7 @@ namespace pack {
         }
 
     template<typename T>
-        void Packing<T>::pack_first_fit(std::vector<T> const& components) {
+        void Packing<T>::pack_first_fit(std::map<T, T> const& components) {
             std::vector<T> remaining_bin_capacities;
             for (auto const& bin : this->bins) {
                 T filling = 0;
@@ -125,21 +125,23 @@ namespace pack {
             }
 
             for (auto const& comp : components) {
-                bool comp_is_packed = false;
-                size_t idx = 0;
-                for (auto& bin : this->bins) {
-                    if (comp <= remaining_bin_capacities[idx]) {
-                        bin.push_back(comp);
-                        remaining_bin_capacities[idx] -= comp;
-                        comp_is_packed = true;
-                        break;
+                for (T comp_idx = 0; comp_idx < comp.second; ++comp_idx) {
+                    bool comp_is_packed = false;
+                    size_t idx = 0;
+                    for (auto& bin : this->bins) {
+                        if (comp.first <= remaining_bin_capacities[idx]) {
+                            bin.push_back(comp.first);
+                            remaining_bin_capacities[idx] -= comp.first;
+                            comp_is_packed = true;
+                            break;
+                        }
+                        idx += 1;
                     }
-                    idx += 1;
-                }
-                if (!comp_is_packed) {
-                    this->bins.emplace_back();
-                    this->bins.back().push_back(comp);
-                    remaining_bin_capacities.push_back(this->approx_bin_capacity - comp);
+                    if (!comp_is_packed) {
+                        this->bins.emplace_back();
+                        this->bins.back().push_back(comp.first);
+                        remaining_bin_capacities.push_back(this->approx_bin_capacity - comp.first);
+                    }
                 }
             }
         }
