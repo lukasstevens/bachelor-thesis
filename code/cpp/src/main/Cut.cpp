@@ -1,12 +1,7 @@
 #include<cmath>
-#include<cstdint>
 #include<list>
-#include<sstream>
 #include<stdexcept>
-#include<string>
-#include<unordered_map>
 #include<unordered_set>
-#include<vector>
 
 #include "Cut.hpp"
 
