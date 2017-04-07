@@ -64,7 +64,7 @@ namespace cut {
             SignaturesForTree(SizeType part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<Tree::SignatureMap>> signatures) :
                 part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures) {}
 
-            std::map<SizeType, std::set<std::set<SizeType>>> components_for_signature(Signature const& signature);
+            std::map<SizeType, std::set<std::set<SizeType>>> components_for_signature(Signature const& signature, Node::EdgeWeightType cut_cost);
     };
 }
 
