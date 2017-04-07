@@ -8,7 +8,7 @@
 #include<unordered_set>
 #include<vector>
 
-#include "Partition.hpp"
+#include "Cut.hpp"
 
 namespace part {
 

@@ -3,7 +3,7 @@
 
 #include<gtest/gtest.h>
 
-#include "Partition.hpp"
+#include "Cut.hpp"
 
 using namespace part;
 
