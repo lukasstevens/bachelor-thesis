@@ -6,7 +6,7 @@
 
 #include "Cut.hpp"
 
-using namespace part;
+using namespace cut;
 
 // Run the algorithm by speifiying a tree via the standard input. 
 // The input format is the following:

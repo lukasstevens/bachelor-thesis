@@ -11,7 +11,7 @@
 #include "Rational.hpp"
 #include "ValarrayUtils.hpp"
 
-namespace part {
+namespace cut {
 
     using SizeType = int32_t;
 

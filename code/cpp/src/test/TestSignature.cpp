@@ -5,7 +5,7 @@
 #include "Cut.hpp"
 #include "ValarrayUtils.hpp"
 
-using namespace part;
+using namespace cut;
 
 TEST(SignatureHash, LengthTwo) {
     valarrutils::ValarrayHasher<SizeType> sig_hash_fn;

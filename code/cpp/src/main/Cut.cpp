@@ -10,7 +10,7 @@
 
 #include "Cut.hpp"
 
-namespace part {
+namespace cut {
 
     using EdgeWeightType = Node::EdgeWeightType;
     using IdType = Node::IdType;
