@@ -31,6 +31,8 @@ namespace cut {
 
     using Signature = std::valarray<SizeType>;
 
+    struct SignaturesForTree;
+
     struct Tree {
         public:
             std::vector<std::vector<Node>> levels;
@@ -44,11 +46,25 @@ namespace cut {
                   valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
             using RationalType = rat::Rational<int64_t>;
 
-            std::vector<std::vector<SignatureMap>> cut(RationalType eps, SizeType part_cnt);
+            SignaturesForTree cut(RationalType eps, SizeType part_cnt);
 
         private:
             FRIEND_TEST(Run, DISABLED_FromStdinVerbose);
             static std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
+    };
+
+    struct SignaturesForTree {
+        public:
+            SizeType const part_cnt;
+            Tree::RationalType const eps;
+            Tree const& tree;
+            std::vector<std::vector<Tree::SignatureMap>> const signatures;
+
+            SignaturesForTree(SizeType part_cnt, Tree::RationalType eps, Tree const& tree, std::vector<std::vector<Tree::SignatureMap>> signatures) :
+                part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures) {}
+
+            void cut_edges_for_signature(Signature const& signature);
+
     };
 }
 
