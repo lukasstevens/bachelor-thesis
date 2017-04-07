@@ -106,7 +106,7 @@ namespace cut {
         return comp_sizes;
     }
 
-    std::vector<std::vector<Tree::SignatureMap>> Tree::partition(Tree::RationalType const& eps, SizeType const part_cnt) {
+    std::vector<std::vector<Tree::SignatureMap>> Tree::cut(Tree::RationalType const& eps, SizeType const part_cnt) {
         std::vector<std::vector<SignatureMap>> signatures;
         for (auto& lvl : this->levels) {
             signatures.emplace_back(lvl.size());
