@@ -205,7 +205,7 @@ namespace cut {
         return SignaturesForTree(part_cnt, eps, *this, std::move(signatures));
     }
     
-    std::map<SizeType, std::set<std::set<SizeType>>> SignaturesForTree::components_for_signature(Signature const& signature, Node::EdgeWeightType cut_cost) {
+    std::set<std::pair<Node::IdType, Node::IdType>> SignaturesForTree::cut_edges_for_signature(Signature const& signature) {
         using NodeIdx = std::pair<size_t, size_t>;
 
         struct NodeInfo {
@@ -218,8 +218,10 @@ namespace cut {
                 node_idx(node_idx), signature(signature), cut_cost(cut_cost), remaining_node_cnt(remaining_node_cnt) {}
         };
 
-        NodeInfo const root(NodeIdx(0, 0), signature, cut_cost, this->tree.tree_sizes[0][0]);
-        NodeInfo root_right_child(NodeIdx(1, this->signatures[1].size() - 1), Signature(), cut_cost, 0);
+        SizeType tree_size = this->tree.tree_sizes[0][0];
+        Node::EdgeWeightType cut_cost = this->signatures[0][0].at(tree_size).at(signature);
+        NodeInfo const root(NodeIdx(0, 0), signature, cut_cost, tree_size);
+        NodeInfo root_right_child(NodeIdx(1, this->tree.levels[1].size() - 1), Signature(), cut_cost, 0);
 
         Signature curr_node_comp_sig(signature.size());
         Tree::SignatureMap const& root_right_child_sigs = 
@@ -250,7 +252,7 @@ namespace cut {
             }
         }
 
-        std::set<std::pair<NodeIdx, NodeIdx>> cut_edges;
+        std::set<std::pair<Node::IdType, Node::IdType>> cut_edges;
 
         std::list<NodeInfo> queue = { root_right_child };
         while (!queue.empty()) {
@@ -268,10 +270,6 @@ namespace cut {
             bool const curr_node_has_child = curr_node.children_idx_range.first < curr_node.children_idx_range.second;
             bool const curr_node_has_left_sibling = this->tree.has_left_sibling[curr_info.node_idx.first][curr_info.node_idx.second];
             
-            // If the current node is a leaf and has no left sibling we have to stop.
-            if (!curr_node_has_child && !curr_node_has_left_sibling) {
-                continue;
-            }
             if (curr_node_has_child) {
                 child_sigs = &(this->signatures[curr_info.node_idx.first + 1][curr_node.children_idx_range.second - 1]);
             }
@@ -287,7 +285,21 @@ namespace cut {
                         for (auto const& sibling_sig : sibling_sigs->at(sibling_sig_size)) {
                             if ((sibling_sig.first + child_sig.first == curr_info.signature).min() && 
                                     sibling_sig.second + child_sig.second == curr_info.cut_cost) {
-                                // The edge was not cut and we found the signatures.
+                                if (curr_node_has_child) {
+                                    queue.emplace_back(
+                                            std::make_pair(curr_info.node_idx.first + 1, curr_node.children_idx_range.second - 1),
+                                            child_sig.first,
+                                            child_sig.second,
+                                            child_sigs_with_size.first);
+
+                                }
+                                if (curr_node_has_left_sibling) {
+                                    queue.emplace_back(
+                                            std::make_pair(curr_info.node_idx.first, curr_info.node_idx.second - 1),
+                                            sibling_sig.first,
+                                            sibling_sig.second,
+                                            sibling_sig_size);
+                                }
                             }
                         }
                     }
@@ -297,7 +309,8 @@ namespace cut {
             // Case 2: The edge was cut
             curr_node_comp_sig = 0;
             curr_node_comp_sig[0] = 1;
-            for (SizeType node_comp_size = 0; node_comp_size < comp_size_bounds.back(); ++node_comp_size) {
+            comp_size_bound_idx = 0;
+            for (SizeType node_comp_size = 1; node_comp_size < comp_size_bounds.back(); ++node_comp_size) {
 
                 while (node_comp_size >= comp_size_bounds[comp_size_bound_idx]) { 
                     curr_node_comp_sig[comp_size_bound_idx] = 0;
@@ -314,6 +327,23 @@ namespace cut {
                                 if ((sibling_sig.first + child_sig.first + curr_node_comp_sig == curr_info.signature).min() && 
                                         sibling_sig.second + child_sig.second + curr_node.parent_edge_weight == curr_info.cut_cost) {
                                     // The edge was cut and we found the signatures.
+                                    if (curr_node_has_child) {
+                                        queue.emplace_back(
+                                                std::make_pair(curr_info.node_idx.first + 1, curr_node.children_idx_range.second - 1),
+                                                child_sig.first,
+                                                child_sig.second,
+                                                child_sigs_with_size.first);
+
+                                    }
+                                    if (curr_node_has_left_sibling) {
+                                        queue.emplace_back(
+                                                std::make_pair(curr_info.node_idx.first, curr_info.node_idx.second - 1),
+                                                sibling_sig.first,
+                                                sibling_sig.second,
+                                                sibling_sig_size);
+                                    }
+                                    
+                                    cut_edges.insert(std::make_pair(curr_node.id, this->tree.levels[curr_info.node_idx.first - 1][curr_node.parent_idx].id));
                                 }
                             }
                         }
@@ -323,8 +353,6 @@ namespace cut {
             }
 
         }
-
-        std::map<SizeType, std::set<std::set<SizeType>>> components;
-        return components;
+        return cut_edges;
     }
 }
