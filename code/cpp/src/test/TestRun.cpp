@@ -4,6 +4,8 @@
 
 #include<gtest/gtest.h>
 
+#include "TestUtils.hpp"
+
 #include "Cut.hpp"
 
 using namespace cut;
@@ -17,23 +19,10 @@ using namespace cut;
 // n-1 lines follow which describe the edges of the tree. Each of these lines consists of 3 integers f, t, w.
 // (f, t) is an edge in the tree and w is the corresponding weight of the edge.
 TEST(Run, DISABLED_FromStdinVerbose) {
-    SizeType node_cnt;     
-    Node::IdType root_id;
-    SizeType part_cnt;     
-    int32_t eps_num;
-    int32_t eps_denom;
-    std::cin >> node_cnt >> root_id >> part_cnt >> eps_num >> eps_denom;
+    testutils::AlgorithmParameters params;
+    std::cin >> params;
 
-    std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree_map;
-    for (SizeType edge_idx = 0; edge_idx < node_cnt - 1; ++edge_idx) {
-        Node::IdType from; 
-        Node::IdType to; 
-        Node::EdgeWeightType weight;
-        std::cin >> from >> to >> weight;
-        tree_map[from][to] = weight;
-    }
-
-    Tree tree = Tree::build_tree(tree_map, root_id);
+    Tree tree = Tree::build_tree(params.tree, params.root_id);
 
     std::cerr << "digraph tree {\n";
     for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
@@ -68,12 +57,12 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     std::cerr << "\n}\n" << std::endl;
 
     std::cerr << "comp_size_bounds:";
-    for (auto& comp_size_bound : calculate_component_size_bounds(RationalType(eps_num, eps_denom), node_cnt, part_cnt)) {
+    for (auto& comp_size_bound : calculate_component_size_bounds(params.eps, params.node_cnt, params.part_cnt)) {
         std::cerr << " " << comp_size_bound;
     }
     std::cerr << "\n" << std::endl;
 
-    auto signatures = tree.cut(RationalType(eps_num, eps_denom), part_cnt);
+    auto signatures = tree.cut(params.eps, params.part_cnt);
 
     for (size_t lvl_idx = 0; lvl_idx < tree.levels.size(); ++lvl_idx) {
         for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
