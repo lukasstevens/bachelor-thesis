@@ -18,8 +18,7 @@ namespace rat {
     template<typename T>
         struct Rational {
             public:
-
-                explicit Rational(T num) : num(num), denom(1) {}
+                explicit Rational(T num = 0) : num(num), denom(1) {}
                 Rational(T num, T denom) : num(num), denom(denom) { this->simplify(); }
                 T num, denom;
 
