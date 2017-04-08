@@ -32,4 +32,8 @@ run = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinVerbose' , '--gt
 gdb = gentarget([['gdb', '--args', test_bin]], pool='console', explicit=True)
 
 # Copy resource files to build directory
-shutil.copytree('../src/test/resources', 'build/')
+try: 
+    shutil.rmtree('resources/')
+except:
+    pass
+shutil.copytree('../src/test/resources', 'resources/')
