@@ -14,3 +14,6 @@ The c++ toolchain used for this project is clang so you have to install `clang>=
 # Building
 Before your first build or if you added source files or if you changed the build script run `craftr export`. 
 After that you can run `craftr build` to build the project. To run the project with your input you can use `craftr build run`.
+
+# Testing
+When invoking `craftr export` the directory `src/test/resources` is automatically copied to `build/`. If you have added new resource files which you need for your tests you have to rerun `craftr export`.
