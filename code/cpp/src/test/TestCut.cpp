@@ -16,26 +16,41 @@ TEST(CutEdgesForSignature, Tree2) {
 
     cut::Tree tree = cut::Tree::build_tree(params.tree, params.root_id);
 
-    auto signatures = tree.cut(params.eps, params.part_cnt);
-
     auto comp_size_bounds = cut::calculate_component_size_bounds(params.eps, params.node_cnt, params.part_cnt);
-    cut::Signature all_edges_cut(comp_size_bounds.size());
-    size_t comp_size_one_idx = 0;
-    while (comp_size_bounds[comp_size_one_idx] <= 1) { 
-        ++comp_size_one_idx;
+    auto signatures = tree.cut(params.eps, params.part_cnt);
+    auto& root_sigs = signatures.signatures[0][0].at(params.node_cnt);
+
+    ASSERT_EQ(comp_size_bounds, std::vector<SizeType>({ 1, 2, 2, 3, 4, 4 }));
+
+    std::vector<std::valarray<SizeType>> poss_signatures({
+            {0, 5, 0, 0, 0, 0},
+            {0, 2, 0, 0, 1, 0},
+            {0, 1, 0, 2, 0, 0},
+            {0, 0, 0, 1, 1, 0},
+            {0, 3, 0, 1, 0, 0}
+            });
+
+    auto mk_p = [](Node::IdType one, Node::IdType other){ 
+        return std::make_pair(one, other);
+    };
+
+    std::vector<std::set<std::pair<Node::IdType, Node::IdType>>> cut_edges_for_sigs({
+            {mk_p(2,1), mk_p(3,1), mk_p(4,2), mk_p(5,2)},
+            {mk_p(2,1), mk_p(3,1)},
+            {mk_p(2,1), mk_p(5,2)},
+            {mk_p(2,1)},
+            {mk_p(2,1), mk_p(3,1), mk_p(5,2)}
+            });
+
+    std::vector<Node::EdgeWeightType> costs_for_sigs({
+            13, 4, 5, 1, 8
+            });
+
+    for (size_t sig_idx = 0; sig_idx < poss_signatures.size(); ++sig_idx) {
+        auto& poss_sig = poss_signatures[sig_idx];
+        ASSERT_TRUE(root_sigs.find(poss_sig) != root_sigs.end());
+        ASSERT_EQ(signatures.cut_edges_for_signature(poss_sig), cut_edges_for_sigs.at(sig_idx));
+        ASSERT_EQ(root_sigs.at(poss_sig), costs_for_sigs[sig_idx]);
     }
-    all_edges_cut[comp_size_one_idx] = params.node_cnt;
-
-    auto cut_edges = signatures.cut_edges_for_signature(all_edges_cut);
-
-    ASSERT_EQ(cut_edges.size(), 4);
-
-    std::set<std::pair<Node::IdType, Node::IdType>> should_cut_edges;
-    should_cut_edges.insert(std::make_pair(2, 1));
-    should_cut_edges.insert(std::make_pair(3, 1));
-    should_cut_edges.insert(std::make_pair(4, 2));
-    should_cut_edges.insert(std::make_pair(5, 2));
-
-    ASSERT_EQ(should_cut_edges, cut_edges);
 
 }
