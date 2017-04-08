@@ -1,4 +1,6 @@
 # bachelorthesis
+import shutil
+
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
@@ -28,3 +30,6 @@ test = runtarget(test_bin)
 run = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinVerbose' , '--gtest_also_run_disabled_tests')
 
 gdb = gentarget([['gdb', '--args', test_bin]], pool='console', explicit=True)
+
+# Copy resource files to build directory
+shutil.copytree('../src/test/resources', 'build/')
