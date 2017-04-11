@@ -7,7 +7,7 @@
 #include "Cut.cpp"
 #include "TestUtils.hpp"
 
-TEST(CutEdgesForSignature, Tree2) {
+TEST(Cut, Tree2) {
     testutils::AlgorithmParameters params;    
     std::string resource_filename("resources/2.in");
     std::ifstream stream(resource_filename);
@@ -53,4 +53,18 @@ TEST(CutEdgesForSignature, Tree2) {
         ASSERT_EQ(root_sigs.at(poss_sig), costs_for_sigs[sig_idx]);
     }
 
+
+    std::vector<std::vector<std::set<Node::IdType>>> components_for_signatures({
+            {{1}, {2}, {3}, {4}, {5}},
+            {{1}, {2, 4, 5}, {3}},
+            {{1, 3}, {2, 4}, {5}},
+            {{1, 3}, {2, 4, 5}},
+            {{1}, {2, 4}, {3}, {5}}
+            });
+    for (size_t comps_idx = 0; comps_idx < components_for_signatures.size(); ++comps_idx) {
+        auto is_comps = signatures.components_for_cut_edges(cut_edges_for_sigs[comps_idx]);
+        for (auto& comp : components_for_signatures[comps_idx]) {
+            ASSERT_NE(std::find(is_comps.begin(), is_comps.end(), comp), is_comps.end());
+        }
+    }
 }

@@ -1,7 +1,6 @@
 #include<cmath>
 #include<list>
 #include<stdexcept>
-#include<unordered_set>
 
 #include "Cut.hpp"
 
@@ -205,7 +204,7 @@ namespace cut {
         return SignaturesForTree(part_cnt, eps, *this, std::move(signatures));
     }
     
-    std::set<std::pair<Node::IdType, Node::IdType>> SignaturesForTree::cut_edges_for_signature(Signature const& signature) {
+    SignaturesForTree::CutEdges SignaturesForTree::cut_edges_for_signature(Signature const& signature) {
         using NodeIdx = std::pair<size_t, size_t>;
 
         struct NodeInfo {
@@ -252,7 +251,7 @@ namespace cut {
             }
         }
 
-        std::set<std::pair<Node::IdType, Node::IdType>> cut_edges;
+        CutEdges cut_edges;
 
         std::list<NodeInfo> queue = { root_right_child };
         while (!queue.empty()) {
@@ -354,5 +353,44 @@ namespace cut {
 
         }
         return cut_edges;
+    }
+
+    std::vector<std::set<Node::IdType>> SignaturesForTree::components_for_cut_edges(CutEdges const& cut_edges) {
+        std::vector<std::set<Node::IdType>> components;
+
+        struct NodeInfo {
+            std::pair<size_t, size_t> node_idx;
+            size_t component_idx;
+
+            NodeInfo(std::pair<size_t, size_t> node_idx, size_t component_idx) :
+                node_idx(node_idx), component_idx(component_idx) {}
+        };
+
+        components.emplace_back();
+        std::list<NodeInfo> queue;
+
+        queue.emplace_back(std::make_pair(0, 0), 0);
+        
+        while (!queue.empty()) {
+            auto curr_info = queue.front();
+            Node const& curr_node = this->tree.levels[curr_info.node_idx.first][curr_info.node_idx.second];
+            queue.pop_front();
+
+            components[curr_info.component_idx].insert(curr_node.id);
+            for (size_t child_idx = curr_node.children_idx_range.first; 
+                    child_idx < curr_node.children_idx_range.second; ++child_idx) {
+                Node const& child = this->tree.levels[curr_info.node_idx.first + 1][child_idx];
+                std::pair<size_t, size_t> const child_node_idx(curr_info.node_idx.first + 1, child_idx);
+                if (cut_edges.find(std::make_pair(child.id, curr_node.id)) != cut_edges.end() || 
+                        cut_edges.find(std::make_pair(curr_node.id, child.id)) != cut_edges.end()) {
+                    components.emplace_back();
+                    queue.emplace_back(child_node_idx, components.size() - 1);
+                } else {
+                    queue.emplace_back(child_node_idx, curr_info.component_idx);
+                }
+            }
+        }
+
+        return components;
     }
 }

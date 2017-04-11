@@ -4,6 +4,7 @@
 #include<map>
 #include<set>
 #include<unordered_map>
+#include<unordered_set>
 #include<valarray>
 #include<vector>
 
@@ -64,7 +65,11 @@ namespace cut {
             SignaturesForTree(SizeType part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<Tree::SignatureMap>> signatures) :
                 part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures) {}
 
-            std::set<std::pair<Node::IdType, Node::IdType>> cut_edges_for_signature(Signature const& signature);
+
+            using CutEdges = std::set<std::pair<Node::IdType, Node::IdType>>;
+            CutEdges cut_edges_for_signature(Signature const& signature);
+
+            std::vector<std::set<Node::IdType>> components_for_cut_edges(CutEdges const& cut_edges);
     };
 }
 
