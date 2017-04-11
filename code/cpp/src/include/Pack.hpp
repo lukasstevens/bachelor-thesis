@@ -23,6 +23,10 @@ namespace pack {
                 void expand_packing(std::map<T, std::vector<T>> const& component_size_mapping);
                 void pack_first_fit(std::map<T, T> const& components);
 
+                size_t bin_cnt() {
+                    return this->bins.size();
+                }
+                
                 std::vector<std::vector<T>> get_bins() {
                     return this->bins;
                 }
