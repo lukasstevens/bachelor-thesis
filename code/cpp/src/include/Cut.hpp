@@ -52,7 +52,9 @@ namespace cut {
     };
     
     
-    std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
+    std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
+
+    std::vector<SizeType> calculate_lower_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
 
     // Recognize that the Tree object referenced in this object MUST outlive this object.
     struct SignaturesForTree {
@@ -61,9 +63,14 @@ namespace cut {
             RationalType const eps;
             Tree const& tree;
             std::vector<std::vector<Tree::SignatureMap>> const signatures;
+            std::vector<SizeType> const upper_comp_size_bounds;
+            std::vector<SizeType> const lower_comp_size_bounds;
 
             SignaturesForTree(SizeType part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<Tree::SignatureMap>> signatures) :
-                part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures) {}
+                part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures), 
+                upper_comp_size_bounds(calculate_upper_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)),
+                lower_comp_size_bounds(calculate_lower_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt))
+                    {}
 
 
             using CutEdges = std::set<std::pair<Node::IdType, Node::IdType>>;

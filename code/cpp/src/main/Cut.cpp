@@ -84,7 +84,7 @@ namespace cut {
         return build_tree(tree_map, tree_map.begin()->first);
     }
 
-    std::vector<SizeType> calculate_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
+    std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
         using Rational = RationalType;
 
         // Calculate the sizes of the components in a signature according to the paper FF13.
@@ -100,6 +100,14 @@ namespace cut {
         return comp_sizes;
     }
 
+    std::vector<SizeType> calculate_lower_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
+        std::vector<SizeType> const upper_comp_size_bounds = calculate_upper_component_size_bounds(eps, node_cnt, part_cnt);
+        std::vector<SizeType> lower_comp_size_bounds({1});
+        lower_comp_size_bounds.insert(lower_comp_size_bounds.end(), upper_comp_size_bounds.begin(), upper_comp_size_bounds.end() - 1);
+
+        return lower_comp_size_bounds;
+    }
+
     SignaturesForTree Tree::cut(RationalType eps, SizeType part_cnt) {
         std::vector<std::vector<SignatureMap>> signatures;
         for (auto const& lvl : this->levels) {
@@ -107,7 +115,7 @@ namespace cut {
         }
 
         // Calculate the size intervals of the connected components of a signature.
-        std::vector<SizeType> comp_size_bounds = calculate_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
+        std::vector<SizeType> const comp_size_bounds = calculate_upper_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
 
         // Iterate over all nodes except the root starting with the node one the bottom left.
         for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
@@ -226,12 +234,10 @@ namespace cut {
         Tree::SignatureMap const& root_right_child_sigs = 
             this->signatures[root_right_child.node_idx.first][root_right_child.node_idx.second];
 
-        std::vector<SizeType> const comp_size_bounds = calculate_component_size_bounds(this->eps, root.remaining_node_cnt, this->part_cnt);
-
         curr_node_comp_sig[0] = 1;
         size_t comp_size_bound_idx = 0;
-        for (SizeType node_comp_size = 1; node_comp_size < comp_size_bounds.back(); ++node_comp_size) {
-            while (node_comp_size >= comp_size_bounds[comp_size_bound_idx]) { 
+        for (SizeType node_comp_size = 1; node_comp_size < this->upper_comp_size_bounds.back(); ++node_comp_size) {
+            while (node_comp_size >= this->upper_comp_size_bounds[comp_size_bound_idx]) { 
                 curr_node_comp_sig[comp_size_bound_idx] = 0;
                 ++comp_size_bound_idx; 
                 curr_node_comp_sig[comp_size_bound_idx] = 1;
@@ -309,9 +315,9 @@ namespace cut {
             curr_node_comp_sig = 0;
             curr_node_comp_sig[0] = 1;
             comp_size_bound_idx = 0;
-            for (SizeType node_comp_size = 1; node_comp_size < comp_size_bounds.back(); ++node_comp_size) {
+            for (SizeType node_comp_size = 1; node_comp_size < this->upper_comp_size_bounds.back(); ++node_comp_size) {
 
-                while (node_comp_size >= comp_size_bounds[comp_size_bound_idx]) { 
+                while (node_comp_size >= this->upper_comp_size_bounds[comp_size_bound_idx]) { 
                     curr_node_comp_sig[comp_size_bound_idx] = 0;
                     ++comp_size_bound_idx; 
                     curr_node_comp_sig[comp_size_bound_idx] = 1;
