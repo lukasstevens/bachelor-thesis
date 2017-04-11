@@ -212,7 +212,7 @@ namespace cut {
         return SignaturesForTree(part_cnt, eps, *this, std::move(signatures));
     }
     
-    SignaturesForTree::CutEdges SignaturesForTree::cut_edges_for_signature(Signature const& signature) {
+    SignaturesForTree::CutEdges SignaturesForTree::cut_edges_for_signature(Signature const& signature) const {
         using NodeIdx = std::pair<size_t, size_t>;
 
         struct NodeInfo {
@@ -361,7 +361,7 @@ namespace cut {
         return cut_edges;
     }
 
-    std::vector<std::set<Node::IdType>> SignaturesForTree::components_for_cut_edges(CutEdges const& cut_edges) {
+    std::vector<std::set<Node::IdType>> SignaturesForTree::components_for_cut_edges(CutEdges const& cut_edges) const {
         std::vector<std::set<Node::IdType>> components;
 
         struct NodeInfo {

@@ -16,7 +16,7 @@ TEST(Cut, Tree2) {
 
     cut::Tree tree = cut::Tree::build_tree(params.tree, params.root_id);
 
-    auto comp_size_bounds = cut::calculate_component_size_bounds(params.eps, params.node_cnt, params.part_cnt);
+    auto comp_size_bounds = cut::calculate_upper_component_size_bounds(params.eps, params.node_cnt, params.part_cnt);
     auto signatures = tree.cut(params.eps, params.part_cnt);
     auto& root_sigs = signatures.signatures[0][0].at(params.node_cnt);
 

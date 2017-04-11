@@ -74,9 +74,9 @@ namespace cut {
 
 
             using CutEdges = std::set<std::pair<Node::IdType, Node::IdType>>;
-            CutEdges cut_edges_for_signature(Signature const& signature);
+            CutEdges cut_edges_for_signature(Signature const& signature) const;
 
-            std::vector<std::set<Node::IdType>> components_for_cut_edges(CutEdges const& cut_edges);
+            std::vector<std::set<Node::IdType>> components_for_cut_edges(CutEdges const& cut_edges) const;
     };
 }
 
