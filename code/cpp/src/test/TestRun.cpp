@@ -6,7 +6,7 @@
 
 #include "TestUtils.hpp"
 
-#include "Cut.hpp"
+#include "Partition.hpp"
 
 using namespace cut;
 
@@ -57,7 +57,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     std::cerr << "\n}\n" << std::endl;
 
     std::cerr << "comp_size_bounds:";
-    for (auto& comp_size_bound : calculate_component_size_bounds(params.eps, params.node_cnt, params.part_cnt)) {
+    for (auto& comp_size_bound : calculate_upper_component_size_bounds(params.eps, params.node_cnt, params.part_cnt)) {
         std::cerr << " " << comp_size_bound;
     }
     std::cerr << "\n" << std::endl;
@@ -79,4 +79,33 @@ TEST(Run, DISABLED_FromStdinVerbose) {
         }
     }
     std::cerr << std::endl;
+
+    std::vector<std::set<Node::IdType>> partitioning;
+    Signature signature;
+    Node::EdgeWeightType cut_cost;
+    std::tie(partitioning, signature, cut_cost) = part::calculate_best_packing(signatures);
+
+    ASSERT_EQ(partitioning.size(), static_cast<size_t>(params.part_cnt));
+    size_t node_cnt_in_partitioning = 0;
+    for (auto const& part : partitioning) {
+        node_cnt_in_partitioning += part.size();
+        ASSERT_LT(part.size(), signatures.upper_comp_size_bounds.back());
+    }
+    ASSERT_EQ(params.node_cnt, node_cnt_in_partitioning);
+
+    std::cerr << "partitioning:" << std::endl;
+    for (auto const& part : partitioning) {
+        for (auto const node : part) {
+            std::cerr << " " << node;
+        }
+        std::cerr << std::endl;
+    }
+
+    std::cerr << "signature:";
+    for (auto const comp_cnt : signature) {
+        std::cerr << " " << comp_cnt;
+    }
+    std::cerr << std::endl;
+    std::cerr << "cut_cost: " << cut_cost << std::endl;
+
 }
