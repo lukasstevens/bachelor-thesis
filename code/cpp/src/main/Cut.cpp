@@ -96,7 +96,7 @@ namespace cut {
             comp_sizes.push_back(static_cast<SizeType>(curr_upper_bound.ceil_to_int()));
             curr_upper_bound *= (Rational(1) + eps);
         }
-        comp_sizes.push_back(static_cast<SizeType>(upper_bound.floor_to_int()));
+        comp_sizes.push_back(static_cast<SizeType>((upper_bound + Rational(1)).floor_to_int()));
         return comp_sizes;
     }
 
