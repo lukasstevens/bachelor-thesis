@@ -20,7 +20,7 @@ TEST(Cut, Tree2) {
     auto signatures = tree.cut(params.eps, params.part_cnt);
     auto& root_sigs = signatures.signatures[0][0].at(params.node_cnt);
 
-    ASSERT_EQ(comp_size_bounds, std::vector<SizeType>({ 1, 2, 2, 3, 4, 4 }));
+    ASSERT_EQ(comp_size_bounds, std::vector<SizeType>({ 1, 2, 2, 3, 4, 5 }));
 
     std::vector<std::valarray<SizeType>> poss_signatures({
             {0, 5, 0, 0, 0, 0},
