@@ -68,3 +68,86 @@ TEST(Cut, Tree2) {
         }
     }
 }
+
+
+void test_comp_size_bounds(rat::Rational<int64_t> eps, SizeType node_cnt, SizeType part_cnt, size_t should_length, std::vector<SizeType>& should_upper, std::vector<SizeType>& should_lower) {
+
+    auto upper = cut::calculate_upper_component_size_bounds(eps, node_cnt, part_cnt);
+
+    auto lower = cut::calculate_lower_component_size_bounds(eps, node_cnt, part_cnt);
+    ASSERT_EQ(should_length, upper.size());
+    ASSERT_EQ(should_upper, upper);
+    ASSERT_EQ(should_length, lower.size());
+    ASSERT_EQ(should_lower, lower);
+}
+
+TEST(ComponentSizeBounds, One) {
+
+    std::vector<SizeType> should_upper_comp_size_bounds({
+            9, 13, 20, 26
+            });
+
+    std::vector<SizeType> should_lower_comp_size_bounds({
+            1, 9 , 13, 20 
+            });
+
+    test_comp_size_bounds(rat::Rational<int64_t>(1, 2), 100, 6, 4, 
+            should_upper_comp_size_bounds, should_lower_comp_size_bounds);
+
+}
+
+TEST(ComponentSizeBounds, Two) {
+
+    std::vector<SizeType> should_upper_comp_size_bounds({
+            5, 7, 9, 12, 16, 21
+            });
+
+    std::vector<SizeType> should_lower_comp_size_bounds({
+            1, 5, 7, 9, 12, 16 
+            });
+
+    test_comp_size_bounds(rat::Rational<int64_t>(1, 3), 100, 7, 6, 
+            should_upper_comp_size_bounds, should_lower_comp_size_bounds);
+}
+
+TEST(ComponentSizeBounds, Three) {
+
+    std::vector<SizeType> should_upper_comp_size_bounds({
+            6, 8, 11, 16, 20
+            });
+
+    std::vector<SizeType> should_lower_comp_size_bounds({
+            1, 6, 8, 11, 16
+            });
+
+    test_comp_size_bounds(rat::Rational<int64_t>(2, 5), 80, 6, 5, 
+            should_upper_comp_size_bounds, should_lower_comp_size_bounds);
+}
+
+TEST(ComponentSizeBounds, Four) {
+
+    std::vector<SizeType> should_upper_comp_size_bounds({
+            6, 8, 12, 17, 19
+            });
+
+    std::vector<SizeType> should_lower_comp_size_bounds({
+            1, 6, 8, 12, 17
+            });
+
+    test_comp_size_bounds(rat::Rational<int64_t>(3, 7), 121, 10, 5, 
+            should_upper_comp_size_bounds, should_lower_comp_size_bounds);
+}
+
+TEST(ComponentSizeBounds, Five) {
+
+    std::vector<SizeType> should_upper_comp_size_bounds({
+            3, 4, 5, 6, 8, 11, 12
+            });
+
+    std::vector<SizeType> should_lower_comp_size_bounds({
+            1, 3, 4, 5, 6, 8, 11
+            });
+
+    test_comp_size_bounds(rat::Rational<int64_t>(3, 10), 81, 9, 7, 
+            should_upper_comp_size_bounds, should_lower_comp_size_bounds);
+}
