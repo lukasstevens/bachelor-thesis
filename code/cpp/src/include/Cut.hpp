@@ -8,8 +8,6 @@
 #include<valarray>
 #include<vector>
 
-#include<gtest/gtest_prod.h>
-
 #include "Rational.hpp"
 #include "ValarrayUtils.hpp"
 
