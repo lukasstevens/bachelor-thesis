@@ -40,6 +40,8 @@ namespace part {
                 }
             }
 
+            // We substract one from the upper bound since the bounds are exclusive,
+            // but the bin capacities are inclusive.
             Packing<SizeType> curr_packing(
                     rat::Rational<SizeType>(signatures.tree.tree_sizes[0][0], signatures.part_cnt).ceil_to_int(), 
                     signatures.upper_comp_size_bounds.back() - 1);
