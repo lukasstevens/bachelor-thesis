@@ -42,7 +42,7 @@ namespace part {
 
             Packing<SizeType> curr_packing(
                     rat::Rational<SizeType>(signatures.tree.tree_sizes[0][0], signatures.part_cnt).ceil_to_int(), 
-                    signatures.upper_comp_size_bounds.back());
+                    signatures.upper_comp_size_bounds.back() - 1);
             curr_packing.pack_perfect(curr_sig_as_map);
 
             if (curr_packing.bin_cnt() > static_cast<size_t>(signatures.part_cnt)) {
