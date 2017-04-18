@@ -101,6 +101,11 @@ namespace rat {
                     return this->num / this->denom + (this->num % this->denom == 0 ? 0 : 1);
                 }
 
+                template<typename Float>
+                    Float to_float() {
+                        return static_cast<Float>(this->num)/this->denom;
+                    }
+
                 Rational& simplify() {
                     if (this->num == 0) {
                         this->denom = 1;
