@@ -38,17 +38,17 @@ namespace valarrutils {
         };
 
     /**
-     * Compares to valarrays since the default compare returns a valarray<bool>.
+     * Compares two valarrays for equality since the operator == returns a valarray<bool>.
      * @tparam T The integer type to use.
      */
     template<typename T>
         struct ValarrayEqual {
 
             /**
-             * Tests to valarray for equality.
+             * Tests two valarrays for equality.
              * @param lhs The first valarray.
              * @param rhs The second valarray.
-             * @returns True if the operands are equal
+             * @returns True if the operands are equal.
              */
             bool operator()(const std::valarray<T>& lhs, const std::valarray<T>& rhs) const {
                 auto comp = lhs == rhs;
