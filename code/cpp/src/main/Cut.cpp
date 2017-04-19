@@ -84,19 +84,31 @@ namespace cut {
         return build_tree(tree_map, tree_map.begin()->first);
     }
 
+    template<typename IntType>
+        IntType floor_to_int(RationalType r) {
+            mpz_class quotient = r.get_num() / r.get_den();
+            return static_cast<IntType>(quotient.get_si());
+        }
+
+    template<typename IntType>
+        SizeType ceil_to_int(RationalType r) {
+            return floor_to_int<IntType>(r) + (r.get_num() % r.get_den() == mpz_class(0) ? 0 : 1);
+        }
+
     std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
         using Rational = RationalType;
 
         // Calculate the sizes of the components in a signature according to the paper FF13.
         // We use rationals here to prevent numerical instabilities.
         std::vector<SizeType> comp_sizes;
-        Rational curr_upper_bound = eps * Rational(Rational(node_cnt, part_cnt).ceil_to_int());
-        Rational upper_bound = (Rational(1) + eps) * Rational(Rational(node_cnt, part_cnt).ceil_to_int());
+        Rational n_div_k = Rational(ceil_to_int<SizeType>(Rational(node_cnt, part_cnt)));
+        Rational curr_upper_bound = eps * n_div_k;
+        Rational upper_bound = (Rational(1) + eps) * n_div_k;
         while (curr_upper_bound < upper_bound) {
-            comp_sizes.push_back(static_cast<SizeType>(curr_upper_bound.ceil_to_int()));
+            comp_sizes.push_back(ceil_to_int<SizeType>(curr_upper_bound));
             curr_upper_bound *= (Rational(1) + eps);
         }
-        comp_sizes.push_back(static_cast<SizeType>((upper_bound + Rational(1)).floor_to_int()));
+        comp_sizes.push_back(floor_to_int<SizeType>(upper_bound + Rational(1)));
         return comp_sizes;
     }
 
@@ -211,7 +223,7 @@ namespace cut {
 
         return SignaturesForTree(part_cnt, eps, *this, std::move(signatures));
     }
-    
+
     SignaturesForTree::CutEdges SignaturesForTree::cut_edges_for_signature(Signature const& signature) const {
         using NodeIdx = std::pair<size_t, size_t>;
 
@@ -274,7 +286,7 @@ namespace cut {
 
             bool const curr_node_has_child = curr_node.children_idx_range.first < curr_node.children_idx_range.second;
             bool const curr_node_has_left_sibling = this->tree.has_left_sibling[curr_info.node_idx.first][curr_info.node_idx.second];
-            
+
             if (curr_node_has_child) {
                 child_sigs = &(this->signatures[curr_info.node_idx.first + 1][curr_node.children_idx_range.second - 1]);
             }
@@ -347,7 +359,7 @@ namespace cut {
                                                 sibling_sig.second,
                                                 sibling_sig_size);
                                     }
-                                    
+
                                     cut_edges.insert(std::make_pair(curr_node.id, this->tree.levels[curr_info.node_idx.first - 1][curr_node.parent_idx].id));
                                 }
                             }
@@ -376,7 +388,7 @@ namespace cut {
         std::list<NodeInfo> queue;
 
         queue.emplace_back(std::make_pair(0, 0), 0);
-        
+
         while (!queue.empty()) {
             auto curr_info = queue.front();
             Node const& curr_node = this->tree.levels[curr_info.node_idx.first][curr_info.node_idx.second];

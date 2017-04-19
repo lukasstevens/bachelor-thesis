@@ -8,7 +8,8 @@
 #include<valarray>
 #include<vector>
 
-#include "Rational.hpp"
+#include<gmpxx.h>
+
 #include "ValarrayUtils.hpp"
 
 namespace cut {
@@ -30,7 +31,7 @@ namespace cut {
     };
 
     using Signature = std::valarray<SizeType>;
-    using RationalType = rat::Rational<int64_t>;
+    using RationalType = mpq_class;
 
     struct SignaturesForTree;
 

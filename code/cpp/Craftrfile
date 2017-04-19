@@ -11,7 +11,7 @@ mylib = Framework(
   std = 'c++11',
   warn = 'all',
   debug = True,
-  libs = ['m']
+  libs = ['m', 'gmpxx', 'gmp']
 )
 
 mylib_lib = cxx.static_library(
