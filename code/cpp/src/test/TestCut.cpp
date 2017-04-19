@@ -70,7 +70,7 @@ TEST(Cut, Tree2) {
 }
 
 
-void test_comp_size_bounds(rat::Rational<int64_t> eps, SizeType node_cnt, SizeType part_cnt, size_t should_length, std::vector<SizeType>& should_upper, std::vector<SizeType>& should_lower) {
+void test_comp_size_bounds(cut::RationalType eps, SizeType node_cnt, SizeType part_cnt, size_t should_length, std::vector<SizeType>& should_upper, std::vector<SizeType>& should_lower) {
 
     auto upper = cut::calculate_upper_component_size_bounds(eps, node_cnt, part_cnt);
 
@@ -91,7 +91,7 @@ TEST(ComponentSizeBounds, One) {
             1, 9 , 13, 20 
             });
 
-    test_comp_size_bounds(rat::Rational<int64_t>(1, 2), 100, 6, 4, 
+    test_comp_size_bounds(cut::RationalType(1, 2), 100, 6, 4, 
             should_upper_comp_size_bounds, should_lower_comp_size_bounds);
 
 }
@@ -106,7 +106,7 @@ TEST(ComponentSizeBounds, Two) {
             1, 5, 7, 9, 12, 16 
             });
 
-    test_comp_size_bounds(rat::Rational<int64_t>(1, 3), 100, 7, 6, 
+    test_comp_size_bounds(cut::RationalType(1, 3), 100, 7, 6, 
             should_upper_comp_size_bounds, should_lower_comp_size_bounds);
 }
 
@@ -120,7 +120,7 @@ TEST(ComponentSizeBounds, Three) {
             1, 6, 8, 11, 16
             });
 
-    test_comp_size_bounds(rat::Rational<int64_t>(2, 5), 80, 6, 5, 
+    test_comp_size_bounds(cut::RationalType(2, 5), 80, 6, 5, 
             should_upper_comp_size_bounds, should_lower_comp_size_bounds);
 }
 
@@ -134,7 +134,7 @@ TEST(ComponentSizeBounds, Four) {
             1, 6, 8, 12, 17
             });
 
-    test_comp_size_bounds(rat::Rational<int64_t>(3, 7), 121, 10, 5, 
+    test_comp_size_bounds(cut::RationalType(3, 7), 121, 10, 5, 
             should_upper_comp_size_bounds, should_lower_comp_size_bounds);
 }
 
@@ -148,6 +148,6 @@ TEST(ComponentSizeBounds, Five) {
             1, 3, 4, 5, 6, 8, 11
             });
 
-    test_comp_size_bounds(rat::Rational<int64_t>(3, 10), 81, 9, 7, 
+    test_comp_size_bounds(cut::RationalType(3, 10), 81, 9, 7, 
             should_upper_comp_size_bounds, should_lower_comp_size_bounds);
 }
