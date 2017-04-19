@@ -4,18 +4,12 @@
 
 #include "Cut.hpp"
 #include "Pack.hpp"
-#include "Rational.hpp"
 
 namespace part {
-    using cut::Node;
-    using cut::Signature;
-    using cut::SignaturesForTree;
-    using cut::SizeType;
-    using pack::Packing;
 
-    std::tuple<std::vector<std::set<Node::IdType>>, Signature, Node::EdgeWeightType> calculate_best_packing(SignaturesForTree const& signatures) {
+    std::tuple<std::vector<std::set<cut::Node::IdType>>, cut::Signature, cut::Node::EdgeWeightType> calculate_best_packing(cut::SignaturesForTree const& signatures) {
         auto const& root_sigs = signatures.signatures[0][0].at(signatures.tree.tree_sizes[0][0]);
-        using SignatureWithCost = std::pair<Node::EdgeWeightType, Signature>;
+        using SignatureWithCost = std::pair<cut::Node::EdgeWeightType, cut::Signature>;
         auto compare = [](SignatureWithCost left, SignatureWithCost right){
             return left.first > right.first;
         };
@@ -27,12 +21,12 @@ namespace part {
         }
 
         while (!prio_q.empty()) {
-            Signature curr_sig;
-            Node::EdgeWeightType curr_cut_cost;
+            cut::Signature curr_sig;
+            cut::Node::EdgeWeightType curr_cut_cost;
             std::tie(curr_cut_cost, curr_sig) = prio_q.top();
             prio_q.pop();
 
-            std::map<SizeType, SizeType> curr_sig_as_map;
+            std::map<cut::SizeType, cut::SizeType> curr_sig_as_map;
             // Starting at 1 to skip components with size smaller than eps * ceil(n/k).
             for (size_t comp_idx = 1; comp_idx < curr_sig.size(); ++comp_idx) {
                 if (curr_sig[comp_idx] > 0) {
@@ -42,8 +36,8 @@ namespace part {
 
             // We substract one from the upper bound since the bounds are exclusive,
             // but the bin capacities are inclusive.
-            Packing<SizeType> curr_packing(
-                    rat::Rational<SizeType>(signatures.tree.tree_sizes[0][0], signatures.part_cnt).ceil_to_int(), 
+            pack::Packing<cut::SizeType> curr_packing(
+                    rat::Rational<cut::SizeType>(signatures.tree.tree_sizes[0][0], signatures.part_cnt).ceil_to_int(), 
                     signatures.upper_comp_size_bounds.back() - 1);
             curr_packing.pack_perfect(curr_sig_as_map);
 
@@ -53,8 +47,8 @@ namespace part {
                 auto cut_edges_for_curr_sig = signatures.cut_edges_for_signature(curr_sig);
                 auto comps_for_curr_sig = signatures.components_for_cut_edges(cut_edges_for_curr_sig);
 
-                std::map<SizeType, std::vector<SizeType>> expansion_map;
-                std::map<SizeType, SizeType> small_components;
+                std::map<cut::SizeType, std::vector<cut::SizeType>> expansion_map;
+                std::map<cut::SizeType, cut::SizeType> small_components;
                 for (auto const& comp : comps_for_curr_sig) {
                     size_t bound_idx = 1;
                     while (comp.size() >= static_cast<size_t>(signatures.upper_comp_size_bounds[bound_idx])) {
@@ -62,10 +56,10 @@ namespace part {
                     }
 
                     if (bound_idx == 0) {
-                        small_components[static_cast<SizeType>(comp.size())] += 1;
+                        small_components[static_cast<cut::SizeType>(comp.size())] += 1;
                     } else {
                         expansion_map[signatures.lower_comp_size_bounds[bound_idx]]
-                            .push_back(static_cast<SizeType>(comp.size()));
+                            .push_back(static_cast<cut::SizeType>(comp.size()));
                     }
                 }
                 curr_packing.expand_packing(expansion_map);
@@ -74,8 +68,8 @@ namespace part {
                 if (curr_packing.bin_cnt() != static_cast<size_t>(signatures.part_cnt)) {
                     continue;
                 } else {
-                    std::vector<std::vector<SizeType>> bins = curr_packing.get_bins();
-                    std::vector<std::set<Node::IdType>> partitioning(bins.size());
+                    std::vector<std::vector<cut::SizeType>> bins = curr_packing.get_bins();
+                    std::vector<std::set<cut::Node::IdType>> partitioning(bins.size());
                     std::vector<bool> used_comp(comps_for_curr_sig.size());
                     for (size_t bin_idx = 0; bin_idx < bins.size(); ++bin_idx) {
                         for (auto const comp_size : bins[bin_idx]) {
@@ -95,6 +89,6 @@ namespace part {
             }
         }
 
-        return std::make_tuple(std::vector<std::set<Node::IdType>>(), Signature(), std::numeric_limits<SizeType>::max());
+        return std::make_tuple(std::vector<std::set<cut::Node::IdType>>(), cut::Signature(), std::numeric_limits<cut::SizeType>::max());
     }
 }
