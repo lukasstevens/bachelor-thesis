@@ -2,6 +2,8 @@
 #include<list>
 #include<stdexcept>
 
+#include "GMPUtils.hpp"
+
 #include "Cut.hpp"
 
 namespace cut {
@@ -84,31 +86,20 @@ namespace cut {
         return build_tree(tree_map, tree_map.begin()->first);
     }
 
-    template<typename IntType>
-        IntType floor_to_int(RationalType r) {
-            mpz_class quotient = r.get_num() / r.get_den();
-            return static_cast<IntType>(quotient.get_si());
-        }
-
-    template<typename IntType>
-        SizeType ceil_to_int(RationalType r) {
-            return floor_to_int<IntType>(r) + (r.get_num() % r.get_den() == mpz_class(0) ? 0 : 1);
-        }
-
     std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
         using Rational = RationalType;
 
         // Calculate the sizes of the components in a signature according to the paper FF13.
         // We use rationals here to prevent numerical instabilities.
         std::vector<SizeType> comp_sizes;
-        Rational n_div_k = Rational(ceil_to_int<SizeType>(Rational(node_cnt, part_cnt)));
+        Rational n_div_k = Rational(gmputils::ceil_to_int<SizeType>(Rational(node_cnt, part_cnt)));
         Rational curr_upper_bound = eps * n_div_k;
         Rational upper_bound = (Rational(1) + eps) * n_div_k;
         while (curr_upper_bound < upper_bound) {
-            comp_sizes.push_back(ceil_to_int<SizeType>(curr_upper_bound));
+            comp_sizes.push_back(gmputils::ceil_to_int<SizeType>(curr_upper_bound));
             curr_upper_bound *= (Rational(1) + eps);
         }
-        comp_sizes.push_back(floor_to_int<SizeType>(upper_bound + Rational(1)));
+        comp_sizes.push_back(gmputils::floor_to_int<SizeType>(upper_bound + Rational(1)));
         return comp_sizes;
     }
 
