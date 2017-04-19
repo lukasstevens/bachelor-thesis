@@ -108,8 +108,24 @@ namespace cut {
              */
             SignaturesForTree cut(RationalType eps, SizeType part_cnt);
     };
+
+    /**
+     * Populates a Tree with the values from the inputstream.
+     * @param is The inputstream.
+     * @param tree The tree to build populate.
+     * @returns The inputstream.
+     */
+    std::istream& operator>>(std::istream& is, Tree& tree);
+
+    /**
+     * Prints a Tree to the outputstream.
+     * @param os The outputstream.
+     * @param tree The tree to print.
+     * @returns The outputstream.
+     */
+    std::ostream& operator<<(std::ostream& os, Tree const& tree);
     
-    
+
     /**
      * Calculates the upper(exclusive) bounds on the component sizes for each index of a signature.
      * @param eps The approximation factor.
@@ -138,12 +154,12 @@ namespace cut {
      */
     struct SignaturesForTree {
         public:
-            SizeType const part_cnt; /**< The number of parts in the partition */
-            RationalType const eps; /**< The approximation parameter */
-            Tree const& tree; /**< The tree for which the signatures were calculated */
+            SizeType const part_cnt; /**< The number of parts in the partition. */
+            RationalType const eps; /**< The approximation parameter. */
+            Tree const& tree; /**< The tree for which the signatures were calculated. */
             std::vector<std::vector<Tree::SignatureMap>> const signatures; /**< The calculated signatures. */
-            std::vector<SizeType> const upper_comp_size_bounds; /**< The upper bounds for the sizes in a signature */
-            std::vector<SizeType> const lower_comp_size_bounds; /**< The lower bounds for the sizes in a signature */
+            std::vector<SizeType> const upper_comp_size_bounds; /**< The upper bounds for the sizes in a signature. */
+            std::vector<SizeType> const lower_comp_size_bounds; /**< The lower bounds for the sizes in a signature. */
 
             /**
              * Constructor.
@@ -178,5 +194,75 @@ namespace cut {
              */
             std::vector<std::set<Node::IdType>> components_for_cut_edges(CutEdges const& cut_edges) const;
     };
+
+    /**
+     * Prints the signatures to the outputstream.
+     * @param os The outputstream.
+     * @param signatures The signatures to print.
+     * @returns The outputstream.
+     */
+    std::ostream& operator<<(std::ostream& os, SignaturesForTree const& signatures);
+
+
+    /**
+     * This class is used to build a SignaturesForTree object.
+     * We need this class since the members of the SignaturesForTree class are constant.
+     */
+    struct SignaturesForTreeBuilder {
+        public:
+            SizeType part_cnt; /**< The number of parts in the partition. */
+            RationalType eps; /**< The approximation parameter. */
+            /** 
+             * The tree for which the signatures were calculated. 
+             * It is saved as a pointer since references must be initialized.
+             */
+            Tree const* tree;
+            std::vector<std::vector<Tree::SignatureMap>> signatures; /**< The calculated signatures. */
+
+            /**
+             * Constructor.
+             */
+            SignaturesForTreeBuilder() {}
+
+            /**
+             * Sets the part count.
+             * @param part_cnt The part count.
+             */
+            void with_part_cnt(SizeType part_cnt);
+
+            /**
+             * Sets the approximation parameter.
+             * @param eps The approximation parameter
+             */
+            void with_eps(RationalType eps);
+
+            /**
+             * Sets the pointer to the tree which is later converted to a reference.
+             * @param A pointer to the tree.
+             */
+            void with_tree(Tree const* tree);
+
+            /**
+             * Sets the signatures.
+             * @param The signatures
+             */
+            void with_signatures(std::vector<std::vector<Tree::SignatureMap>> const& signatures);
+
+            /**
+             * Finishes building the signatures.
+             * @returns The finished SignaturesForTree object.
+             */
+            SignaturesForTree finish();
+
+
+    };
+
+    /**
+     * Populates a SignaturesForTreeBuilder with the values from the inputstream.
+     * @param is The inputstream.
+     * @param builder The builder.
+     * @returns The inputstream.
+     */
+    std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder& builder);
 }
 
