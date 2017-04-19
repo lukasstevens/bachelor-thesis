@@ -167,14 +167,14 @@ namespace cut {
             /**
              * Calculates the edges which were cut to arrive at \p signature at the root.
              * @param signature The signature for which the cut edges should be calculated.
-             * @return The edges cut.
+             * @return The edges cut as a set of pairs. One pair specifies the two endpoints of the cut edge.
              */
             CutEdges cut_edges_for_signature(Signature const& signature) const;
 
             /**
              * Calculates the connected components which result in cutting the edges described by \p cut_edges.
              * @param cut_edges The edges to cut.
-             * @returns The connected components as sets.
+             * @returns A vector of sets. Each set identifies one connected component in the Tree by the node ids in that set.
              */
             std::vector<std::set<Node::IdType>> components_for_cut_edges(CutEdges const& cut_edges) const;
     };
