@@ -64,6 +64,7 @@ namespace pack {
                 
                 /**
                  * Gets the current packing.
+                 * A bin contains saves the components by their sizes in a vector. These bins are organized in a vector.
                  * @returns The current packing.
                  */
                 std::vector<std::vector<T>> get_bins() {
