@@ -31,6 +31,8 @@ run = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinVerbose' , '--gt
 
 gdb = gentarget([['gdb', '--args', test_bin]], pool='console', explicit=True)
 
+docs = gentarget([['doxygen', '.doxygen.config']], explicit=True, cwd=project_dir)
+
 # Copy resource files to build directory
 try: 
     shutil.rmtree('resources/')
