@@ -6,8 +6,16 @@
 #include "GMPUtils.hpp"
 #include "Pack.hpp"
 
+/**
+ * Contains functions for running the partitioning algorithm described in the paper FF13.
+ */
 namespace part {
 
+    /**
+     * Calculates the best feasible packing for the signatures given by \p signatures.
+     * @param signatures The signatures and tree to use for the calculations.
+     * @returns The components, the best signature and the cut cost as a tuple.
+     */
     std::tuple<std::vector<std::set<cut::Node::IdType>>, cut::Signature, cut::Node::EdgeWeightType> calculate_best_packing(cut::SignaturesForTree const& signatures) {
         auto const& root_sigs = signatures.signatures[0][0].at(signatures.tree.tree_sizes[0][0]);
         using SignatureWithCost = std::pair<cut::Node::EdgeWeightType, cut::Signature>;

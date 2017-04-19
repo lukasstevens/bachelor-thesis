@@ -133,7 +133,7 @@ namespace cut {
     std::vector<SizeType> calculate_lower_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
 
     /**
-     * This class represents the signatures for a tree caclulated by Tree::cut. 
+     * This class represents the signatures for a tree caclulated by Tree::cut(). 
      * The tree instance MUST outlive the SignatuesForTree instance.
      */
     struct SignaturesForTree {
