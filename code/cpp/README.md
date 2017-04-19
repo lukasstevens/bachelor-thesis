@@ -19,3 +19,6 @@ After that you can run `craftr build` to build the project. To run the project w
 
 # Testing
 When invoking `craftr export` the directory `src/test/resources` is automatically copied to `build/`. If you have added new resource files which you need for your tests you have to rerun `craftr export`.
+
+# Documentation
+You can generate the doxygen documentation by running `craftr build docs`. The documentation is located in `build/docs`.
