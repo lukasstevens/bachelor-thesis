@@ -11,6 +11,8 @@ pip3 install --user git+https://github.com/craftr-build/craftr@development
 ```
 The c++ toolchain used for this project is clang so you have to install `clang>=3.8.1` with your package manager.
 
+The project also depends on one library namely `libgmp`. You will need to install it with your package manager.
+
 # Building
 Before your first build or if you added source files or if you changed the build script run `craftr export`. 
 After that you can run `craftr build` to build the project. To run the project with your input you can use `craftr build run`.
