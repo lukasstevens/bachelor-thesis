@@ -14,7 +14,6 @@
 #include "ValarrayUtils.hpp"
 
 /** 
- * \namespace cut 
  * This namespace contains all classes, functions and type definitions which are needed for the cutting phase.
  */
 namespace cut {
@@ -71,7 +70,8 @@ namespace cut {
             std::vector<std::vector<SizeType>> tree_sizes; /**< Lookup table for the size of the subtree rooted at a node */
 
             /**
-             * This functions builds a Tree from \p tree. This is a unordered map of unordered maps which constitutes
+             * This functions builds a Tree from \p tree. 
+             * This is a unordered map of unordered maps which constitutes
              * a projection from two nodes(an edge) onto an edge weight. The tree represented by \p tree is explored in
              * a BFS order starting at \p root_id.
              * @param tree The tree to use.
@@ -81,7 +81,8 @@ namespace cut {
             static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> const& tree, Node::IdType root_id);
 
             /**
-             * Similiar to the overloaded function. Uses a random root. For this to work the tree must be undirected.
+             * Similiar to the overloaded function. Uses a random root. 
+             * For this to work the tree must be undirected.
              * @param tree The tree to use.
              * @returns the tree built from \p tree.
              *
@@ -90,9 +91,9 @@ namespace cut {
             static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> const& tree);
 
             /**
-             * A type which saves the signatures at a node. It maps the number of nodes in the lower frontier
-             * to the possible signatures which this number of nodes and the signatures are mapped again to their
-             * cut cost.
+             * A type which saves the signatures at a node. 
+             * It maps the number of nodes in the lower frontier to the possible 
+             * signatures which this number of nodes and the signatures are mapped again to their cut cost.
              */
             using SignatureMap = std::map<SizeType, std::unordered_map<Signature, Node::EdgeWeightType, 
                   valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
@@ -171,7 +172,7 @@ namespace cut {
             CutEdges cut_edges_for_signature(Signature const& signature) const;
 
             /**
-             * Calculates the connected components which result in cutting the edges described by
+             * Calculates the connected components which result in cutting the edges described by \p cut_edges.
              * @param cut_edges The edges to cut.
              * @returns The connected components as sets.
              */
