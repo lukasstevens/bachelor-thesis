@@ -3,6 +3,7 @@
 #include<queue>
 
 #include "Cut.hpp"
+#include "GMPUtils.hpp"
 #include "Pack.hpp"
 
 namespace part {
@@ -37,7 +38,7 @@ namespace part {
             // We substract one from the upper bound since the bounds are exclusive,
             // but the bin capacities are inclusive.
             pack::Packing<cut::SizeType> curr_packing(
-                    rat::Rational<cut::SizeType>(signatures.tree.tree_sizes[0][0], signatures.part_cnt).ceil_to_int(), 
+                    gmputils::ceil_to_int<cut::SizeType>(cut::RationalType(signatures.tree.tree_sizes[0][0], signatures.part_cnt)),
                     signatures.upper_comp_size_bounds.back() - 1);
             curr_packing.pack_perfect(curr_sig_as_map);
 
