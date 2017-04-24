@@ -2,6 +2,7 @@
 #pragma once
 
 #include<cstdint>
+#include<iostream>
 #include<map>
 #include<set>
 #include<unordered_map>
@@ -71,14 +72,14 @@ namespace cut {
 
             /**
              * This functions builds a Tree from \p tree. 
-             * This is a unordered map of unordered maps which constitutes
+             * This is a map of maps which constitutes
              * a projection from two nodes(an edge) onto an edge weight. The tree represented by \p tree is explored in
              * a BFS order starting at \p root_id.
              * @param tree The tree to use.
              * @param root_id The id of the root in the tree.
              * @returns The tree built from \p tree.
              */
-            static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> const& tree, Node::IdType root_id);
+            static Tree build_tree(std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> const& tree, Node::IdType root_id);
 
             /**
              * Similiar to the overloaded function. Uses a random root. 
@@ -88,7 +89,7 @@ namespace cut {
              *
              * @see build_tree()
              */
-            static Tree build_tree(std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> const& tree);
+            static Tree build_tree(std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> const& tree);
 
             /**
              * A type which saves the signatures at a node. 
@@ -107,6 +108,15 @@ namespace cut {
              * @See SignaturesForTree
              */
             SignaturesForTree cut(RationalType eps, SizeType part_cnt);
+
+            /**
+             * Calculates the node_idx for the node with the id \p node_id.
+             * @param node_id The id of the node.
+             * @returns A pair describing the index of the node in the levels of the tree.
+             * Returns <code>(std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max()) 
+             * if no node with id \p node_id exists.
+             */
+            std::pair<size_t, size_t> get_node_idx(Node::IdType node_id) const;
     };
 
     /**
@@ -210,43 +220,36 @@ namespace cut {
      */
     struct SignaturesForTreeBuilder {
         public:
-            SizeType part_cnt; /**< The number of parts in the partition. */
-            RationalType eps; /**< The approximation parameter. */
             /** 
              * The tree for which the signatures were calculated. 
-             * It is saved as a pointer since references must be initialized.
              */
-            Tree const* tree;
-            std::vector<std::vector<Tree::SignatureMap>> signatures; /**< The calculated signatures. */
+            Tree const& tree;
 
             /**
              * Constructor.
              */
-            SignaturesForTreeBuilder() {}
+            SignaturesForTreeBuilder(Tree const& tree) : tree(tree) {}
 
             /**
              * Sets the part count.
              * @param part_cnt The part count.
+             * @returns A reference to this.
              */
-            void with_part_cnt(SizeType part_cnt);
+            SignaturesForTreeBuilder& with_part_cnt(SizeType part_cnt);
 
             /**
              * Sets the approximation parameter.
              * @param eps The approximation parameter
+             * @returns A reference to this.
              */
-            void with_eps(RationalType eps);
-
-            /**
-             * Sets the pointer to the tree which is later converted to a reference.
-             * @param A pointer to the tree.
-             */
-            void with_tree(Tree const* tree);
+            SignaturesForTreeBuilder& with_eps(RationalType eps);
 
             /**
              * Sets the signatures.
              * @param The signatures
+             * @returns A reference to this.
              */
-            void with_signatures(std::vector<std::vector<Tree::SignatureMap>> const& signatures);
+            SignaturesForTreeBuilder& with_signatures(std::vector<std::vector<Tree::SignatureMap>> const& signatures);
 
             /**
              * Finishes building the signatures.
@@ -254,6 +257,10 @@ namespace cut {
              */
             SignaturesForTree finish();
 
+        private:
+            SizeType part_cnt; /**< The number of parts in the partition. */
+            RationalType eps; /**< The approximation parameter. */
+            std::vector<std::vector<Tree::SignatureMap>> signatures; /**< The calculated signatures. */
 
     };
 
