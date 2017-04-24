@@ -126,6 +126,12 @@ namespace cut {
 
     /**
      * Populates a Tree with the values from the inputstream.
+     * This uses the following format:
+     * The first line contains two integers \c n \c r.
+     * \c n specifies the number of nodes in the tree whereas \c r specifies the id of the root.
+     * <code>n-1</code> lines follow each containing three integers \c f \c t \c w. 
+     * \c f and \c t describe an edge in the tree from \c f to \c t. 
+     * The weight of the edge is specified by \c w.
      * @param is The inputstream.
      * @param tree The tree to build populate.
      * @returns The inputstream.
@@ -134,6 +140,7 @@ namespace cut {
 
     /**
      * Prints a Tree to the outputstream.
+     * @see std::istream& operator>>(std::istream&, Tree&) The format for outputting a tree.
      * @param os The outputstream.
      * @param tree The tree to print.
      * @returns The outputstream.
@@ -212,6 +219,7 @@ namespace cut {
 
     /**
      * Prints the signatures to the outputstream.
+     * @see std::istream& operator>>(std::istream&, SignatureForTreeBuilder&) The format used is described here.
      * @param os The outputstream.
      * @param signatures The signatures to print.
      * @returns The outputstream.
@@ -271,6 +279,26 @@ namespace cut {
 
     /**
      * Populates a SignaturesForTreeBuilder with the values from the inputstream.
+     * The format is the following: \n
+     * The first line contains three integers \c k \c e_n \c e_d.
+     * \c k is the number of parts into which the tree should be partitioned. 
+     * \c e_n and \c e_d describe the approximation parameter epsilon where epsilon is equal to
+     * <code>e_n/e_d</code>. \n
+     * \c n blocks describing the signatures at a node follow 
+     * where \c n is the number of nodes in SignaturesForTreeBuilder::tree.
+     * The format of a block is the following: \n
+     * The first line contains two integers \c i \c sc where \c i is id of the node and \c sc is 
+     * the number of different lower frontier sizes at that node.
+     * \c sc inner blocks follow each describing all possible signatures for a lower frontier of a
+     * specific size. The format for an inner block is the following: \n
+     * The first line contains two integers \c s \c c where \c s is the number of nodes in the following 
+     * signatures and \c c is the number of signatures. \n
+     * \c c lines follow each describing one signature. The signature consists of \c l space-seperate integers
+     * where \c l is the length of a signature as given by the parameters \c k and epsilon. At the end of the line
+     * is a single integer \c w which describes the cut cost for that signature.
+     *
+     * You can look at the files with file extension \c signatures in <code>src/test/resources</code> for examples.
+     *
      * @param is The inputstream.
      * @param builder The builder.
      * @returns The inputstream.
