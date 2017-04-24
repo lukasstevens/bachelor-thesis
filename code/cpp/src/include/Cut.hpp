@@ -110,7 +110,7 @@ namespace cut {
              * @param part_cnt The number of parts in which the tree should be partitioned.
              * @returns The signatures calculated for the given parameters.
              *
-             * @See SignaturesForTree
+             * @see SignaturesForTree
              */
             SignaturesForTree cut(RationalType eps, SizeType part_cnt);
 
@@ -118,7 +118,7 @@ namespace cut {
              * Calculates the node_idx for the node with the id \p node_id.
              * @param node_id The id of the node.
              * @returns A pair describing the index of the node in the levels of the tree.
-             * Returns <code>(std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max()) 
+             * Returns <code>(std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max())</code>
              * if no node with id \p node_id exists.
              */
             std::pair<size_t, size_t> get_node_idx(Node::IdType node_id) const;
@@ -251,7 +251,7 @@ namespace cut {
 
             /**
              * Sets the signatures.
-             * @param The signatures
+             * @param signatures The signatures
              * @returns A reference to this.
              */
             SignaturesForTreeBuilder& with_signatures(std::vector<std::vector<Tree::SignatureMap>> const& signatures);
