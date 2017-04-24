@@ -1,4 +1,5 @@
 # bachelorthesis
+import os
 import shutil
 
 cxx = load('craftr.lang.cxx')
@@ -35,7 +36,7 @@ docs = gentarget([['doxygen', '.doxygen.config']], explicit=True, cwd=project_di
 
 # Copy resource files to build directory
 try: 
-    shutil.rmtree('resources/')
+    shutil.rm('resources')
 except:
     pass
-shutil.copytree('../src/test/resources', 'resources/')
+os.symlink('../src/test/resources', 'resources')
