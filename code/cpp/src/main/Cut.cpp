@@ -1,4 +1,5 @@
 #include<cmath>
+#include<limits>
 #include<list>
 #include<stdexcept>
 
@@ -16,7 +17,7 @@ namespace cut {
         id(id), parent_edge_weight(parent_edge_weight), parent_idx(parent_idx), children_idx_range(children_idx_range) {}
 
 
-    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>> const& tree_map, IdType root_id) {
+    Tree Tree::build_tree(std::map<IdType, std::map<IdType, EdgeWeightType>> const& tree_map, IdType root_id) {
         Tree tree;
         // Use a struct to represent an incomplete node since the child_idx_range is not known.
         struct NodeStub {
@@ -51,8 +52,8 @@ namespace cut {
                 for (auto const neighbor : tree_map.at(curr_node.id)) {
                     // Check if neighbor is the parent.
                     if (curr_node.level == 0 || neighbor.first != tree.levels[curr_node.level - 1][curr_node.parent_idx].id) {
-                        bool has_left_sibling = !(old_next_child_idx == next_child_idx);
-                        queue.emplace_back(neighbor.first, neighbor.second, tree.levels[curr_node.level].size(), has_left_sibling, curr_node.level + 1); 
+                        bool curr_has_left_sibling = !(old_next_child_idx == next_child_idx);
+                        queue.emplace_back(neighbor.first, neighbor.second, tree.levels[curr_node.level].size(), curr_has_left_sibling, curr_node.level + 1); 
                         ++next_child_idx;
                     }
                 }
@@ -82,33 +83,8 @@ namespace cut {
         return tree;
     }
 
-    Tree Tree::build_tree(std::unordered_map<IdType, std::unordered_map<IdType, EdgeWeightType>> const& tree_map) {
+    Tree Tree::build_tree(std::map<IdType, std::map<IdType, EdgeWeightType>> const& tree_map) {
         return build_tree(tree_map, tree_map.begin()->first);
-    }
-
-    std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
-        using Rational = RationalType;
-
-        // Calculate the sizes of the components in a signature according to the paper FF13.
-        // We use rationals here to prevent numerical instabilities.
-        std::vector<SizeType> comp_sizes;
-        Rational n_div_k = Rational(gmputils::ceil_to_int<SizeType>(Rational(node_cnt, part_cnt)));
-        Rational curr_upper_bound = eps * n_div_k;
-        Rational upper_bound = (Rational(1) + eps) * n_div_k;
-        while (curr_upper_bound < upper_bound) {
-            comp_sizes.push_back(gmputils::ceil_to_int<SizeType>(curr_upper_bound));
-            curr_upper_bound *= (Rational(1) + eps);
-        }
-        comp_sizes.push_back(gmputils::floor_to_int<SizeType>(upper_bound + Rational(1)));
-        return comp_sizes;
-    }
-
-    std::vector<SizeType> calculate_lower_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
-        std::vector<SizeType> const upper_comp_size_bounds = calculate_upper_component_size_bounds(eps, node_cnt, part_cnt);
-        std::vector<SizeType> lower_comp_size_bounds({1});
-        lower_comp_size_bounds.insert(lower_comp_size_bounds.end(), upper_comp_size_bounds.begin(), upper_comp_size_bounds.end() - 1);
-
-        return lower_comp_size_bounds;
     }
 
     SignaturesForTree Tree::cut(RationalType eps, SizeType part_cnt) {
@@ -213,6 +189,72 @@ namespace cut {
         }
 
         return SignaturesForTree(part_cnt, eps, *this, std::move(signatures));
+    }
+
+    std::pair<size_t, size_t> Tree::get_node_idx(Node::IdType node_id) const {
+            for (size_t lvl_idx = 0; lvl_idx < this->levels.size(); ++lvl_idx) {
+                for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
+                    if (this->levels[lvl_idx][node_idx].id == node_id) {
+                        return std::make_pair(lvl_idx, node_idx);
+                    }
+                }
+            }
+            return std::make_pair(std::numeric_limits<size_t>::max(), 
+                    std::numeric_limits<size_t>::max());
+    }
+
+    std::istream& operator>>(std::istream& is, Tree& tree) {
+        SizeType node_cnt;
+        IdType root_id;
+        is >> node_cnt >> root_id;
+
+        std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
+        for (SizeType edge_idx = 0; edge_idx < node_cnt - 1; ++edge_idx) {
+            IdType from; 
+            IdType to; 
+            EdgeWeightType weight;
+            is >> from >> to >> weight;
+            tree_map[from][to] = weight;
+        }
+        tree = Tree::build_tree(tree_map, root_id);
+
+        return is;
+    }
+
+    std::ostream& operator<<(std::ostream& os, Tree const& tree) {
+        os << tree.tree_sizes[0][0] << " " << tree.levels[0][0].id << std::endl;
+        for (size_t lvl_idx = 1; lvl_idx < tree.levels.size(); ++lvl_idx) {
+            for (auto const& node : tree.levels[lvl_idx]) {
+                os << tree.levels[lvl_idx - 1][node.parent_idx].id << " ";
+                os << node.id << " " << node.parent_edge_weight << std::endl;
+            }
+        }
+        return os;
+    }
+
+    std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
+        using Rational = RationalType;
+
+        // Calculate the sizes of the components in a signature according to the paper FF13.
+        // We use rationals here to prevent numerical instabilities.
+        std::vector<SizeType> comp_sizes;
+        Rational n_div_k = Rational(gmputils::ceil_to_int<SizeType>(Rational(node_cnt, part_cnt)));
+        Rational curr_upper_bound = eps * n_div_k;
+        Rational upper_bound = (Rational(1) + eps) * n_div_k;
+        while (curr_upper_bound < upper_bound) {
+            comp_sizes.push_back(gmputils::ceil_to_int<SizeType>(curr_upper_bound));
+            curr_upper_bound *= (Rational(1) + eps);
+        }
+        comp_sizes.push_back(gmputils::floor_to_int<SizeType>(upper_bound + Rational(1)));
+        return comp_sizes;
+    }
+
+    std::vector<SizeType> calculate_lower_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt) {
+        std::vector<SizeType> const upper_comp_size_bounds = calculate_upper_component_size_bounds(eps, node_cnt, part_cnt);
+        std::vector<SizeType> lower_comp_size_bounds({1});
+        lower_comp_size_bounds.insert(lower_comp_size_bounds.end(), upper_comp_size_bounds.begin(), upper_comp_size_bounds.end() - 1);
+
+        return lower_comp_size_bounds;
     }
 
     SignaturesForTree::CutEdges SignaturesForTree::cut_edges_for_signature(Signature const& signature) const {
@@ -401,5 +443,94 @@ namespace cut {
         }
 
         return components;
+    }
+
+    std::ostream& operator<<(std::ostream& os, SignaturesForTree const& signatures) {
+        os << signatures.part_cnt << " ";  
+        os << signatures.eps.get_num() << " " << signatures.eps.get_den() << std::endl;
+        os << std::endl;
+
+        auto const& sigs = signatures.signatures;
+        for (size_t lvl_idx = 0; lvl_idx < sigs.size(); ++lvl_idx) {
+            for (size_t node_idx = 0; node_idx < sigs[lvl_idx].size(); ++node_idx) {
+                auto const& node_sigs = sigs[lvl_idx][node_idx];
+                os << signatures.tree.levels[lvl_idx][node_idx].id << " ";
+                os << node_sigs.size() << std::endl;
+
+                for (auto const& node_sigs_with_size : node_sigs) {
+                    os << node_sigs_with_size.first << " ";
+                    os << node_sigs_with_size.second.size() << std::endl;
+                    for (auto const& sig : node_sigs_with_size.second) {
+                        for (auto const& val : sig.first) {
+                            os << val << " ";
+                        }
+                        os << sig.second << std::endl;
+                    }
+                }
+                os << std::endl;
+            }
+        }
+        return os;
+    }
+
+    SignaturesForTreeBuilder& SignaturesForTreeBuilder::with_part_cnt(SizeType part_cnt) {
+        this->part_cnt = part_cnt;
+        return *this;
+    }
+
+    SignaturesForTreeBuilder& SignaturesForTreeBuilder::with_eps(RationalType eps) {
+        this->eps = eps;
+        return *this;
+    }
+
+    SignaturesForTreeBuilder& SignaturesForTreeBuilder::with_signatures(std::vector<std::vector<Tree::SignatureMap>> const& signatures) {
+        this->signatures = signatures;
+        return *this;
+    }
+
+    SignaturesForTree SignaturesForTreeBuilder::finish() {
+        return SignaturesForTree(this->part_cnt, this->eps, this->tree, this->signatures);
+    }
+
+    std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder& builder) {
+        SizeType part_cnt;
+        int64_t eps_num;
+        int64_t eps_denom;
+        is >> part_cnt >> eps_num >> eps_denom;
+        RationalType eps(eps_num, eps_denom);
+        builder.with_part_cnt(part_cnt).with_eps(eps);
+        auto signature_length = calculate_upper_component_size_bounds(
+                eps, builder.tree.tree_sizes[0][0], part_cnt).size();
+
+        std::vector<std::vector<Tree::SignatureMap>> signatures;
+        for (auto const& level : builder.tree.levels) {
+            signatures.emplace_back(level.size());
+        }
+
+        for (SizeType node_idx = 0; node_idx < builder.tree.tree_sizes[0][0]; ++node_idx) {
+            Node::IdType node_id;
+            SizeType size_cnt;
+            is >> node_id >> size_cnt;
+            auto node_idx_in_tree = builder.tree.get_node_idx(node_id);
+            
+            for (SizeType size_idx = 0; size_idx < size_cnt; ++size_idx) {
+                SizeType size;
+                SizeType signature_cnt;
+                is >> size >> signature_cnt;
+                for (SizeType signature_idx = 0; signature_idx < signature_cnt; ++signature_idx) {
+                    std::valarray<SizeType> signature(signature_length);
+                    Node::EdgeWeightType cut_cost;
+                    for (auto& comp : signature) {
+                        is >> comp;
+                    }
+                    is >> cut_cost;
+                    signatures[node_idx_in_tree.first][node_idx_in_tree.second][size][signature] =
+                        cut_cost;
+                }
+            }
+        }
+        builder.with_signatures(signatures);
+
+        return is;
     }
 }
