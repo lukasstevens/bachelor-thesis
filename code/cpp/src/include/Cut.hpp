@@ -99,7 +99,7 @@ namespace cut {
             /**
              * A type which saves the signatures at a node. 
              * It maps the number of nodes in the lower frontier to the possible 
-             * signatures which this number of nodes and the signatures are mapped again to their cut cost.
+             * signatures with this number of nodes and the signatures are mapped to their cut cost.
              */
             using SignatureMap = std::map<SizeType, std::unordered_map<Signature, Node::EdgeWeightType, 
                   valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
