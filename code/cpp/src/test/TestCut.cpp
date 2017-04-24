@@ -5,36 +5,94 @@
 #include<gtest/gtest.h>
 
 #include "Cut.cpp"
-#include "TestUtils.hpp"
 
-TEST(Cut, Tree2) {
-    testutils::AlgorithmParameters params;    
-    std::string resource_filename("resources/2.in");
-    std::ifstream stream(resource_filename);
-    ASSERT_TRUE(stream.good()) << "Failed to open file " << resource_filename << ".";
-    stream >> params;
+struct Params {
+    cut::RationalType eps;
+    cut::SizeType part_cnt;
 
-    cut::Tree tree = cut::Tree::build_tree(params.tree, params.root_id);
+    Params(cut::RationalType eps, cut::SizeType part_cnt) : eps(eps), part_cnt(part_cnt) {}
+};
 
-    auto comp_size_bounds = cut::calculate_upper_component_size_bounds(params.eps, params.node_cnt, params.part_cnt);
+Params get_params(std::string tree_name, std::string params_name) {
+    cut::SizeType part_cnt;
+    long eps_num;
+    long eps_denom;
+    std::string params_resource_name("resources/" + tree_name + "." + params_name + ".signatures");
+    std::ifstream param_stream(params_resource_name);
+    EXPECT_TRUE(param_stream.good()) << "Failed to open file " << params_resource_name << ".";
+    param_stream >> part_cnt >> eps_num >> eps_denom;
+    param_stream.close();
+    cut::RationalType eps(eps_num, eps_denom);
+    return Params(eps, part_cnt);
+}
+
+cut::Tree get_tree(std::string tree_name) {
+    std::string tree_resource_filename = "resources/" + tree_name + ".tree";
+    std::ifstream tree_stream(tree_resource_filename);
+    EXPECT_TRUE(tree_stream.good()) << "Failed to open file " << tree_resource_filename << ".";
+    cut::Tree tree;
+    tree_stream >> tree;
+    tree_stream.close();
+    return tree;
+}
+
+void test_tree_signatures(std::string tree_name, std::string params_name) {
+    std::string signatures_resource_filename = "resources/" + tree_name + "." + params_name + ".signatures";
+
+    Params params = get_params(tree_name, params_name);
+
+    cut::Tree tree = get_tree(tree_name);
+
+    std::ifstream signature_stream(signatures_resource_filename);
+    ASSERT_TRUE(signature_stream.good()) << "Failed to open file " << signatures_resource_filename << ".";
+    cut::SignaturesForTreeBuilder signature_builder(tree);
+    signature_stream >> signature_builder;
+    signature_stream.close();
+    auto should_signatures = signature_builder.finish();
+
     auto signatures = tree.cut(params.eps, params.part_cnt);
-    auto& root_sigs = signatures.signatures[0][0].at(params.node_cnt);
+    ASSERT_EQ(should_signatures.signatures.size(), signatures.signatures.size());
+    for (size_t lvl_idx = 0; lvl_idx < should_signatures.signatures.size(); ++lvl_idx) {
+        ASSERT_EQ(should_signatures.signatures[lvl_idx].size(), signatures.signatures[lvl_idx].size());
+        for (size_t node_idx = 0; node_idx < should_signatures.signatures[lvl_idx].size(); ++node_idx) {
+            auto const& should_node_sigs = should_signatures.signatures[lvl_idx][node_idx];
+            auto const& node_sigs = should_signatures.signatures[lvl_idx][node_idx];
+            EXPECT_EQ(should_node_sigs.size(), node_sigs.size());
 
-    ASSERT_EQ(comp_size_bounds, std::vector<SizeType>({ 1, 2, 2, 3, 4, 5 }));
+            for (auto const& should_sigs_with_size : should_node_sigs) {
+                EXPECT_NE(node_sigs.find(should_sigs_with_size.first), node_sigs.end());
+                auto const& node_sigs_with_size = node_sigs.at(should_sigs_with_size.first);
+                EXPECT_EQ(should_sigs_with_size.second.size(), node_sigs_with_size.size());
+                for (auto const& should_sig : should_sigs_with_size.second) {
+                    EXPECT_NE(
+                            node_sigs_with_size.find(should_sig.first),
+                            node_sigs_with_size.end() 
+                            );
+                    EXPECT_EQ(should_sig.second, node_sigs_with_size.at(should_sig.first));
+                }
+            }
+        }
+    }
+}
 
-    std::vector<std::valarray<SizeType>> poss_signatures({
-            {0, 5, 0, 0, 0, 0},
-            {0, 2, 0, 0, 1, 0},
-            {0, 1, 0, 2, 0, 0},
-            {0, 0, 0, 1, 1, 0},
-            {0, 3, 0, 1, 0, 0}
-            });
+TEST(Cut, T1P1) {
+    test_tree_signatures("1", "1");
+}
 
-    auto mk_p = [](Node::IdType one, Node::IdType other){ 
+TEST(Cut, T2P1) {
+    test_tree_signatures("2", "1"); 
+
+    cut::Tree tree = get_tree("2");
+
+    Params params = get_params("2", "1");
+    auto comp_size_bounds = cut::calculate_upper_component_size_bounds(params.eps, tree.tree_sizes[0][0], params.part_cnt);
+    auto signatures = tree.cut(params.eps, params.part_cnt);
+
+    auto mk_p = [](cut::Node::IdType one, cut::Node::IdType other){ 
         return std::make_pair(one, other);
     };
 
-    std::vector<std::set<std::pair<Node::IdType, Node::IdType>>> cut_edges_for_sigs({
+    std::vector<cut::SignaturesForTree::CutEdges> cut_edges_for_sigs({
             {mk_p(2,1), mk_p(3,1), mk_p(4,2), mk_p(5,2)},
             {mk_p(2,1), mk_p(3,1)},
             {mk_p(2,1), mk_p(5,2)},
@@ -42,19 +100,8 @@ TEST(Cut, Tree2) {
             {mk_p(2,1), mk_p(3,1), mk_p(5,2)}
             });
 
-    std::vector<Node::EdgeWeightType> costs_for_sigs({
-            13, 4, 5, 1, 8
-            });
 
-    for (size_t sig_idx = 0; sig_idx < poss_signatures.size(); ++sig_idx) {
-        auto& poss_sig = poss_signatures[sig_idx];
-        ASSERT_TRUE(root_sigs.find(poss_sig) != root_sigs.end());
-        ASSERT_EQ(signatures.cut_edges_for_signature(poss_sig), cut_edges_for_sigs.at(sig_idx));
-        ASSERT_EQ(root_sigs.at(poss_sig), costs_for_sigs[sig_idx]);
-    }
-
-
-    std::vector<std::vector<std::set<Node::IdType>>> components_for_signatures({
+    std::vector<std::vector<std::set<cut::Node::IdType>>> components_for_signatures({
             {{1}, {2}, {3}, {4}, {5}},
             {{1}, {2, 4, 5}, {3}},
             {{1, 3}, {2, 4}, {5}},
@@ -70,7 +117,8 @@ TEST(Cut, Tree2) {
 }
 
 
-void test_comp_size_bounds(cut::RationalType eps, SizeType node_cnt, SizeType part_cnt, size_t should_length, std::vector<SizeType>& should_upper, std::vector<SizeType>& should_lower) {
+void test_comp_size_bounds(cut::RationalType eps, cut::SizeType node_cnt, cut::SizeType part_cnt, 
+        size_t should_length, std::vector<cut::SizeType>& should_upper, std::vector<cut::SizeType>& should_lower) {
 
     auto upper = cut::calculate_upper_component_size_bounds(eps, node_cnt, part_cnt);
 
@@ -83,11 +131,11 @@ void test_comp_size_bounds(cut::RationalType eps, SizeType node_cnt, SizeType pa
 
 TEST(ComponentSizeBounds, One) {
 
-    std::vector<SizeType> should_upper_comp_size_bounds({
+    std::vector<cut::SizeType> should_upper_comp_size_bounds({
             9, 13, 20, 26
             });
 
-    std::vector<SizeType> should_lower_comp_size_bounds({
+    std::vector<cut::SizeType> should_lower_comp_size_bounds({
             1, 9 , 13, 20 
             });
 
@@ -98,11 +146,11 @@ TEST(ComponentSizeBounds, One) {
 
 TEST(ComponentSizeBounds, Two) {
 
-    std::vector<SizeType> should_upper_comp_size_bounds({
+    std::vector<cut::SizeType> should_upper_comp_size_bounds({
             5, 7, 9, 12, 16, 21
             });
 
-    std::vector<SizeType> should_lower_comp_size_bounds({
+    std::vector<cut::SizeType> should_lower_comp_size_bounds({
             1, 5, 7, 9, 12, 16 
             });
 
@@ -112,11 +160,11 @@ TEST(ComponentSizeBounds, Two) {
 
 TEST(ComponentSizeBounds, Three) {
 
-    std::vector<SizeType> should_upper_comp_size_bounds({
+    std::vector<cut::SizeType> should_upper_comp_size_bounds({
             6, 8, 11, 16, 20
             });
 
-    std::vector<SizeType> should_lower_comp_size_bounds({
+    std::vector<cut::SizeType> should_lower_comp_size_bounds({
             1, 6, 8, 11, 16
             });
 
@@ -126,11 +174,11 @@ TEST(ComponentSizeBounds, Three) {
 
 TEST(ComponentSizeBounds, Four) {
 
-    std::vector<SizeType> should_upper_comp_size_bounds({
+    std::vector<cut::SizeType> should_upper_comp_size_bounds({
             6, 8, 12, 17, 19
             });
 
-    std::vector<SizeType> should_lower_comp_size_bounds({
+    std::vector<cut::SizeType> should_lower_comp_size_bounds({
             1, 6, 8, 12, 17
             });
 
@@ -140,11 +188,11 @@ TEST(ComponentSizeBounds, Four) {
 
 TEST(ComponentSizeBounds, Five) {
 
-    std::vector<SizeType> should_upper_comp_size_bounds({
+    std::vector<cut::SizeType> should_upper_comp_size_bounds({
             3, 4, 5, 6, 8, 11, 12
             });
 
-    std::vector<SizeType> should_lower_comp_size_bounds({
+    std::vector<cut::SizeType> should_lower_comp_size_bounds({
             1, 3, 4, 5, 6, 8, 11
             });
 

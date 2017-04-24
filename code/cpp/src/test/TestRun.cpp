@@ -4,8 +4,6 @@
 
 #include<gtest/gtest.h>
 
-#include "TestUtils.hpp"
-
 #include "Partition.hpp"
 
 using namespace cut;
@@ -19,10 +17,14 @@ using namespace cut;
 // n-1 lines follow which describe the edges of the tree. Each of these lines consists of 3 integers f, t, w.
 // (f, t) is an edge in the tree and w is the corresponding weight of the edge.
 TEST(Run, DISABLED_FromStdinVerbose) {
-    testutils::AlgorithmParameters params;
-    std::cin >> params;
+    Tree tree;
+    std::cin >> tree;
 
-    Tree tree = Tree::build_tree(params.tree, params.root_id);
+    SizeType part_cnt;
+    int64_t eps_num;
+    int64_t eps_denom;
+    std::cin >> part_cnt >> eps_num >> eps_denom;
+    RationalType eps(eps_num, eps_denom);
 
     std::cerr << "digraph tree {\n";
     for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
@@ -57,41 +59,27 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     std::cerr << "\n}\n" << std::endl;
 
     std::cerr << "comp_size_bounds:";
-    for (auto& comp_size_bound : calculate_upper_component_size_bounds(params.eps, params.node_cnt, params.part_cnt)) {
+    for (auto& comp_size_bound : calculate_upper_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)) {
         std::cerr << " " << comp_size_bound;
     }
     std::cerr << "\n" << std::endl;
 
-    auto signatures = tree.cut(params.eps, params.part_cnt);
+    auto signatures = tree.cut(eps, part_cnt);
 
-    for (size_t lvl_idx = 0; lvl_idx < tree.levels.size(); ++lvl_idx) {
-        for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
-            std::cerr << "signatures of node " << tree.levels[lvl_idx][node_idx].id << ":\n";
-            for (auto& sigs_with_size : signatures.signatures[lvl_idx][node_idx]) {
-                std::cerr << " node_cnt " << sigs_with_size.first << ":\n";
-                for (auto& sig : sigs_with_size.second) {
-                    for (auto comp_size : sig.first) {
-                        std::cerr << " " << comp_size;
-                    }
-                    std::cerr << " cut_cost: " << sig.second << "\n";
-                }
-            }
-        }
-    }
-    std::cerr << std::endl;
+    std::cerr << signatures << std::endl;
 
     std::vector<std::set<Node::IdType>> partitioning;
     Signature signature;
     Node::EdgeWeightType cut_cost;
     std::tie(partitioning, signature, cut_cost) = part::calculate_best_packing(signatures);
 
-    ASSERT_EQ(partitioning.size(), static_cast<size_t>(params.part_cnt));
+    ASSERT_EQ(partitioning.size(), static_cast<size_t>(part_cnt));
     size_t node_cnt_in_partitioning = 0;
     for (auto const& part : partitioning) {
         node_cnt_in_partitioning += part.size();
         ASSERT_LT(part.size(), signatures.upper_comp_size_bounds.back());
     }
-    ASSERT_EQ(params.node_cnt, node_cnt_in_partitioning);
+    ASSERT_EQ(tree.tree_sizes[0][0], node_cnt_in_partitioning);
 
     std::cerr << "partitioning:" << std::endl;
     for (auto const& part : partitioning) {
