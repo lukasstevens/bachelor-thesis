@@ -1,4 +1,4 @@
-#include<unordered_map>
+#include<map>
 #include<iostream>
 
 #include<gtest/gtest.h>
@@ -8,7 +8,7 @@
 using namespace cut;
 
 TEST(BuildTree, TwoNodes) {
-    std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree_map;
+    std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> tree_map;
     tree_map[1][2] = 3;
     Tree tree = Tree::build_tree(tree_map, 1);
     Node root = tree.levels[0][0];
@@ -36,7 +36,7 @@ TEST(BuildTree, TwoNodes) {
 }
 
 TEST(BuildTree, ThreeNodeChain) {
-    std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree_map;
+    std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> tree_map;
     tree_map[1][2] = 4;
     tree_map[2][3] = 5;
     Tree tree = Tree::build_tree(tree_map, 1);
@@ -69,7 +69,7 @@ TEST(BuildTree, ThreeNodeChain) {
 }
 
 TEST(BuildTree, ThreeNodes) {
-    std::unordered_map<Node::IdType, std::unordered_map<Node::IdType, Node::EdgeWeightType>> tree_map;
+    std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> tree_map;
     tree_map[1][2] = 4;
     tree_map[1][3] = 5;
     Tree tree = Tree::build_tree(tree_map, 1);
