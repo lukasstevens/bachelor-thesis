@@ -71,6 +71,11 @@ namespace cut {
             std::vector<std::vector<SizeType>> tree_sizes; /**< Lookup table for the size of the subtree rooted at a node */
 
             /**
+             * Constructor.
+             */
+            Tree() = default;
+
+            /**
              * This functions builds a Tree from \p tree. 
              * This is a map of maps which constitutes
              * a projection from two nodes(an edge) onto an edge weight. The tree represented by \p tree is explored in
