@@ -46,7 +46,7 @@ namespace part {
             // We substract one from the upper bound since the bounds are exclusive,
             // but the bin capacities are inclusive.
             pack::Packing<cut::SizeType> curr_packing(
-                    gmputils::ceil_to_int<cut::SizeType>(cut::RationalType(signatures.tree.tree_sizes[0][0], signatures.part_cnt)),
+                    signatures.lower_comp_size_bounds.back(),
                     signatures.upper_comp_size_bounds.back() - 1);
             curr_packing.pack_perfect(curr_sig_as_map);
 
@@ -59,7 +59,7 @@ namespace part {
                 std::map<cut::SizeType, std::vector<cut::SizeType>> expansion_map;
                 std::map<cut::SizeType, cut::SizeType> small_components;
                 for (auto const& comp : comps_for_curr_sig) {
-                    size_t bound_idx = 1;
+                    size_t bound_idx = 0;
                     while (comp.size() >= static_cast<size_t>(signatures.upper_comp_size_bounds[bound_idx])) {
                         ++bound_idx;
                     }
