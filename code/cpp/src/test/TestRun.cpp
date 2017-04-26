@@ -26,38 +26,6 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     std::cin >> part_cnt >> eps_num >> eps_denom;
     RationalType eps(eps_num, eps_denom);
 
-    std::cerr << "digraph tree {\n";
-    for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
-        for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
-            Node& node = tree.levels[lvl_idx][node_idx];
-            std::cerr << "\t" << tree.levels[lvl_idx - 1][node.parent_idx].id;
-            std::cerr << " -> " << node.id;
-            std::cerr << "[label=\"" << node.parent_edge_weight << "\"]\n";
-        }
-    }
-
-    int32_t invis_node = -1;
-    for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
-        std::vector<Node>& lvl = tree.levels[lvl_idx];
-        std::stringstream node_ordering; 
-        node_ordering << "{rank=same " << lvl[0].id;
-        for (size_t node_idx = 1; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
-            Node& node = lvl[node_idx];
-            std::cerr << "\t" << invis_node << "[label=\"\", width=0.1, style=invis]\n";
-            std::cerr << "\t" << tree.levels[lvl_idx - 1][node.parent_idx].id;
-            std::cerr << " -> " << invis_node << "[style=invis]\n";
-            node_ordering << " -> " << invis_node << " -> " << node.id;
-            --invis_node;
-        }
-        if (lvl.size() > 1) {
-            node_ordering << "[style=invis]";
-        }
-        node_ordering << "}\n";
-        std::cerr << node_ordering.str();
-    }
-
-    std::cerr << "\n}\n" << std::endl;
-
     std::cerr << "comp_size_bounds:";
     for (auto& comp_size_bound : calculate_upper_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)) {
         std::cerr << " " << comp_size_bound;
@@ -95,5 +63,64 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     }
     std::cerr << std::endl;
     std::cerr << "cut_cost: " << cut_cost << std::endl;
+
+
+    std::cerr << "digraph tree {\n\tedge[dir=none]\n";
+
+    auto get_part_idx = [partitioning](Node::IdType node_id){
+        size_t idx = 0;
+        for (auto const& part : partitioning) {
+            if (part.find(node_id) != part.end()) {
+                return idx;
+            }
+            idx += 1;
+        }
+        return static_cast<size_t>(-1);
+    };
+
+    for (size_t idx = 0; idx < partitioning.size(); ++idx) {
+        std::cerr << "\tsubgraph part" << idx << " {\n";
+        std::cerr << "\t\tnode[style=filled, color=\"/spectral9/" << (idx + 1) << "\"]\n";
+        for (auto node_id : partitioning[idx]) {
+            std::cerr << "\t\t" << node_id << "\n"; 
+        }
+        std::cerr << "\t}\n";
+    }
+
+    for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
+        for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
+            Node& node = tree.levels[lvl_idx][node_idx];
+            Node& parent = tree.levels[lvl_idx - 1][node.parent_idx];
+            std::cerr << "\t" << parent.id;
+            std::cerr << " -> " << node.id;
+            std::cerr << "[label=\"" << node.parent_edge_weight << "\"";
+            if (get_part_idx(node.id) != get_part_idx(parent.id)) {
+                std::cerr << ", style=dashed";
+            }
+            std::cerr << "]\n";
+        }
+    }
+
+    int32_t invis_node = -1;
+    for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
+        std::vector<Node>& lvl = tree.levels[lvl_idx];
+        std::stringstream node_ordering; 
+        node_ordering << "{rank=same " << lvl[0].id;
+        for (size_t node_idx = 1; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
+            Node& node = lvl[node_idx];
+            std::cerr << "\t" << invis_node << "[label=\"\", width=0.1, style=invis]\n";
+            std::cerr << "\t" << tree.levels[lvl_idx - 1][node.parent_idx].id;
+            std::cerr << " -> " << invis_node << "[style=invis]\n";
+            node_ordering << " -> " << invis_node << " -> " << node.id;
+            --invis_node;
+        }
+        if (lvl.size() > 1) {
+            node_ordering << "[style=invis]";
+        }
+        node_ordering << "}\n";
+        std::cerr << node_ordering.str();
+    }
+
+    std::cerr << "\n}\n" << std::endl;
 
 }
