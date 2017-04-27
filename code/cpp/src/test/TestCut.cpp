@@ -90,7 +90,8 @@ INSTANTIATE_TEST_CASE_P(
             TestParams("3", "1"),
             TestParams("3", "2"),
             TestParams("4", "1"),
-            TestParams("5", "1")
+            TestParams("5", "1"),
+            TestParams("6", "1")
             ));
 
 void test_comp_size_bounds(cut::RationalType eps, cut::SizeType node_cnt, cut::SizeType part_cnt, 
