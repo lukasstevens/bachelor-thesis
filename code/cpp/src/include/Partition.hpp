@@ -74,7 +74,7 @@ namespace part {
                 curr_packing.expand_packing(expansion_map);
                 curr_packing.pack_first_fit(small_components);
 
-                if (curr_packing.bin_cnt() != static_cast<size_t>(signatures.part_cnt)) {
+                if (curr_packing.bin_cnt() > static_cast<size_t>(signatures.part_cnt)) {
                     continue;
                 } else {
                     std::vector<std::vector<cut::SizeType>> bins = curr_packing.get_bins();
