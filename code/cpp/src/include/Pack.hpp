@@ -1,4 +1,6 @@
 /** @file Pack.hpp */
+#pragma once
+
 #include<map>
 #include<valarray>
 #include<vector>
