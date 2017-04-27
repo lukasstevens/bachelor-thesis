@@ -6,14 +6,18 @@
 
 #include "Cut.cpp"
 
-struct Params {
+struct AlgorithmParams {
     cut::RationalType eps;
     cut::SizeType part_cnt;
 
-    Params(cut::RationalType eps, cut::SizeType part_cnt) : eps(eps), part_cnt(part_cnt) {}
+    AlgorithmParams(cut::RationalType eps, cut::SizeType part_cnt) : eps(eps), part_cnt(part_cnt) {}
 };
 
-Params get_params(std::string tree_name, std::string params_name) {
+using TestParams = std::pair<std::string, std::string>;
+class TestCut : public testing::TestWithParam<TestParams> {};
+
+
+AlgorithmParams get_algorithm_params(std::string tree_name, std::string params_name) {
     cut::SizeType part_cnt;
     long eps_num;
     long eps_denom;
@@ -23,7 +27,7 @@ Params get_params(std::string tree_name, std::string params_name) {
     param_stream >> part_cnt >> eps_num >> eps_denom;
     param_stream.close();
     cut::RationalType eps(eps_num, eps_denom);
-    return Params(eps, part_cnt);
+    return AlgorithmParams(eps, part_cnt);
 }
 
 cut::Tree get_tree(std::string tree_name) {
@@ -36,10 +40,12 @@ cut::Tree get_tree(std::string tree_name) {
     return tree;
 }
 
-void test_tree_signatures(std::string tree_name, std::string params_name) {
+TEST_P(TestCut, CutsAsExpected) {
+    std::string tree_name = this->GetParam().first;
+    std::string params_name = this->GetParam().second;
     std::string signatures_resource_filename = "resources/" + tree_name + "." + params_name + ".signatures";
 
-    Params params = get_params(tree_name, params_name);
+    AlgorithmParams params = get_algorithm_params(tree_name, params_name);
 
     cut::Tree tree = get_tree(tree_name);
 
@@ -75,47 +81,17 @@ void test_tree_signatures(std::string tree_name, std::string params_name) {
     }
 }
 
-TEST(Cut, T1P1) {
-    test_tree_signatures("1", "1");
-}
-
-TEST(Cut, T2P1) {
-    test_tree_signatures("2", "1"); 
-
-    cut::Tree tree = get_tree("2");
-
-    Params params = get_params("2", "1");
-    auto comp_size_bounds = cut::calculate_upper_component_size_bounds(params.eps, tree.tree_sizes[0][0], params.part_cnt);
-    auto signatures = tree.cut(params.eps, params.part_cnt);
-
-    auto mk_p = [](cut::Node::IdType one, cut::Node::IdType other){ 
-        return std::make_pair(one, other);
-    };
-
-    std::vector<cut::SignaturesForTree::CutEdges> cut_edges_for_sigs({
-            {mk_p(2,1), mk_p(3,1), mk_p(4,2), mk_p(5,2)},
-            {mk_p(2,1), mk_p(3,1)},
-            {mk_p(2,1), mk_p(5,2)},
-            {mk_p(2,1)},
-            {mk_p(2,1), mk_p(3,1), mk_p(5,2)}
-            });
-
-
-    std::vector<std::vector<std::set<cut::Node::IdType>>> components_for_signatures({
-            {{1}, {2}, {3}, {4}, {5}},
-            {{1}, {2, 4, 5}, {3}},
-            {{1, 3}, {2, 4}, {5}},
-            {{1, 3}, {2, 4, 5}},
-            {{1}, {2, 4}, {3}, {5}}
-            });
-    for (size_t comps_idx = 0; comps_idx < components_for_signatures.size(); ++comps_idx) {
-        auto is_comps = signatures.components_for_cut_edges(cut_edges_for_sigs[comps_idx]);
-        for (auto& comp : components_for_signatures[comps_idx]) {
-            ASSERT_NE(std::find(is_comps.begin(), is_comps.end(), comp), is_comps.end());
-        }
-    }
-}
-
+INSTANTIATE_TEST_CASE_P(
+        CutTests,
+        TestCut,
+        testing::Values(
+            TestParams("1", "1"),
+            TestParams("2", "1"),
+            TestParams("3", "1"),
+            TestParams("3", "2"),
+            TestParams("4", "1"),
+            TestParams("5", "1")
+            ));
 
 void test_comp_size_bounds(cut::RationalType eps, cut::SizeType node_cnt, cut::SizeType part_cnt, 
         size_t should_length, std::vector<cut::SizeType>& should_upper, std::vector<cut::SizeType>& should_lower) {
