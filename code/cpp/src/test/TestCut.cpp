@@ -4,57 +4,20 @@
 
 #include<gtest/gtest.h>
 
-#include "Cut.cpp"
-
-struct AlgorithmParams {
-    cut::RationalType eps;
-    cut::SizeType part_cnt;
-
-    AlgorithmParams(cut::RationalType eps, cut::SizeType part_cnt) : eps(eps), part_cnt(part_cnt) {}
-};
+#include "Cut.hpp"
+#include "TestUtils.hpp"
 
 using TestParams = std::pair<std::string, std::string>;
 class TestCut : public testing::TestWithParam<TestParams> {};
 
 
-AlgorithmParams get_algorithm_params(std::string tree_name, std::string params_name) {
-    cut::SizeType part_cnt;
-    long eps_num;
-    long eps_denom;
-    std::string params_resource_name("resources/" + tree_name + "." + params_name + ".signatures");
-    std::ifstream param_stream(params_resource_name);
-    EXPECT_TRUE(param_stream.good()) << "Failed to open file " << params_resource_name << ".";
-    param_stream >> part_cnt >> eps_num >> eps_denom;
-    param_stream.close();
-    cut::RationalType eps(eps_num, eps_denom);
-    return AlgorithmParams(eps, part_cnt);
-}
-
-cut::Tree get_tree(std::string tree_name) {
-    std::string tree_resource_filename = "resources/" + tree_name + ".tree";
-    std::ifstream tree_stream(tree_resource_filename);
-    EXPECT_TRUE(tree_stream.good()) << "Failed to open file " << tree_resource_filename << ".";
-    cut::Tree tree;
-    tree_stream >> tree;
-    tree_stream.close();
-    return tree;
-}
-
 TEST_P(TestCut, CutsAsExpected) {
     std::string tree_name = this->GetParam().first;
     std::string params_name = this->GetParam().second;
-    std::string signatures_resource_filename = "resources/" + tree_name + "." + params_name + ".signatures";
 
-    AlgorithmParams params = get_algorithm_params(tree_name, params_name);
-
-    cut::Tree tree = get_tree(tree_name);
-
-    std::ifstream signature_stream(signatures_resource_filename);
-    ASSERT_TRUE(signature_stream.good()) << "Failed to open file " << signatures_resource_filename << ".";
-    cut::SignaturesForTreeBuilder signature_builder(tree);
-    signature_stream >> signature_builder;
-    signature_stream.close();
-    auto should_signatures = signature_builder.finish();
+    auto params = testutils::get_algorithm_params(tree_name, params_name);
+    cut::Tree tree = testutils::get_tree(tree_name);
+    auto should_signatures = testutils::get_signatures_for_tree(tree_name, params_name, tree);
 
     auto signatures = tree.cut(params.eps, params.part_cnt);
     ASSERT_EQ(should_signatures.signatures.size(), signatures.signatures.size());
