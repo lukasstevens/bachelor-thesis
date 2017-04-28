@@ -1,11 +1,54 @@
-#include<gtest/gtest.h>
+#include <gtest/gtest.h>
 
-#include "Pack.cpp"
+#include "Cut.hpp"
+#include "Pack.hpp"
+#include "Partition.hpp"
+#include "TestUtils.hpp"
 
-using namespace pack;
+using TestParams = std::pair<std::string, std::string>;
+class TestPack : public testing::TestWithParam<TestParams> {};
+
+TEST_P(TestPack, PacksAsExpected) {
+    std::string tree_name;
+    std::string params_name;
+    std::tie(tree_name, params_name) = this->GetParam();
+
+    cut::Tree tree = testutils::get_tree(tree_name);
+    cut::SignaturesForTree signatures = testutils::get_signatures_for_tree(tree_name, params_name, tree);
+
+    part::Partitioning partitioning;
+    cut::Signature best_signature;
+    cut::Node::EdgeWeightType opt_cut_cost;
+    std::tie(partitioning, best_signature, opt_cut_cost) = part::calculate_best_packing(signatures);
+
+    part::Partitioning should_partitioning;
+    cut::Signature should_best_signature;
+    cut::Node::EdgeWeightType should_opt_cut_cost;
+    std::tie(should_partitioning, should_best_signature, should_opt_cut_cost) = 
+        testutils::get_opt_partitioning(tree_name, params_name);
+
+    ASSERT_EQ(should_partitioning, partitioning);
+    ASSERT_EQ(should_opt_cut_cost, opt_cut_cost);
+    valarrutils::ValarrayEqual<cut::SizeType> valarr_eq;
+    ASSERT_TRUE(valarr_eq(should_best_signature, best_signature));
+}
+
+
+INSTANTIATE_TEST_CASE_P(
+        PackTests,
+        TestPack,
+        testing::Values(
+            TestParams("1", "1"),
+            TestParams("2", "1"),
+            TestParams("3", "1"),
+            TestParams("3", "2"),
+            TestParams("4", "1"),
+            TestParams("5", "1"),
+            TestParams("6", "1")
+            ));
 
 TEST(PackFirstFit, One) {
-    Packing<int> packing(3, 3);
+    pack::Packing<int> packing(3, 3);
 
     std::map<int, int> components;
 
@@ -20,7 +63,7 @@ TEST(PackFirstFit, One) {
 }
 
 TEST(PackPerfect, One) {
-    Packing<int> packing(5, 7);
+    pack::Packing<int> packing(5, 7);
     std::map<int, int> components;
     components[1] = 3;
     components[4] = 2;
