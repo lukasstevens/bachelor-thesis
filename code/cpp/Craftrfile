@@ -5,7 +5,7 @@ import shutil
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
-includes = ['src/include', 'deps/include', 'src/main']
+includes = ['src/include', 'deps/include']
 
 mylib = Framework(
   include = [local(x) for x in includes],
