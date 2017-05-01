@@ -1,3 +1,8 @@
+#include<fstream>
+#include<sstream>
+
+#include<gtest/gtest.h>
+
 #include "TestUtils.hpp"
 
 namespace testutils {
@@ -41,29 +46,32 @@ namespace testutils {
             std::string tree_name,
             std::string params_name) {
 
-
         std::string partitioning_name = "resources/" + tree_name + "." + params_name + ".parts";
         std::ifstream partitioning_stream(partitioning_name);
+        EXPECT_TRUE(partitioning_stream.good());
 
         std::string line;
-        std::getline(partitioning_stream, line);
-        std::istringstream line_stream(line);
-       
-        cut::SizeType comp_cnt;
+
         std::vector<cut::SizeType> best_signature;
-        while(line_stream >> comp_cnt) {
-            best_signature.push_back(comp_cnt);
+        {
+            std::getline(partitioning_stream, line);
+            std::stringstream line_stream(line);
+
+            cut::SizeType comp_cnt;
+            while(line_stream >> comp_cnt) {
+                best_signature.push_back(comp_cnt);
+            }
         }
 
-        cut::Node::EdgeWeightType opt_cut_cost;
-        partitioning_stream >> opt_cut_cost;
+        std::getline(partitioning_stream, line);
+        cut::Node::EdgeWeightType opt_cut_cost = std::stoi(line);
 
-        size_t part_cnt;
-        partitioning_stream >> part_cnt;
+        std::getline(partitioning_stream, line);
+        size_t part_cnt = std::stoul(line);
         part::Partitioning partitioning(part_cnt);
         for (size_t part_idx = 0; part_idx < part_cnt; ++part_idx) {
             std::getline(partitioning_stream, line);
-            line_stream.str(line);
+            std::stringstream line_stream(line);
             cut::Node::IdType node_id;
             while(line_stream >> node_id) {
                 partitioning[part_idx].insert(node_id);

@@ -27,10 +27,10 @@ TEST_P(TestPack, PacksAsExpected) {
     std::tie(should_partitioning, should_best_signature, should_opt_cut_cost) = 
         testutils::get_opt_partitioning(tree_name, params_name);
 
-    ASSERT_EQ(should_partitioning, partitioning);
-    ASSERT_EQ(should_opt_cut_cost, opt_cut_cost);
+    EXPECT_EQ(should_partitioning, partitioning);
+    EXPECT_EQ(should_opt_cut_cost, opt_cut_cost);
     valarrutils::ValarrayEqual<cut::SizeType> valarr_eq;
-    ASSERT_TRUE(valarr_eq(should_best_signature, best_signature));
+    EXPECT_TRUE(valarr_eq(should_best_signature, best_signature));
 }
 
 
