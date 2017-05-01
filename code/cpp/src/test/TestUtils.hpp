@@ -1,10 +1,5 @@
 #pragma once
 
-#include<fstream>
-#include<sstream>
-
-#include<gtest/gtest.h>
-
 #include "Cut.hpp"
 #include "Partition.hpp"
 
