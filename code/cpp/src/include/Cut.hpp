@@ -97,6 +97,12 @@ namespace cut {
             static Tree build_tree(std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> const& tree);
 
             /**
+             * Calculates the sizes of the subtrees in the tree.
+             * It stores the sizes in the member Tree::tree_sizes.
+             */
+            void calculate_subtree_sizes();
+
+            /**
              * A type which saves the signatures at a node. 
              * It maps the number of nodes in the lower frontier to the possible 
              * signatures with this number of nodes and the signatures are mapped to their cut cost.
@@ -122,6 +128,26 @@ namespace cut {
              * if no node with id \p node_id exists.
              */
             std::pair<size_t, size_t> get_node_idx(Node::IdType node_id) const;
+
+        private:
+            /**
+             * Calculates the signatures at a node.
+             * Uses the signatures of the left sibling and the right child of the node.
+             * If the left sibling or right child does not exist one just has to pass a Tree::SignatureMap
+             * which only contains one signature, namely the 0-vector, and which has cut cost 0.
+             * @param node The current node.
+             * @param subtree_size The size of the subtree rooted at the current node.
+             * @param left_sibling_sigs The signatures at the left sibling.
+             * @param right_child_sigs The signatures at the right child.
+             * @param comp_size_bounds The upper component size bounds(exclusive) for the signature.
+             */
+            static SignatureMap cut_at_node(
+                    Node const& node, 
+                    SizeType subtree_size,
+                    SignatureMap const& left_sibling_sigs, 
+                    SignatureMap const& right_child_sigs, 
+                    std::vector<SizeType> const& comp_size_bounds);
+
     };
 
     /**
@@ -146,7 +172,7 @@ namespace cut {
      * @returns The outputstream.
      */
     std::ostream& operator<<(std::ostream& os, Tree const& tree);
-    
+
 
     /**
      * Calculates the upper(exclusive) bounds on the component sizes for each index of a signature.
@@ -194,7 +220,7 @@ namespace cut {
                 part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures), 
                 upper_comp_size_bounds(calculate_upper_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)),
                 lower_comp_size_bounds(calculate_lower_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt))
-                    {}
+        {}
 
 
             /** 
