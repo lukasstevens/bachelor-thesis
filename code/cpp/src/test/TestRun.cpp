@@ -122,5 +122,19 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     }
 
     std::cerr << "\n}\n" << std::endl;
+}
 
+TEST(Run, DISABLED_FromStdinCutting) {
+    Tree tree;
+    std::cin >> tree;
+
+    SizeType part_cnt;
+    int64_t eps_num;
+    int64_t eps_denom;
+    std::cin >> part_cnt >> eps_num >> eps_denom;
+    RationalType eps(eps_num, eps_denom);
+
+    auto signatures = tree.cut(eps, part_cnt);
+
+    std::cerr << signatures << std::endl;
 }
