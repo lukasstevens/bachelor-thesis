@@ -11,7 +11,8 @@ mylib = Framework(
   include = [local(x) for x in includes],
   std = 'c++11',
   warn = 'all',
-  debug = True,
+  debug = options.debug,
+  optimize = 'debug' if options.debug else 'speed',
   libs = ['m', 'gmpxx', 'gmp']
 )
 
