@@ -28,7 +28,9 @@ test_bin = cxx.executable(
 
 test = runtarget(test_bin)
 
-run = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinVerbose' , '--gtest_also_run_disabled_tests')
+run = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinVerbose', '--gtest_also_run_disabled_tests')
+
+run_cutting = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinCutting', '--gtest_also_run_disabled_tests')
 
 gdb = gentarget([['gdb', '--args', test_bin]], pool='console', explicit=True)
 
