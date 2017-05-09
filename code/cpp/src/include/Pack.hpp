@@ -217,7 +217,7 @@ namespace pack {
 
             for (auto& bin : this->bins) {
                 for (auto& comp : bin) {
-                    auto old_comp = comp;
+                    T old_comp = comp;
                     comp = comp_size_mapping_cp[old_comp].back(); 
                     comp_size_mapping_cp[old_comp].pop_back();
                 }
