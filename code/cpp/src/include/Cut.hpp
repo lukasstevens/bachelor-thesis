@@ -245,7 +245,7 @@ namespace cut {
 
     /**
      * Prints the signatures to the outputstream.
-     * @see std::istream& operator>>(std::istream&, SignatureForTreeBuilder&) The format used is described here.
+     * @see std::istream& operator>>(std::istream&, SignaturesForTreeBuilder&) The format used is described here.
      * @param os The outputstream.
      * @param signatures The signatures to print.
      * @returns The outputstream.
