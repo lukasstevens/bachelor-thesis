@@ -20,6 +20,8 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     Tree tree;
     std::cin >> tree;
 
+    std::cerr << tree.as_graphviz();
+
     SizeType part_cnt;
     int64_t eps_num;
     int64_t eps_denom;

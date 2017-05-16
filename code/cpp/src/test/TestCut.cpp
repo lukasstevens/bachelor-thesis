@@ -28,17 +28,18 @@ TEST_P(TestCut, CutsAsExpected) {
             auto const& node_sigs = signatures.signatures[lvl_idx][node_idx];
             EXPECT_EQ(should_node_sigs.size(), node_sigs.size());
 
+            cut::SizeType node_sigs_size = 0;
             for (auto const& should_node_sigs_with_size : should_node_sigs) {
-                EXPECT_NE(node_sigs.find(should_node_sigs_with_size.first), node_sigs.end());
-                auto const& node_sigs_with_size = node_sigs.at(should_node_sigs_with_size.first);
-                EXPECT_EQ(should_node_sigs_with_size.second.size(), node_sigs_with_size.size());
-                for (auto const& should_node_sig : should_node_sigs_with_size.second) {
+                auto const& node_sigs_with_size = node_sigs.at(static_cast<size_t>(node_sigs_size));
+                EXPECT_EQ(should_node_sigs_with_size.size(), node_sigs_with_size.size());
+                for (auto const& should_node_sig : should_node_sigs_with_size) {
                     EXPECT_NE(
                             node_sigs_with_size.find(should_node_sig.first),
                             node_sigs_with_size.end() 
                             );
                     EXPECT_EQ(should_node_sig.second, node_sigs_with_size.at(should_node_sig.first));
                 }
+                ++node_sigs_size;
             }
         }
     }

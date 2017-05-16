@@ -107,7 +107,7 @@ namespace cut {
              * It maps the number of nodes in the lower frontier to the possible 
              * signatures with this number of nodes and the signatures are mapped to their cut cost.
              */
-            using SignatureMap = std::map<SizeType, std::unordered_map<Signature, Node::EdgeWeightType, 
+            using SignatureMap = std::vector<std::unordered_map<Signature, Node::EdgeWeightType, 
                   valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
 
             /**
@@ -177,14 +177,16 @@ namespace cut {
              * If the left sibling or right child does not exist one just has to pass a Tree::SignatureMap
              * which only contains one signature, namely the 0-vector, and which has cut cost 0.
              * @param node The current node.
-             * @param subtree_size The size of the subtree rooted at the current node.
+             * @param node_subtree_size The size of the subtree rooted at the current node.
+             * @param left_siblings_size The combined size of the trees rooted at the siblings of \p node.
              * @param left_sibling_sigs The signatures at the left sibling.
              * @param right_child_sigs The signatures at the right child.
              * @param comp_size_bounds The upper component size bounds(exclusive) for the signature.
              */
             static SignatureMap cut_at_node(
                     Node const& node, 
-                    SizeType subtree_size,
+                    SizeType node_subtree_size,
+                    SizeType left_siblings_size,
                     SignatureMap const& left_sibling_sigs, 
                     SignatureMap const& right_child_sigs, 
                     std::vector<SizeType> const& comp_size_bounds);
