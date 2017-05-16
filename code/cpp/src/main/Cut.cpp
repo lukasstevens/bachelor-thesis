@@ -155,9 +155,6 @@ namespace cut {
         // Calculate the size intervals of the connected components of a signature.
         std::vector<SizeType> const comp_size_bounds = calculate_upper_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
 
-        // The signature which contains 0 nodes, is the 0-vector and has 0 cut cost is
-        // always present, even if the node does not exist.
-        SignatureMap const empty_map({{0, {{Signature(comp_size_bounds.size()), 0}}}});
 
         // Iterate over all nodes except the root starting with the node one the bottom left.
         for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
@@ -166,7 +163,10 @@ namespace cut {
                 SizeType const node_subtree_size = this->tree_sizes[lvl_idx][node_idx];
                 bool const node_has_left_sibling = this->has_left_sibling[lvl_idx][node_idx];
                 bool const node_has_child = node.children_idx_range.first < node.children_idx_range.second;
-                // The only signature which always has cut value smaller infinity(even if the node does not exist) is the 0-vector.
+
+                // The signature which contains 0 nodes, is the 0-vector and has 0 cut cost is
+                // always present, even if the node does not exist.
+                SignatureMap const empty_map({{0, {{Signature(comp_size_bounds.size()), 0}}}});
 
                 SignatureMap const* left_sibling_sigs = &empty_map;
                 SignatureMap const* child_sigs = &empty_map;
