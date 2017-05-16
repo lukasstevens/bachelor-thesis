@@ -164,8 +164,8 @@ namespace cut {
                 // The only signature which always has cut value smaller infinity(even if the node does not exist) is the 0-vector.
                 empty_map[0][Signature(comp_size_bounds.size())] = 0;
 
-                SignatureMap& left_sibling_sigs = empty_map;
-                SignatureMap& child_sigs = empty_map;
+                SignatureMap const* left_sibling_sigs = &empty_map;
+                SignatureMap const* child_sigs = &empty_map;
 
                 // Adjust the reference to the signatures if the node has a left sibling or
                 // has a child respectively.
@@ -173,14 +173,14 @@ namespace cut {
                 // At the moment we are adding the 0-vector to all signatures calculated beforehand which is 
                 // unnecessary.
                 if (node_has_left_sibling) {
-                    left_sibling_sigs = signatures[lvl_idx][node_idx - 1];
+                    left_sibling_sigs = &signatures[lvl_idx][node_idx - 1];
                 }
                 if (node_has_child) {
-                    child_sigs = signatures[lvl_idx + 1][node.children_idx_range.second - 1];
+                    child_sigs = &signatures[lvl_idx + 1][node.children_idx_range.second - 1];
                 }
 
-                signatures[lvl_idx][node_idx] = cut_at_node(node, node_subtree_size, left_sibling_sigs, 
-                        child_sigs, comp_size_bounds);
+                signatures[lvl_idx][node_idx] = cut_at_node(node, node_subtree_size, *left_sibling_sigs,
+                        *child_sigs, comp_size_bounds);
 
             }
 
