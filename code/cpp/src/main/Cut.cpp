@@ -303,7 +303,7 @@ namespace cut {
                         Signature node_sig = left_sibling_sig.first + child_sig.first;
 
                         // Check if the current signature is feasible.
-                        if ((node_sig > signature).min()) {
+                        if (!((node_sig <= signature).min())) {
                             continue;
                         }
 
@@ -313,7 +313,7 @@ namespace cut {
                                 false);
 
                         if (node_sigs[frontier_size].find(node_sig) == node_sigs[frontier_size].end()
-                                || cut_cost <= node_sigs[frontier_size][node_sig].first) {
+                                || cut_cost < node_sigs[frontier_size][node_sig].first) {
                             node_sigs[frontier_size][node_sig] = std::make_pair(cut_cost, previous_signatures);
                         } 
 
@@ -331,10 +331,14 @@ namespace cut {
                             size_t i = 0; 
                             while (node_comp_size >= this->upper_comp_size_bounds[i]) { ++i; }
                             node_sig[i] += 1;
+                            // Check if the current signature is feasible.
+                            if (!((node_sig <= signature).min())) {
+                                continue;
+                            }
 
                             previous_signatures.was_parent_edge_cut = true;
                             if (node_sigs[frontier_size].find(node_sig) == node_sigs[frontier_size].end()
-                                    || cut_cost <= node_sigs[frontier_size][node_sig].first) {
+                                    || cut_cost < node_sigs[frontier_size][node_sig].first) {
                                 node_sigs[frontier_size][node_sig] = std::make_pair(cut_cost, previous_signatures);
                             } 
                         }
@@ -434,6 +438,31 @@ namespace cut {
             SignatureAtNode(std::pair<SizeType, Signature> sig_with_size, std::pair<size_t, size_t> node_idx) :
                 sig_with_size(sig_with_size), node_idx(node_idx) {}
         };
+
+        for (size_t lvl_idx = 0; lvl_idx < this->tree.levels.size(); ++lvl_idx) {
+            for (size_t node_idx = 0; node_idx < this->tree.levels[lvl_idx].size(); ++node_idx) {
+                Node const& node = this->tree.levels[lvl_idx][node_idx];
+                std::cerr << node.id << "\n";
+                for (auto const& sigs_with_size : signatures_with_prev[lvl_idx][node_idx]) {
+                    std::cerr << "size: " << sigs_with_size.first << "\n";
+                    for (auto const& sig : sigs_with_size.second) {
+                        std::cerr << "\t";
+                        for (auto comp : sig.first) {
+                            std::cerr << comp << " ";
+                        }
+                        for (auto comp : sig.second.second.left_sibling_sig.second) {
+                            std::cerr << " " << comp;
+                        }
+                        std::cerr << " ";
+                        for (auto comp : sig.second.second.right_child_sig.second) {
+                            std::cerr << " " << comp;
+                        }
+                        std::cerr << "  " << sig.second.second.was_parent_edge_cut;
+                        std::cerr << "\n";
+                    }
+                }
+            }
+        }
 
         std::list<SignatureAtNode> queue; 
         queue.emplace_back(std::make_pair(this->tree.tree_sizes[0][0], signature), std::make_pair(0, 0));
