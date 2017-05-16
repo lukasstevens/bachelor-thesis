@@ -110,10 +110,11 @@ namespace cut {
                         SizeType frontier_size = left_sibling_sigs_with_size.first + child_sigs_with_size.first;
                         EdgeWeightType cut_cost = left_sibling_sig.second + child_sig.second;
                         Signature sig = left_sibling_sig.first + child_sig.first;
-                        if (node_sigs[frontier_size].find(sig) == node_sigs[frontier_size].end()) {
+
+                        auto prev_cut_cost_it = node_sigs[frontier_size].find(sig);
+                        if (prev_cut_cost_it == node_sigs[frontier_size].end()
+                                || cut_cost < prev_cut_cost_it->second) {
                             node_sigs[frontier_size][sig] = cut_cost;
-                        } else {
-                            node_sigs[frontier_size][sig] = std::min(node_sigs[frontier_size][sig], cut_cost);
                         }
 
                         // Second case: The edge from the current node to its parent is cut.
@@ -130,10 +131,11 @@ namespace cut {
                             size_t i = 0; 
                             while (node_comp_size >= comp_size_bounds[i]) { ++i; }
                             sig[i] += 1;
-                            if (node_sigs[frontier_size].find(sig) == node_sigs[frontier_size].end()) {
+
+                            prev_cut_cost_it = node_sigs[frontier_size].find(sig);
+                            if (prev_cut_cost_it == node_sigs[frontier_size].end()
+                                    || cut_cost < prev_cut_cost_it->second) {
                                 node_sigs[frontier_size][sig] = cut_cost;
-                            } else {
-                                node_sigs[frontier_size][sig] = std::min(node_sigs[frontier_size][sig], cut_cost);
                             }
                         }
                     }
@@ -287,80 +289,80 @@ namespace cut {
 
     std::vector<std::vector<Tree::SignatureMapWithPrev>> Tree::cut_with_prev(RationalType eps, SizeType part_cnt, Signature const& signature) const {
 
-            auto const upper_comp_size_bounds = calculate_upper_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
-            std::vector<std::vector<SignatureMapWithPrev>> signatures_with_prev;
-            for (auto const& lvl : this->levels) {
-                signatures_with_prev.emplace_back(lvl.size());
-            }
+        auto const upper_comp_size_bounds = calculate_upper_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
+        std::vector<std::vector<SignatureMapWithPrev>> signatures_with_prev;
+        for (auto const& lvl : this->levels) {
+            signatures_with_prev.emplace_back(lvl.size());
+        }
 
-            // Iterate over all nodes except the root starting with the node one the bottom left.
-            for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
-                for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
-                    Node const& node = this->levels[lvl_idx][node_idx];
-                    SizeType const node_subtree_size = this->tree_sizes[lvl_idx][node_idx];
-                    SignatureMapWithPrev empty_map;
-                    // The only signature which always has cut value smaller infinity(even if the node does not exist) is the 0-vector.
-                    Signature const empty_signature = Signature(signature.size());
-                    std::pair<SizeType, Signature> empty_prev_signature(0, empty_signature);
-                    empty_map[0][empty_signature] = std::make_pair(0, 
-                            PreviousSignatures(empty_prev_signature, empty_prev_signature, false));
+        // Iterate over all nodes except the root starting with the node one the bottom left.
+        for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
+            for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
+                Node const& node = this->levels[lvl_idx][node_idx];
+                SizeType const node_subtree_size = this->tree_sizes[lvl_idx][node_idx];
+                SignatureMapWithPrev empty_map;
+                // The only signature which always has cut value smaller infinity(even if the node does not exist) is the 0-vector.
+                Signature const empty_signature = Signature(signature.size());
+                std::pair<SizeType, Signature> empty_prev_signature(0, empty_signature);
+                empty_map[0][empty_signature] = std::make_pair(0, 
+                        PreviousSignatures(empty_prev_signature, empty_prev_signature, false));
 
-                    SignatureMapWithPrev const* left_sibling_sigs = &empty_map;
-                    SignatureMapWithPrev const* child_sigs = &empty_map;
+                SignatureMapWithPrev const* left_sibling_sigs = &empty_map;
+                SignatureMapWithPrev const* child_sigs = &empty_map;
 
-                    // Adjust the reference to the signatures if the node has a left sibling or
-                    // has a child respectively.
-                    bool const node_has_left_sibling = this->has_left_sibling[lvl_idx][node_idx];
-                    bool const node_has_child = node.children_idx_range.first < node.children_idx_range.second;
-                    if (node_has_left_sibling) {
-                        left_sibling_sigs = &signatures_with_prev[lvl_idx][node_idx - 1];
-                    }
-                    if (node_has_child) {
-                        child_sigs = &signatures_with_prev[lvl_idx + 1][node.children_idx_range.second - 1];
-                    }
-
-                    signatures_with_prev[lvl_idx][node_idx] = 
-                        cut_at_node_with_prev(node, node_subtree_size, *left_sibling_sigs, *child_sigs, 
-                                upper_comp_size_bounds, signature);
-
+                // Adjust the reference to the signatures if the node has a left sibling or
+                // has a child respectively.
+                bool const node_has_left_sibling = this->has_left_sibling[lvl_idx][node_idx];
+                bool const node_has_child = node.children_idx_range.first < node.children_idx_range.second;
+                if (node_has_left_sibling) {
+                    left_sibling_sigs = &signatures_with_prev[lvl_idx][node_idx - 1];
+                }
+                if (node_has_child) {
+                    child_sigs = &signatures_with_prev[lvl_idx + 1][node.children_idx_range.second - 1];
                 }
 
-                // Calculate the signatures at the root according to the paper FF13. 
-                // Signatures which contain less then the total amount of nodes are ignored.
-                SignatureMapWithPrev& root_sigs = signatures_with_prev[0][0];
-                SizeType const node_cnt = this->tree_sizes[0][0];
-                for (auto const& child_sigs_with_size : signatures_with_prev[1].back()) {
-                    SizeType const root_comp_size = node_cnt - child_sigs_with_size.first;
-                    if (root_comp_size >= upper_comp_size_bounds.back()) {
-                        continue;
-                    } else {
-                        for (auto const& child_sig : child_sigs_with_size.second) {
+                signatures_with_prev[lvl_idx][node_idx] = 
+                    cut_at_node_with_prev(node, node_subtree_size, *left_sibling_sigs, *child_sigs, 
+                            upper_comp_size_bounds, signature);
 
-                            // Initialize root_sig equal to child_sig and then adjust for the size
-                            // of the component which contians the root.
-                            Signature root_sig(child_sig.first);
-                            size_t i = 0;
-                            while(root_comp_size >= upper_comp_size_bounds[i]) { ++i; }
-                            root_sig[i] += 1;
+            }
 
-                            Node::EdgeWeightType cut_cost = child_sig.second.first;
+            // Calculate the signatures at the root according to the paper FF13. 
+            // Signatures which contain less then the total amount of nodes are ignored.
+            SignatureMapWithPrev& root_sigs = signatures_with_prev[0][0];
+            SizeType const node_cnt = this->tree_sizes[0][0];
+            for (auto const& child_sigs_with_size : signatures_with_prev[1].back()) {
+                SizeType const root_comp_size = node_cnt - child_sigs_with_size.first;
+                if (root_comp_size >= upper_comp_size_bounds.back()) {
+                    continue;
+                } else {
+                    for (auto const& child_sig : child_sigs_with_size.second) {
 
-                            PreviousSignatures previous_signatures(
-                                    std::make_pair(0, Signature(signature.size())),
-                                    std::make_pair(child_sigs_with_size.first, child_sig.first),
-                                    false);
+                        // Initialize root_sig equal to child_sig and then adjust for the size
+                        // of the component which contians the root.
+                        Signature root_sig(child_sig.first);
+                        size_t i = 0;
+                        while(root_comp_size >= upper_comp_size_bounds[i]) { ++i; }
+                        root_sig[i] += 1;
 
-                            if (root_sigs[node_cnt].find(root_sig) == root_sigs[node_cnt].end() || 
-                                    cut_cost < root_sigs[node_cnt][root_sig].first) {
-                                root_sigs[node_cnt][root_sig] = std::make_pair(cut_cost, previous_signatures);
-                            }
+                        Node::EdgeWeightType cut_cost = child_sig.second.first;
+
+                        PreviousSignatures previous_signatures(
+                                std::make_pair(0, Signature(signature.size())),
+                                std::make_pair(child_sigs_with_size.first, child_sig.first),
+                                false);
+
+                        if (root_sigs[node_cnt].find(root_sig) == root_sigs[node_cnt].end() || 
+                                cut_cost < root_sigs[node_cnt][root_sig].first) {
+                            root_sigs[node_cnt][root_sig] = std::make_pair(cut_cost, previous_signatures);
                         }
                     }
                 }
             }
-
-            return signatures_with_prev;
         }
+
+        return signatures_with_prev;
+    }
     std::pair<size_t, size_t> Tree::get_node_idx(Node::IdType node_id) const {
         for (size_t lvl_idx = 0; lvl_idx < this->levels.size(); ++lvl_idx) {
             for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
