@@ -194,6 +194,12 @@ namespace cut {
              * Calculates the signatures at a node.
              * This works analogous to Tree::cut_at_node(), only that the previous signatures are calculated
              * and no signatures greater than \p signature are allowed.
+             * @param node The current node.
+             * @param subtree_size The size of the subtree rooted at the current node.
+             * @param left_sibling_sigs The signatures at the left sibling.
+             * @param right_child_sigs The signatures at the right child.
+             * @param comp_size_bounds The upper component size bounds(exclusive) for the signature.
+             * @param The maximum allowed signature.
              */
             static SignatureMapWithPrev cut_at_node_with_prev(
                     Node const& node, 
