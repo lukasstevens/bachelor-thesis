@@ -2,6 +2,7 @@
 #include<limits>
 #include<list>
 #include<stdexcept>
+#include<sstream>
 
 #include "GMPUtils.hpp"
 
@@ -163,8 +164,8 @@ namespace cut {
                 // The only signature which always has cut value smaller infinity(even if the node does not exist) is the 0-vector.
                 empty_map[0][Signature(comp_size_bounds.size())] = 0;
 
-                SignatureMap const* left_sibling_sigs = &empty_map;
-                SignatureMap const* child_sigs = &empty_map;
+                SignatureMap& left_sibling_sigs = empty_map;
+                SignatureMap& child_sigs = empty_map;
 
                 // Adjust the reference to the signatures if the node has a left sibling or
                 // has a child respectively.
@@ -172,14 +173,14 @@ namespace cut {
                 // At the moment we are adding the 0-vector to all signatures calculated beforehand which is 
                 // unnecessary.
                 if (node_has_left_sibling) {
-                    left_sibling_sigs = &signatures[lvl_idx][node_idx - 1];
+                    left_sibling_sigs = signatures[lvl_idx][node_idx - 1];
                 }
                 if (node_has_child) {
-                    child_sigs = &signatures[lvl_idx + 1][node.children_idx_range.second - 1];
+                    child_sigs = signatures[lvl_idx + 1][node.children_idx_range.second - 1];
                 }
 
-                signatures[lvl_idx][node_idx] = cut_at_node(node, node_subtree_size, *left_sibling_sigs, 
-                        *child_sigs, comp_size_bounds);
+                signatures[lvl_idx][node_idx] = cut_at_node(node, node_subtree_size, left_sibling_sigs, 
+                        child_sigs, comp_size_bounds);
 
             }
 
@@ -220,6 +221,45 @@ namespace cut {
         }
         return std::make_pair(std::numeric_limits<size_t>::max(), 
                 std::numeric_limits<size_t>::max());
+    }
+
+    std::string Tree::as_graphviz() const {
+
+        std::stringstream stream;
+        for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
+            stream << "digraph tree {\n";
+            for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
+                Node const& node = this->levels[lvl_idx][node_idx];
+                Node const& parent = this->levels[lvl_idx - 1][node.parent_idx];
+                stream << "\t" << parent.id;
+                stream << " -> " << node.id;
+                stream << "[label=\"" << node.parent_edge_weight << "\"";
+                stream << "]\n";
+            }
+        }
+
+        int32_t invis_node = -1;
+        for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
+            std::vector<Node> const& lvl = this->levels[lvl_idx];
+            std::stringstream node_ordering; 
+            node_ordering << "{rank=same " << lvl[0].id;
+            for (size_t node_idx = 1; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
+                Node const& node = lvl[node_idx];
+                stream << "\t" << invis_node << "[label=\"\", width=0.1, style=invis]\n";
+                stream << "\t" << this->levels[lvl_idx - 1][node.parent_idx].id;
+                stream << " -> " << invis_node << "[style=invis]\n";
+                node_ordering << " -> " << invis_node << " -> " << node.id;
+                --invis_node;
+            }
+            if (lvl.size() > 1) {
+                node_ordering << "[style=invis]";
+            }
+            node_ordering << "}\n";
+            stream << node_ordering.str();
+        }
+
+        stream << "}\n";
+        return stream.str();
     }
 
     std::istream& operator>>(std::istream& is, Tree& tree) {

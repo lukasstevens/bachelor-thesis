@@ -129,6 +129,13 @@ namespace cut {
              */
             std::pair<size_t, size_t> get_node_idx(Node::IdType node_id) const;
 
+            /**
+             * Outputs the tree in the graphviz format.
+             * The tree is presented exactly as it is layed out in the memory.
+             * @returns The tree in graphviz format as a string.
+             */
+            std::string as_graphviz() const;
+
         private:
             /**
              * Calculates the signatures at a node.
