@@ -370,22 +370,22 @@ namespace cut {
                     empty_map[0][empty_signature] = std::make_pair(0, 
                             PreviousSignatures(empty_prev_signature, empty_prev_signature, false));
 
-                    SignatureMapWithPrev& left_sibling_sigs = empty_map;
-                    SignatureMapWithPrev& child_sigs = empty_map;
+                    SignatureMapWithPrev const* left_sibling_sigs = &empty_map;
+                    SignatureMapWithPrev const* child_sigs = &empty_map;
 
                     // Adjust the reference to the signatures if the node has a left sibling or
                     // has a child respectively.
                     bool const node_has_left_sibling = this->tree.has_left_sibling[lvl_idx][node_idx];
                     bool const node_has_child = node.children_idx_range.first < node.children_idx_range.second;
                     if (node_has_left_sibling) {
-                        left_sibling_sigs = signatures_with_prev[lvl_idx][node_idx - 1];
+                        left_sibling_sigs = &signatures_with_prev[lvl_idx][node_idx - 1];
                     }
                     if (node_has_child) {
-                        child_sigs = signatures_with_prev[lvl_idx + 1][node.children_idx_range.second - 1];
+                        child_sigs = &signatures_with_prev[lvl_idx + 1][node.children_idx_range.second - 1];
                     }
 
                     signatures_with_prev[lvl_idx][node_idx] = 
-                        cut_at_node_with_prev(signature, node, node_subtree_size, left_sibling_sigs, child_sigs);
+                        cut_at_node_with_prev(signature, node, node_subtree_size, *left_sibling_sigs, *child_sigs);
 
                 }
 
