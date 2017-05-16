@@ -439,30 +439,30 @@ namespace cut {
                 sig_with_size(sig_with_size), node_idx(node_idx) {}
         };
 
-        for (size_t lvl_idx = 0; lvl_idx < this->tree.levels.size(); ++lvl_idx) {
-            for (size_t node_idx = 0; node_idx < this->tree.levels[lvl_idx].size(); ++node_idx) {
-                Node const& node = this->tree.levels[lvl_idx][node_idx];
-                std::cerr << node.id << "\n";
-                for (auto const& sigs_with_size : signatures_with_prev[lvl_idx][node_idx]) {
-                    std::cerr << "size: " << sigs_with_size.first << "\n";
-                    for (auto const& sig : sigs_with_size.second) {
-                        std::cerr << "\t";
-                        for (auto comp : sig.first) {
-                            std::cerr << comp << " ";
-                        }
-                        for (auto comp : sig.second.second.left_sibling_sig.second) {
-                            std::cerr << " " << comp;
-                        }
-                        std::cerr << " ";
-                        for (auto comp : sig.second.second.right_child_sig.second) {
-                            std::cerr << " " << comp;
-                        }
-                        std::cerr << "  " << sig.second.second.was_parent_edge_cut;
-                        std::cerr << "\n";
-                    }
-                }
-            }
-        }
+        // for (size_t lvl_idx = 0; lvl_idx < this->tree.levels.size(); ++lvl_idx) {
+        //     for (size_t node_idx = 0; node_idx < this->tree.levels[lvl_idx].size(); ++node_idx) {
+        //         Node const& node = this->tree.levels[lvl_idx][node_idx];
+        //         std::cerr << node.id << "\n";
+        //         for (auto const& sigs_with_size : signatures_with_prev[lvl_idx][node_idx]) {
+        //             std::cerr << "size: " << sigs_with_size.first << "\n";
+        //             for (auto const& sig : sigs_with_size.second) {
+        //                 std::cerr << "\t";
+        //                 for (auto comp : sig.first) {
+        //                     std::cerr << comp << " ";
+        //                 }
+        //                 for (auto comp : sig.second.second.left_sibling_sig.second) {
+        //                     std::cerr << " " << comp;
+        //                 }
+        //                 std::cerr << " ";
+        //                 for (auto comp : sig.second.second.right_child_sig.second) {
+        //                     std::cerr << " " << comp;
+        //                 }
+        //                 std::cerr << "  " << sig.second.second.was_parent_edge_cut;
+        //                 std::cerr << "\n";
+        //             }
+        //         }
+        //     }
+        // }
 
         std::list<SignatureAtNode> queue; 
         queue.emplace_back(std::make_pair(this->tree.tree_sizes[0][0], signature), std::make_pair(0, 0));
@@ -478,19 +478,19 @@ namespace cut {
             PreviousSignatures const& previous_signatures = signatures_with_prev_at_node
                 .at(sig_at_node.sig_with_size.first).at(sig_at_node.sig_with_size.second).second;
 
-            std::cerr << node.id << " ";
-            for (auto const& comp : sig_at_node.sig_with_size.second) {
-                std::cerr << " " << comp;
-            }
-            std::cerr << " ";
-            for (auto const& comp : previous_signatures.left_sibling_sig.second) {
-                std::cerr << " " << comp;
-            }
-            std::cerr << " ";
-            for (auto const& comp : previous_signatures.right_child_sig.second) {
-                std::cerr << " " << comp;
-            }
-            std::cerr << "  " << previous_signatures.was_parent_edge_cut << std::endl;
+            // std::cerr << node.id << " ";
+            // for (auto const& comp : sig_at_node.sig_with_size.second) {
+            //     std::cerr << " " << comp;
+            // }
+            // std::cerr << " ";
+            // for (auto const& comp : previous_signatures.left_sibling_sig.second) {
+            //     std::cerr << " " << comp;
+            // }
+            // std::cerr << " ";
+            // for (auto const& comp : previous_signatures.right_child_sig.second) {
+            //     std::cerr << " " << comp;
+            // }
+            // std::cerr << "  " << previous_signatures.was_parent_edge_cut << std::endl;
 
             bool const node_has_left_sibling = this->tree.has_left_sibling[node_idx.first][node_idx.second];
             bool const node_has_child = node.children_idx_range.first < node.children_idx_range.second;
