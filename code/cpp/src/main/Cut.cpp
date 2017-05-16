@@ -112,9 +112,10 @@ namespace cut {
                         Signature sig = left_sibling_sig.first + child_sig.first;
 
                         auto prev_cut_cost_it = node_sigs[frontier_size].find(sig);
-                        if (prev_cut_cost_it == node_sigs[frontier_size].end()
-                                || cut_cost < prev_cut_cost_it->second) {
+                        if (prev_cut_cost_it == node_sigs[frontier_size].end()) {
                             node_sigs[frontier_size][sig] = cut_cost;
+                        } else if (cut_cost < prev_cut_cost_it->second) {
+                            prev_cut_cost_it->second = cut_cost;
                         }
 
                         // Second case: The edge from the current node to its parent is cut.
@@ -133,9 +134,10 @@ namespace cut {
                             sig[i] += 1;
 
                             prev_cut_cost_it = node_sigs[frontier_size].find(sig);
-                            if (prev_cut_cost_it == node_sigs[frontier_size].end()
-                                    || cut_cost < prev_cut_cost_it->second) {
+                            if (prev_cut_cost_it == node_sigs[frontier_size].end()) {
                                 node_sigs[frontier_size][sig] = cut_cost;
+                            } else if (cut_cost < prev_cut_cost_it->second) {
+                                prev_cut_cost_it->second = cut_cost;
                             }
                         }
                     }
@@ -202,9 +204,10 @@ namespace cut {
                         root_sig[i] += 1;
 
                         auto prev_cut_cost_it = root_sigs[node_cnt].find(root_sig);
-                        if (prev_cut_cost_it == root_sigs[node_cnt].end()
-                                || sig.second < prev_cut_cost_it->second) {
+                        if (prev_cut_cost_it == root_sigs[node_cnt].end()) {
                             root_sigs[node_cnt][root_sig] = sig.second;
+                        } else if (sig.second < prev_cut_cost_it->second) {
+                            prev_cut_cost_it->second = sig.second;
                         }
                     }
                 }
