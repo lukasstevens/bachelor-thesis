@@ -7,22 +7,6 @@
 
 using namespace cut;
 
-TEST(SignatureHash, LengthTwo) {
-    valarrutils::ValarrayHasher<SizeType> sig_hash_fn;
-    std::hash<std::string> string_hash_fn;
-
-    std::string s;
-    for (size_t i = 0; i < 2; ++i) {
-        s.push_back('a');
-        for (size_t k = 0; k < 3; ++k) {
-            s.push_back('\0');
-        }
-    }
-
-    Signature sig({97, 97});
-    ASSERT_EQ(string_hash_fn(s), sig_hash_fn(sig));
-}
-
 TEST(SignatureOperators, Equals) {
     valarrutils::ValarrayEqual<SizeType> eq;
     ASSERT_TRUE(eq(Signature({1, 2}), Signature({1, 2})));
