@@ -229,7 +229,6 @@ namespace cut {
                 lower_comp_size_bounds(calculate_lower_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt))
         {}
 
-
             /** 
              * A type representing the edges cut by the cutting phase.
              */
@@ -248,6 +247,56 @@ namespace cut {
              * @returns A vector of sets. Each set identifies one connected component in the Tree by the node ids in that set.
              */
             std::vector<std::set<Node::IdType>> components_for_cut_edges(CutEdges const& cut_edges) const;
+
+        private:
+            /**
+             * This saves the signatures which were used to arrive the current sig.
+             * @see SignatureMapWithPrev
+             */
+            struct PreviousSignatures {
+                std::pair<SizeType, Signature> left_sibling_sig;
+                std::pair<SizeType, Signature> right_child_sig;
+                bool was_parent_edge_cut;
+
+                PreviousSignatures() = default;
+
+                PreviousSignatures(
+                        std::pair<SizeType, Signature> left_sibling_sig,
+                        std::pair<SizeType, Signature> right_child_sig,
+                        bool was_parent_edge_cut) :
+                    left_sibling_sig(left_sibling_sig), right_child_sig(right_child_sig), 
+                    was_parent_edge_cut(was_parent_edge_cut) {}
+            };
+
+            /**
+             * A type which saves the signatures at a node and also the previous signature for each signature. 
+             * This is used in cut_edges_for_signature().
+             * @see Tree::SignatureMap
+             */
+            using SignatureMapWithPrev = std::map<SizeType, 
+                  std::unordered_map<Signature, std::pair<Node::EdgeWeightType, PreviousSignatures>,
+                  valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
+
+            /**
+             * Calculates the signatures at a node.
+             * This works analogous to Tree::cut_at_node(), only that the previous signatures are calculated
+             * and no signatures greater than \p signature are allowed.
+             */
+            SignatureMapWithPrev cut_at_node_with_prev(
+                    Signature const& signature,
+                    Node const& node, 
+                    SizeType subtree_size,
+                    SignatureMapWithPrev const& left_sibling_sigs, 
+                    SignatureMapWithPrev const& right_child_sigs
+                    ) const; 
+
+            /**
+             * Calculates the signatures of the tree with information about the previous signatures.
+             * Additionally no signatures greater than \p signature are allowed.
+             * Analogous to Tree::cut().
+             */
+            std::vector<std::vector<SignatureMapWithPrev>> cut_with_prev(Signature const& signature) const;
+
     };
 
     /**
