@@ -114,7 +114,7 @@ namespace cut {
                         auto prev_cut_cost_it = node_sigs[frontier_size].find(sig);
                         if (prev_cut_cost_it == node_sigs[frontier_size].end()
                                 || cut_cost < prev_cut_cost_it->second) {
-                            prev_cut_cost_it->second = cut_cost;
+                            node_sigs[frontier_size][sig] = cut_cost;
                         }
 
                         // Second case: The edge from the current node to its parent is cut.
@@ -135,7 +135,7 @@ namespace cut {
                             prev_cut_cost_it = node_sigs[frontier_size].find(sig);
                             if (prev_cut_cost_it == node_sigs[frontier_size].end()
                                     || cut_cost < prev_cut_cost_it->second) {
-                                prev_cut_cost_it->second = cut_cost;
+                                node_sigs[frontier_size][sig] = cut_cost;
                             }
                         }
                     }
@@ -204,7 +204,7 @@ namespace cut {
                         auto prev_cut_cost_it = root_sigs[node_cnt].find(root_sig);
                         if (prev_cut_cost_it == root_sigs[node_cnt].end()
                                 || sig.second < prev_cut_cost_it->second) {
-                            prev_cut_cost_it->second = sig.second;
+                            root_sigs[node_cnt][root_sig] = sig.second;
                         }
                     }
                 }
