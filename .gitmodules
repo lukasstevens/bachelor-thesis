@@ -1,12 +1,6 @@
-[submodule "code/cpp/deps/compact_optional"]
-	path = code/cpp/deps/compact_optional
-	url = git@github.com:akrzemi1/compact_optional
 [submodule "code/cpp/deps/KaHIP"]
 	path = code/cpp/deps/KaHIP
 	url = https://github.com/schulzchristian/KaHIP
 [submodule "code/cpp/deps/metis"]
 	path = code/cpp/deps/metis
 	url = git@github.com:lukasstevens/metis-mirror
-[submodule "code/cpp/deps/hopscotch-map"]
-	path = code/cpp/deps/hopscotch-map
-	url = git@github.com:Tessil/hopscotch-map.git
