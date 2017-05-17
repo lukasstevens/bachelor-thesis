@@ -7,3 +7,6 @@
 [submodule "code/cpp/deps/metis"]
 	path = code/cpp/deps/metis
 	url = git@github.com:lukasstevens/metis-mirror
+[submodule "code/cpp/deps/hopscotch-map"]
+	path = code/cpp/deps/hopscotch-map
+	url = git@github.com:Tessil/hopscotch-map.git
