@@ -651,18 +651,19 @@ namespace cut {
             is >> node_id >> size_cnt;
             auto node_idx_in_tree = builder.tree.get_node_idx(node_id);
 
+            SizeType max_sig_size = 1;
+            for (size_t sibling_idx = 0; sibling_idx <= node_idx_in_tree.second; ++sibling_idx) {
+                max_sig_size += builder.tree.tree_sizes[node_idx_in_tree.first][sibling_idx];
+            }
+
+            Tree::SignatureMap& node_sigs = signatures[node_idx_in_tree.first][node_idx_in_tree.second];
+            node_sigs = Tree::SignatureMap(static_cast<size_t>(max_sig_size));
+
             for (SizeType size_idx = 0; size_idx < size_cnt; ++size_idx) {
                 SizeType size;
                 SizeType signature_cnt;
                 is >> size >> signature_cnt;
 
-                SizeType max_sig_size = 1;
-                for (size_t sibling_idx = 0; sibling_idx <= node_idx_in_tree.second; ++sibling_idx) {
-                    max_sig_size += builder.tree.tree_sizes[node_idx_in_tree.first][sibling_idx];
-                }
-
-                Tree::SignatureMap& node_sigs = signatures[node_idx_in_tree.first][node_idx_in_tree.second];
-                node_sigs = Tree::SignatureMap(static_cast<size_t>(max_sig_size));
                 for (SizeType signature_idx = 0; signature_idx < signature_cnt; ++signature_idx) {
                     std::valarray<SizeType> signature(signature_length);
                     Node::EdgeWeightType cut_cost;
