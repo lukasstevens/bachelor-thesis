@@ -11,3 +11,55 @@ Fragen:
 * Library: https://github.com/saschagrunert/indextree
 
 == Code ==
+
+== Gliederung ==
+* Abstract
+* Einleitung
+    - Hinführung zum Thema k-balancierte Partitionierung
+    - Definition des Problems
+    - Anwendungsfälle
+    - Ziel der Bachelorarbeit
+    - Vorherige Beiträge
+* Theoretischer Hintergrund
+    - Beweis der NP-Hardness für Approximationsalgorithmen mit k-balancierter Partitionierung
+    - Formale Beschreibung des Algorithmus
+        * Einführung und Definitionen
+        * Schnittphase
+        * Packphase
+        * Beweis der Korrektheit und Laufzeit
+        * Abschließende Bemerkungen (Erweiterung auf generelle Graphen ...)
+* Beschreibung der Implementierung
+    - Verwendete Materialen (Programmiersprache, verwendete Bibliotheken, Metis, KaHiP)
+    - Verwendete Datenstrukturen
+        * Repräsentation des Baums im Speicher
+        * Repräsentation der Signaturen
+        * Repräsentation einer Menge an Signaturen (Hashmap, Hashing)
+        * Repräsentation eines Packings
+    - Implementierung des Algorithmus
+        * Schnittphase
+            - Überblick als Pseudocode
+            - Einzelne Subroutinen als Pseudocode
+            - Ausgewählte Abschnitte mit C++ Code (evtl. Abschnitte mit der höchsten Auswirkung auf die Performanz)
+        * Packphase
+            - Überblick als Pseudocode
+            - Einzelne Subroutinen als Pseudocode
+            - Wenig Auswirkung auf die Performanz => kein C++ Code?
+        * Partitionierung
+            - Zusammenführung der Schnitt und der Packphase als Pseudocode
+    - Vorraussetzungen für und Durchführung des Kompilierungsprozesses
+    - Interaktion mit dem Programm 
+        * Beschreibung der Programmierschnittstelle 
+        * Beschreibung der Kommandozeilenschnittstelle (Entwicklung einer Schnittstelle mit mehr Kontrolle über Ausgabe)
+* Ergebnisse
+    - Laufzeit in Abhängigkeit der Eingabeparameter (k, epsilon, n, evtl. Maximalgrad, evtl. verschiedene Bäume)
+    - Vergleich des Algorithmus mit den Heuristiken auf Bäumen (evtl. verschiedene Heuristiken zur Erstellung der Bäume)
+    - Vergleich des Algorithmus mit Heuristiken auf generellen Graphen 
+        * unter Verwendung von Hierarchical Decomposition
+        * unter Verwendung von Spannbäumen (MST, zufälliger Spannbaum)
+* Diskussion
+    - Diskussion der Lösungsqualität des Programms (auch im Hinblick auf Heuristiken)
+    - Diskussion der Laufzeit im Hinblick auf Verwendung des Programms
+    - Kombination von Verkleinerung des Baums und Anwendung des Programms
+    - Mögliche Performanzverbesserungen (z.B. Parallelisierung, GPU)
+* Zusammenfassung und Ausblick
+
