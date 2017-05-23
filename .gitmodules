@@ -3,4 +3,4 @@
 	url = https://github.com/schulzchristian/KaHIP
 [submodule "code/cpp/deps/metis"]
 	path = code/cpp/deps/metis
-	url = git@github.com:lukasstevens/metis-mirror
+	url = https://github.com/lukasstevens/metis-mirror
