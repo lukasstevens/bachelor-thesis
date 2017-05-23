@@ -43,7 +43,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     Node::EdgeWeightType cut_cost;
     std::tie(partitioning, signature, cut_cost) = part::calculate_best_packing(signatures);
 
-    ASSERT_EQ(partitioning.size(), static_cast<size_t>(part_cnt));
+    ASSERT_LE(partitioning.size(), static_cast<size_t>(part_cnt));
     size_t node_cnt_in_partitioning = 0;
     for (auto const& part : partitioning) {
         node_cnt_in_partitioning += part.size();
