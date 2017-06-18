@@ -3,6 +3,37 @@
 * [[FF13]] -- Algorithmus in Kapitel 3
 * [[AR06]] -- Beweis der NP-Vollständigkeit in Kapitel 2
 
+== Literaturrecherche ==
+* Nachfolgende Paper
+    - http://www.sciencedirect.com/science/article/pii/S0304397513002259
+        * Tradeoff zwischen Laufzeit und Lösungsqualität ist unvermeidbar 
+        * Für Bäume existiert kein echt polynomieller Algorithmus mit beliebig guter Approximationsgarantie
+        * Selber Inhalt wie [[FF13]]?
+    - http://dl.acm.org/citation.cfm?id=2745882
+        * Online-Scheduling für Graphen
+* Vorherige Paper
+    - http://dl.acm.org/citation.cfm?id=1496872
+        * Interessante Einleitung: Nimmt insbesondere Bezug auf Sparsest Cut Algorithmen
+        * Anwendung von Sparsest Cut auf Minimum Bisection
+        * Verweist auf rekursiven Finden der Minimum Bisection zur Approximation der k-balancierten Partitionierung
+            - Erste Algorithmen für k-balanciertes Partitioning
+        * Anwendung: VLSI Design
+        * Ergebnis: $O(\sqrt{log n\ log k})$ Approximation für $(k,2)$-Partitionierung
+    - http://dl.acm.org/citation.cfm?id=1007931
+        * Weitere Referenzen zu Sparsest Cut
+        * $(k, 1+\epsilon)$-Partitionierung mit $\alpha = O(log^{1.5}n/\epsilon^2)$
+        * $(k,1)$-Partitionierung hat keinen polynomiellen Approximationsalgorithmus
+        * Verbesserung zu $\alpha = O(log n)$ in [[FF13]]
+    - http://dl.acm.org/citation.cfm?id=909014
+        * Paritionierung in Abhängigkeit des maximalen Grades
+        * Doktorarbeit: Schwer zu bekommen?
+        * Ergebnis: $(k, 1)$-Partitionierung mit $\alpha \in O(\Delta log_\delta(n/k))$ für Bäume mit maximalen Grad $\Delta$
+        * Kann generalisiert werden, um eine $(k, 1)$-Partitionierung in polynomieller Zeit für konstantes $k$ zu finden
+    - http://epubs.siam.org/doi/abs/10.1137/S0097539796308217
+        * $(k,2)$-Partitionierung mit $\alpha \in O(log n)$
+* Min-Max Partitionierung
+
+
 Fragen:
 * Welcher Packing Algorithmus?
 
