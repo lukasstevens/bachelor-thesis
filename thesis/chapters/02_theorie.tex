@@ -1,0 +1,48 @@
+% !TeX root = ../main.tex
+% Add the above to each chapter to make compiling the PDF easier in some editors.
+
+\chapter{Theoretischer Hintergrund}\label{chapter:theorie}
+\section{Berechnungskomplexität von perfekt ausgewogenen Partitionierungen \todo{Titel!}}
+Wie bereits im vorherigem Kapitel geschildert, ist das $(2,1)$-Partitionierungsproblem, oft auch Minimum-Bisection-Problem genannt, ein wohlbekanntes Thema in der Forschung. 
+Es ist bereits länger bekannt, dass es sich beim Minimum-Bisection-Problem um ein NP-vollständiges Problem handelt~\parencite{gj79}.
+In jüngerer Vergangenheit wurde in \parencite{fk02} ein polynomieller Algorithmus präsentiert, der das Problem mit einem polylogarithmischen Approximationsfaktor löst. 
+Wie sich herausstellte, lässt sich dieses Ergebnis jedoch nicht auf auf das $(k,1)$-Partitionierungsproblem übertragen.
+Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$-Partitionierungsproblem, wobei $k$ keine Konstante ist, geben.
+Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist, gezeigt. \\
+
+\begin{thm}
+    Vorausgesetzt $P \neq NP$, dann gibt es für das $(k,1)$-Partitionierungsproblem keinen polynomiellen Approximationsalgorithmus mit endlichem Approximationsfaktor.
+\end{thm}
+\begin{proof}
+    Um die Aussage zu zeigen, reduzieren wir das $3$-Partitionierungsproblem auf das $(k,1)$-Partitionierungsproblem. 
+    Das $3$-Partitionierungsproblem ist folgendermaßen definiert: Gegeben $n = 3k$ ganze Zahlen $a_1,\ldots, a_n$ und einen Schwellwert $A$, sodass $\frac{A}{4} < a_i < \frac{A}{2}$ für alle $i \in [n]$ gilt, und 
+    \begin{equation*}
+        \sum_{i=1}^{n} a_i = kA.
+    \end{equation*}
+    Nun soll entschieden werden, ob eine Partitionierung der Zahlen $a_1, \ldots, a_n$ in $k$ Dreiergruppen, die alle zu $A$ summieren, möglich ist. 
+    In \parencite{gj79} wurde die starke NP-Vollständigkeit dieses Problems gezeigt, das heißt es ist auch schon NP-vollständig, wenn sowohl alle $a_i$, als auch $A$, polynomiell beschränkt sind.
+	Im Folgenden nehmen wir an, dass die $a_i$ und $A$ polynomiell beschränkt sind.
+
+    \noindent Wir nehmen zum Widerspruch an, dass wir einen Approximationsalgorithmus $\mathcal{A}$ mit endlichem Approximationsfaktor für das $(k,1)$-Paritionierungsproblem haben. 
+    Wir zeigen nun, dass wir $\mathcal{A}$ benutzen können, um eine Instanz des $3$-Partitionierungsproblems zu lösen.
+    Wir konstruieren einen Graphen $G$, in dem es für jede der gegebenen Zahlen $a_i$ ein Clique mit $a_i$ Knoten gibt.
+	Man bemerke dabei, dass $G$ in polynomieller Zeit konstruiert werden kann, da alle $a_i$ und $A$ polynomiell beschränkt sind.
+    Wenn es eine Lösung für die Instanz des $3$-Partitionierungsproblems gibt, dann findet $\mathcal{A}$ eine Lösung die keine Kanten in $G$ schneidet. 
+    Auf der anderen Seite schneidet $\mathcal{A}$ mindestens eine Kante in $G$, wenn keine Lösung existiert.
+    Mit $\mathcal{A}$ kann also entschieden werden, ob eine Lösung existiert, und somit kann das $3$-Partitionierungsproblem gelöst werden.
+    Dies ist jedoch ein Widerspruch zur Annahme, dass es unter der Voraussetzung $P \neq NP$ keinen Algorithmus gibt, der das $3$-Partitionierungsproblem in polynomieller Zeit löst.
+\end{proof}
+
+Weiterhin wurde dieses Ergebnis in \parencite{ff13} verfeinert. 
+Dort wurde gezeigt, dass das $(k,1)$-Partitionierungsproblem generell auch dann NP-vollständig bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
+Insbesondere wurden ungewichtete Bäume mit Maximaldurchmesser $4$, das heißt die Länge des längsten Pfades zwischen zwei beliebigen Blättern ist höchstens 4, betrachtet.
+Schon für diese Bäume konnte gezeigt werden, dass es keinen Approximationsalgorithmus mit Approximationsfaktor $n^c$ für eine beliebige Konstante $c < 1$ geben kann.
+Auch für ungewichtete Bäume mit maximalen Knotengrad mindestens $5$ bleibt das Problem NP-vollständig.
+
+Die vorangegangenen Erkenntisse zeigen, dass auch für bestimmte eingeschränkte Graphen kein Approximationsalgorithmus für das $(k,1)$-Partitionierungsproblem gefunden werden kann, außer es gilt $P=NP$. 
+Deshalb liegt die Verwendung eines bikriteriellen Algorithmus nahe, der die Anforderung relaxiert, dass alle $k$ Teile die gleiche Größe haben.
+Anstatt das $(k,1)$-Partitionierungsproblem zu lösen, wird stattdessen das $(k,1+\varepsilon)$-Partitionierungsproblem mit $\varepsilon > 0$ betrachtet.
+Für dieses Problem wurde in \parencite{ar06} ein polynomieller Algorithmus mit Approximationsfaktor $\mathcal{O}(log^{1.5}\, n / \varepsilon^2)$ für konstantes $\varepsilon > 0$ präsentiert.
+In dieser Arbeit wird auf einen verbesserten Algorithmus eingegangen, der polynomielle Laufzeit für konstantes $\varepsilon > 0$ erreicht und dabei einen Approximationsfaktor von $\mathcal{O}(log\, n)$ für generelle Graphen und einen Approximationsfaktor von $1$ für Bäume aufweist.
+
+
