@@ -12,7 +12,7 @@ Wie sich herausstellte, lässt sich dieses Ergebnis jedoch nicht auf auf das $(k
 Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$-Partitionierungsproblem, wobei $k$ keine Konstante ist, geben.
 Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist, gezeigt. \\
 
-\begin{thm} \label{thm:np_comp}
+\begin{thm}\label{thm:np_comp}
     Vorausgesetzt $P \neq NP$, dann gibt es für das $(k,1)$-Partitionierungsproblem keinen polynomiellen Approximationsalgorithmus mit endlichem Approximationsfaktor.
 \end{thm}
 \begin{proof}
@@ -22,7 +22,7 @@ Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist,
         \sum_{i=1}^{n} a_i = kA.
     \end{equation*}
     Nun soll entschieden werden, ob eine Partitionierung der Zahlen $a_1, \ldots, a_n$ in $k$ Tripel, die alle zu $A$ summieren, möglich ist. 
-    In \parencite{gj79} wurde die starke NP-Vollständigkeit dieses Problems gezeigt, das heißt es ist auch schon NP-vollständig, wenn sowohl alle $a_i$, als auch $A$, polynomiell beschränkt sind.
+    In \parencite{gj79} wurde die starke NP-Vollständigkeit dieses Problems gezeigt, das heißt, es ist auch schon NP-vollständig, wenn sowohl alle $a_i$, als auch $A$, polynomiell beschränkt sind.
     Seien die $a_i$ und $A$ im Folgenden polynomiell beschränkt.
 
     \noindent Wir nehmen zum Widerspruch an, dass wir einen Approximationsalgorithmus $\apxalg$ mit endlichem Approximationsfaktor für das $(k,1)$-Paritionierungsproblem haben. 
@@ -37,19 +37,19 @@ Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist,
 
 Weiterhin wurde dieses Ergebnis in \parencite{ff13} verfeinert. 
 Dort wurde gezeigt, dass das $(k,1)$-Partitionierungsproblem auch dann NP-vollständig bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
-Insbesondere wurden ungewichtete Bäume mit Maximaldurchmesser $4$, das heißt die Länge des längsten Pfades zwischen zwei beliebigen Blättern ist höchstens $4$, betrachtet.
+Insbesondere wurden ungewichtete Bäume mit Maximaldurchmesser $4$, das heißt, die Länge des längsten Pfades zwischen zwei beliebigen Blättern ist höchstens $4$, betrachtet.
 Schon für diese Bäume kann für das $(k,1)$-Partitionierungsproblem kein Approximationsalgorithmus mit Approximationsfaktor $n^c$ für beliebige Konstanten $c < 1$ gefunden werden.
 Auch für ungewichtete Bäume mit maximalen Knotengrad $5$ kann es keinen polynomiellen Algorithmus geben.
 
 Die vorangegangenen Erkenntisse zeigen, dass auch für bestimmte eingeschränkte Graphen kein Approximationsalgorithmus für das $(k,1)$-Partitionierungsproblem gefunden werden kann, außer es gilt $P=NP$. 
 Deshalb liegt die Verwendung eines bikriteriellen Algorithmus nahe, also ein Algorithmus, der die Anforderung relaxiert, dass alle $k$ Teile die gleiche Größe haben.
 Dabei wird, anstatt das $(k,1)$-Partitionierungsproblem zu lösen, stattdessen das $(k,1+\eps)$-Partitionierungsproblem mit $\eps > 0$ betrachtet.
-Für dieses Problem wurde von Andreev und Räcke ein polynomieller Algorithmus mit Approximationsfaktor $\bigO(log^{1.5}\, n / \eps^2)$ für konstantes $\eps > 0$ präsentiert. \parencite{ar06} 
+Für dieses Problem wurde von Andreev und Räcke ein polynomieller Algorithmus mit Approximationsfaktor $\bigO(\log^{1.5}\, n / \eps^2)$ für konstantes $\eps > 0$ präsentiert. \parencite{ar06} 
 
 \section{Ein bikriterieller Graphpartitionerungsalgorithmus}
 Wie im vorherigem Abschnitt gezeigt, ist das $(k,1)$-Partitionierungsproblems schwer zu approximieren. 
 Deshalb wurde ein bikriterieller Ansatz nahegelegt, das bedeutet man approximiert in Hinsicht auf die Ausgeglichenheit der Partitionenierung und in Hinsicht auf die Schnittkosten.
-In diesem Abschnitt wird ein polynomieller bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\bigO(log\, n)$, wie in \parencite{ff13} beschrieben, vorgestellt.
+In diesem Abschnitt wird ein polynomieller bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\bigO(\log\, n)$, wie in \parencite{ff13} beschrieben, vorgestellt.
 Dieser Algorithmus arbeitet ausschließlich auf Bäumen, er kann jedoch auf generelle Graphen erweitert werden, indem man den Eingabegraphen vorher in einen Baum mit ähnlichen Schnittkosten umwandelt.
 Für diese Umwandlung wird ein Verfahren verwendet, das von Räcke entwickelt wurde. \parencite{rc08}
 
@@ -70,13 +70,13 @@ Offensichtlich kann mit diesem Verfahren eine optimale Lösung für das $(k,1)$-
 Die Laufzeit dieses Verfahrens ist jedoch exponentiell in der Anzahl der Knoten $n$, da insbesondere die Anzahl der Äquivalenzklassen exponentiell in $n$ ist.
 
 Um eine polynomieller Laufzeit zu erreichen, werden die Zusammenhangskomponenten in gröbere Äquivalenzklassen eingeordnet.
-Anstatt Komponenten nach der genauen Größe zu gruppieren, werden die möglichen Größen in Intervalle aufgeteilt, das heißt Komponenten mit verschiedenen Größen werden entsprechend in Intervallen zusammengefasst. 
+Anstatt Komponenten nach der genauen Größe zu gruppieren, werden die möglichen Größen in Intervalle aufgeteilt, das heißt, Komponenten mit verschiedenen Größen werden entsprechend in Intervallen zusammengefasst. 
 Wie oben gehören zwei Mengen zur selben Äquivalenzklasse, wenn sie für jedes der Intervalle gleich viele Komponenten in diesem Größenintervall haben.
 Durch eine geschickte Wahl der Intervalle in Abhängigkeit von $\eps$ kann die Anzahl der Äquivalenzklassen für konstantes $\eps$ auf eine polynomielle Anzahl im Bezug auf $n$ beschränkt werden.
 Diese groben Äquivalenzklassen verursachen jedoch einen Approximationsfehler und man erhält keine perfekt ausgewogene Partitionierung mehr sondern eine $(k, 1+\eps)$-Partitionierung. Die folgende Definition legt die Wahl der Intervalle fest. \\
 
-\begin{defn}[Signatur] \label{defn:signature}
-    Sei $\mathcal{S}$ eine Menge von Zusammenhangskomponenten über der Knotenmenge $V$ von $T$ und $\eps > 0$. Ein Vektor $\vec{g} = (g_0, \ldots, g_t)$ mit $t = \ceil*{log_{1+\eps}(1/e)} + 1$ wird Signatur von $\mathcal{S}$ genannt, wenn $\mathcal{S}$ genau $g_0$ Komponenten mit Größe in $[1,\, \eps \ceil*{n/k})$ und $g_i$ Komponenten mit Größe in $[(1+\eps)^{i-1}\, \cdot\, \eps \ceil*{n/k},\, (1+\eps)^i\, \cdot \, \eps \ceil*{n/k})$ für $i \in \{1, \ldots, t\}$ enthält.
+\begin{defn}[Signatur]\label{defn:signature}
+    Sei $\mathcal{S}$ eine Menge von Zusammenhangskomponenten über der Knotenmenge $V$ von $T$ und $\eps > 0$. Ein Vektor $\vec{g} = (g_0, \ldots, g_t)$ mit $t = \ceil*{\log_{1+\eps}(1/e)} + 1$ wird Signatur von $\mathcal{S}$ genannt, wenn $\mathcal{S}$ genau $g_0$ Komponenten mit Größe in $[1,\, \eps \ceil*{n/k})$ und $g_i$ Komponenten mit Größe in $[{(1+\eps)}^{i-1}\, \cdot\, \eps \ceil*{n/k},\, {(1+\eps)}^i\, \cdot \, \eps \ceil*{n/k})$ für $i \in \{1, \ldots, t\}$ enthält.
 \end{defn}
 
 In einer groben Äquivalenzklasse befinden sich alle Mengen von Zusammenhangskomponenten, die dieselbe Signature haben.
@@ -124,8 +124,8 @@ Jetzt kann $\mathcal{F}^*$ entweder eine untere Grenze sein, wo die Kante $e$ vo
 Wenn $e$ nicht geschnitten wird, dann ist $v$ nicht in den $m$ Knoten enthalten, die durch $\mathcal{F}^*$ überdeckt werden, da $v$ dann mit der Komponente, die die Wurzel enthält, verbunden ist.
 Damit müssen diese $m$ Knoten in den Mengen $L_w$ und $L_u$ enthalten sein, da gilt $L_v = L_w \setunion L_u \setunion \{v\}$.
 Seien nun $x$ der Knoten in $L_u$ von $\mathcal{F}^*$ überdeckt, dann sind $m - x$ der Knoten in $L_w$ von $\mathcal{F}^*$ überdeckt.
-Dann muss die Signatur $\vec{g}$ zu $\mathcal{F}^*$ die Summe der Signaturen $\vec{g}_u$ und $\vec{g}_w$ sein, sodass $\vec{g}_u$(beziehungsweise $\vec{g}_w$) minimale Schnittkosten unter den unteren Grenzen von $L_u$(beziehungsweise $L_w$), die $x$ Knoten(beziehungsweise $m - x$) Knoten überdecken, hat.
-Falls dies nicht der Fall wäre, könnte diese untere Grenze von $L_u$(beziehungsweise $L_w$) durch eine untere Grenze mit geringeren Kosten ausgetauscht werden, was ein Widerspruch zur Optimalität von $\mathcal{F}^*$ wäre.
+Dann muss die Signatur $\vec{g}$ zu $\mathcal{F}^*$ die Summe der Signaturen $\vec{g}_u$ und $\vec{g}_w$ sein, sodass $\vec{g}_u$ (beziehungsweise $\vec{g}_w$) minimale Schnittkosten unter den unteren Grenzen von $L_u$ (beziehungsweise $L_w$), die $x$ Knoten (beziehungsweise $m - x$) Knoten überdecken, hat.
+Falls dies nicht der Fall wäre, könnte diese untere Grenze von $L_u$ (beziehungsweise $L_w$) durch eine untere Grenze mit geringeren Kosten ausgetauscht werden, was ein Widerspruch zur Optimalität von $\mathcal{F}^*$ wäre.
 Also gilt im Fall, dass $v$ eine rechtestes Kind $u$ hat und $v$ einen Vorgänger $w$ hat und die Kante $e$ von $v$ zu seinem Elternknoten nicht geschnitten wird, dass 
 \begin{equation} \label{eq:e_not_cut}
     C_v(\vec{g}, m) = \min \left\{ C_w(\vec{g}_w, m - x) + C_u(\vec{g}_u, x) \mid 0 \leq x \leq m \land \vec{g}_w + \vec{g}_u = \vec{g} \right\}.
@@ -143,13 +143,13 @@ Damit gilt in diesem Fall
         C_v(\vec{g}, m) = \weight(e) + \min \{ & C_w(\vec{g}_w, m - n_v) + C_u(\vec{g}_u, n_v - x) \mid \\ & \qquad 1 \leq x \leq \mu \land \vec{g}_w + \vec{g}_u + \vec{e}(x) = \vec{g} \}.
     \end{aligned}
 \end{equation}
-Somit kann $C_v(\vec{g}, m)$ für den Fall, dass $v$ weder ein Blatt ist noch keinen linken Geschwisterknoten hat, korrekt berechnet werden, indem man das Minimum der Werte geben durch \eqref{eq:e_not_cut} und \eqref{eq:e_cut} bestimmt.
+Somit kann $C_v(\vec{g}, m)$ für den Fall, dass $v$ weder ein Blatt ist noch keinen linken Geschwisterknoten hat, korrekt berechnet werden, indem man das Minimum der Werte geben durch~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} bestimmt.
 Es bleiben noch zwei Fälle übrig, also wenn $v$ entweder ein Blatt ist oder $v$ der linkeste unter seinen Geschwisterknoten ist.
 In diesen Fällen existiert das rechte Kind $u$ oder respektive der Vorgänger $w$ nicht.
-Die Definition von $C_v(\cdot, \cdot)$ folgt dann aus den Gleichungen \eqref{eq:e_not_cut} und \eqref{eq:e_cut}, indem die Funktionswerte $C_u(\vec{g}, x)$(respektive $C_w(\vec{g}, x)$ für den nicht existierenden Knoten $u$(respektive $w$) auf $0$ gesetzt werden, wenn $\vec{g} = (0, \cdots, 0)$ und $x = 0$, und auf $\infty$ sonst. 
+Die Definition von $C_v(\cdot, \cdot)$ folgt dann aus den Gleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut}, indem die Funktionswerte $C_u(\vec{g}, x)$ (respektive $C_w(\vec{g}, x)$ für den nicht existierenden Knoten $u$ (respektive $w$) auf $0$ gesetzt werden, wenn $\vec{g} = (0, \cdots, 0)$ und $x = 0$, und auf $\infty$ sonst. 
 Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven Definitionen von $C_v(\cdot, \cdot)$ verwenden werden können, um mit dynamischer Programmierung die Lösungsmenge $\mathbb{S}$ in polynomieller Zeit für konstantes $\eps$ zu berechnen. \\
 
-\begin{thm} \label{thm:treealg}
+\begin{thm}\label{thm:treealg}
     Für einen beliebigen Baum $T$ und eine konstante $\eps > 0$ existiert ein Algorithmus, der $\mathbb{S}$ in polynomieller Zeit findet.
 \end{thm}
 \begin{proof}
@@ -164,24 +164,24 @@ Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven
     Die Menge von Zusammenhangskomponenten $\mathcal{S}$ mit der Signatur $\vec{g}$ kann wiederum rekursiv mit Hilfe von dynamischer Programmierung und den rekursiven Formeln für $C_v$ berechnet werden.
     Die Anzahl der Knoten in den Teilbäumen, die in den linken Geschwisterknoten von $v$ und $v$ selbst gewurzelt sind, ist durch $\card{L_v}$ gegeben.
     Diese $\card{L_v}$ Knoten sind dann auf Zusammenhangskomponenten von verschidenenen Größen verteilt und stellen eine untere Grenze $\mathcal{F}$ von $L_v$ dar.
-    Die Komponente $g_i$ der Signatur $\vec{g}$ zu $\mathcal{F}$ zählt Komponenten mit Größe mindestens der unteren Schranke des $i$-ten Intervalls, wie in Definition \ref{defn:signature} spezifiziert.
-    Deshalb kann man $g_i$ mit $\card{L_v}/((1 + \eps)^{i - 1} \cdot \eps n/k) \leq k/((1 + \eps)^{i - 1} \cdot \eps)$ für $i \in \{1, \ldots, t\}$ beschränken und mit $\card{L_v}$ für den Fall $i = 0$.
+    Die Komponente $g_i$ der Signatur $\vec{g}$ zu $\mathcal{F}$ zählt Komponenten mit Größe mindestens der unteren Schranke des $i$-ten Intervalls, wie in Definition~\ref{defn:signature} spezifiziert.
+    Deshalb kann man $g_i$ mit $\card{L_v}/({(1 + \eps)}^{i - 1} \cdot \eps n/k) \leq k/({(1 + \eps)}^{i - 1} \cdot \eps)$ für $i \in \{1, \ldots, t\}$ beschränken und mit $\card{L_v}$ für den Fall $i = 0$.
     Insgesamt kann man die Anzahl an Signaturen $\vec{g}$ an einem Knoten $v$ mit
     \begin{equation*}
-        \card{L_v} \cdot \prod^t_{i=1} \frac{k}{(1 + \eps)^{i - 1} \cdot \eps} 
-        = \card{L_v} \cdot \left( \frac{k}{\eps} \right)^t \cdot \left( \frac{1}{1 + \eps} \right)^{\frac{(t-1)t}{2}} 
-        \leq \card{L_v} \cdot \left( \frac{k}{\sqrt{\eps}} \right)^t
+        \card{L_v} \cdot \prod^t_{i=1} \frac{k}{{(1 + \eps)}^{i - 1} \cdot \eps} 
+        = \card{L_v} \cdot {\left( \frac{k}{\eps} \right)}^t \cdot {\left( \frac{1}{1 + \eps} \right)}^{\frac{(t-1)t}{2}} 
+        \leq \card{L_v} \cdot {\left( \frac{k}{\sqrt{\eps}} \right)}^t
     \end{equation*}
     nach oben beschränken. 
     Die Ungleichung gilt, da $t - 1 = \ceil*{\log_{1 + \eps}(1/\eps)}$. 
-    Ferner kann $t - 1$ für $\eps \leq 1$ mit $\ceil*{1/\eps \dot \log(1/e)}$ nach oben abgeschätzt werden, weil dann $1 + \eps \geq 2^\eps$ gilt.
-    Schlussendlich steht fest, dass die Anzahl der Signaturen an einem Knoten $v$ gleich $\gamma \card{L_v}$ ist, wobei $\gamma \in \bigO((k/\sqrt{\eps})^{1 + \ceil{1/\eps \cdot \log(1/\eps)}})$.
+    Ferner kann $t - 1$ für $\eps \leq 1$ mit $\ceil*{1/\eps \cdot \log(1/\eps)}$ nach oben abgeschätzt werden, weil dann $1 + \eps \geq 2^\eps$ gilt.
+    Schlussendlich steht fest, dass die Anzahl der Signaturen an einem Knoten $v$ gleich $\gamma \card{L_v}$ ist, wobei $\gamma \in \bigO({(k/\sqrt{\eps})}^{1 + \ceil{1/\eps \cdot \log(1/\eps)}})$.
 
     Um die Laufzeit zu ermitteln, wird für jeden Knoten $v \neq r$ die benötigte Anzahl der Schritte $T_v$ betrachtet, um alle Einträge $C_{v^\prime}(\vec{g}, m)$ für alle $v^\prime \in L_v$ zu bestimmen. 
     Wir stellen die Behautpung auf, dass $T_v \leq \frac{3}{2} \gamma^2 \card{L_v}^4$ für jeden Knoten $v$.
-    Für die Berechnung der Signaturen am Knoten $v$, brauchen wir die Signaturen von $u$ und $w$, welche in Zeit $T_u$ beziehungsweise $T_w$ berechnet werden können.
-    Aus den Gleichungen \eqref{eq:e_not_cut} und \eqref{eq:e_cut} wird erkenntlich, dass wir für die Berechnung der optimalen Kosten $C_v(\vec{g}, m)$ für alle $m$ und $\vec{g}$ zusätzlich durch alle Kombinationen von $x$, $\vec{g}_u$ und $\vec{g}_w$ gegangen werden muss.
-    Für ein festes $x$ gibt es höchstens $\gamma \card{L_u} \cdot \gamma \card{L_w}$ Möglichkeiten um die Signaturen $\vec{g}_u$ und $\vec{g}_w$ zur Signature $\vec{g}$ zu kombinieren.
+    Zur Berechnung der Signaturen am Knoten $v$ werden die Signaturen von $u$ und $w$ benötigt, welche in Zeit $T_u$ beziehungsweise $T_w$ berechnet werden können.
+    Aus den Gleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} wird erkenntlich, dass wir für die Berechnung der optimalen Kosten $C_v(\vec{g}, m)$ für alle $m$ und $\vec{g}$ alle Kombinationen von $x$, $\vec{g}_u$ und $\vec{g}_w$ betrachtet werden müssen.
+    Für ein festes $x$ gibt es höchstens $\gamma \card{L_u} \cdot \gamma \card{L_w}$ Möglichkeiten um die Signaturen $\vec{g}_u$ und $\vec{g}_w$ zur Signatur $\vec{g}$ zu kombinieren.
     Da $m$ und $x$ mit $\card{L_v}$ nach oben abgeschätzt werden können und $\card{L_u} + \card{L_w} \leq \card{L_v}$ gilt, erhalten wir
     \begin{equation*}
         \begin{aligned}
@@ -191,28 +191,51 @@ Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven
                 & \leq \frac{3}{2} \gamma^2 \card{L_v}^4.
         \end{aligned}
     \end{equation*}
-    Aus der Gleichung \eqref{eq:root} folgt, dass die Berechnung jeder Signatur an der Wurzel $r$ Zeit $\bigO(\gamma n)$ benötigt.
-    Deshalb ist die Laufzeit für die Schnittphase insgesamt $\bigO(\gamma^2 n^4) = \bigO(n^4(k/\sqrt{\eps})^{2+2 \ceil{1/\eps \cdot \log(1/\eps)}})$ und damit polynomiell für konstantes $\eps$.
+    Aus der Gleichung~\eqref{eq:root} folgt, dass die Berechnung jeder Signatur an der Wurzel $r$ Zeit $\bigO(\gamma n)$ benötigt.
+    Deshalb ist die Laufzeit für die Schnittphase insgesamt $\bigO(\gamma^2 n^4) = \bigO(n^4{(k/\sqrt{\eps})}^{2+2 \ceil{1/\eps \cdot \log(1/\eps)}})$ und damit polynomiell für konstantes $\eps$.
 \end{proof}
+
 \subsection{Die Packphase}
 In der ersten Phase gibt der Algorithmus Mengen von Zusammenhangskomponenten $\mathcal{S} \in \mathbb{S}$ und deren zugehörige optimale Schnittkosten aus.
-Um zu überprufen, ob eine Menge von Zusammenhangskomponenten $\mathcal{S}$ für eine gültige $(k,1+\eps)$-Partitionierung des Graphen verwendet werden kann, versucht der Algorithmus in der zweiten Phase die Komponenten in $\mathcal{S}$ in $k$ Behälter der Größe $(1 + \eps) \ceil*{n/k}$ zu packen.
-Dieses Problem, genannt Bin-Packing-Problem, ist generell NP-vollständig, da es eine Verallgemeinerung des stark NP-vollständigen 3-Partitionierungsproblems(siehe Satz \ref{thm:np_comp}) ist.
-
+Um zu überprufen, ob eine Menge von Zusammenhangskomponenten $\mathcal{S}$ für eine gültige $(k,1+\eps)$-Partitionierung des Graphen verwendet werden kann, versucht der Algorithmus in der zweiten Phase die Komponenten in $\mathcal{S}$ in höchstens $k$ Behälter der Größe $(1 + \eps) \ceil*{n/k}$ zu packen.
+Dieses Problem, genannt Bin-Packing-Problem, ist generell NP-vollständig, da es eine Verallgemeinerung des stark NP-vollständigen 3-Partitionierungsproblems (siehe Satz~\ref{thm:np_comp}) ist.
 Jedoch haben Hochbaum und Shmoys in \parencite{hs86} einen Algorithmus entwickelt, der das Problem in polynomieller Zeit für konstantes $\eps$ löst.
-Dieser Algorithmus wird im Weiteren beschrieben.
-Zuerst entfernen wir alle Komponenten in $\mathcal{S}$ mit einer Größe kleiner oder gleich $\eps \ceil*{n/k}$ und lösen dann eine Bin-Packing-Instanz ohne diese kleinen Komponenten.
+Im Weiteren wird dieser Algorithmus beschrieben, wie er in \parencite{hs86, va13} vorgestellt wurde.
 
-To be continued 
+Es wird gezeigt, wie eine Menge von Zusammenhangskomponenten $\mathcal{S} \in \mathbb{S}$ mit der Signatur $\vec{g} = (g_0, \ldots, g_t)$ in Behälter der Größe $(1 + \eps) \ceil{n/k}$ gepackt werden kann.
+Im ersten Schritt werden alle Komponenten mit Größe kleiner als $\eps \ceil*{n/k}$ entfernt, was genau die Komponenten sind, die durch den Eintrag $g_0$ gezählt werden.
+Die übrigen Komponenten in $\mathcal{S}$ werden anhand ihrer Größe nach Definition~\ref{defn:signature} in Intervalle gruppiert und die Größe jeder Komponente wird auf die untere Intervallgrenze des Intervalls gerundet, in dem sich die Komponente befindet.
+Dadurch gibt es dann genau $g_i$ Komponenten der Größe ${(1 + \eps)}^{i-1} \cdot \eps \ceil*{n/k}$ und es wird der Vektor $(g_1, \ldots, g_t)$ verwendet, um die Bin-Packing-Instanz mit gerundeten Komponentengrößen zu beschreiben. 
+Außerdem reduziert dieser Rundungschritt die Anzahl der verschieden Größen auf $t = \ceil*{\log_{1+\eps}(1/\eps)} + 1$, was ein Konstante für konstantes $\eps$ ist.
+Im zweiten Schritt werden die größeren Komponenten in $\mathcal{S}$ folgendermaßen in Behälter der Größe $\ceil{n/k}$ gepackt.
+Für eine Bin-Packing-Instanz $\vec{i} = (i_1, \ldots, i_t)$ definiere $Bins(\vec{i})$ als die minimale Anzahl an Behältern, die für das Packen der Komponenten in $\vec{i}$ benötigt werden.
+Weiterhin wird für die gegebene Instanz $(g_1, \ldots, g_t)$ die Menge $\mathcal{C} = \left\{ \vec{c} \mid Bins(\vec{c}) = 1 \right\}$ definiert, also die Menge aller Möglichkeiten einen einzigen Behälter zu füllen.
+Bei $Bins(\cdot)$ handelt es sich um eine $t$-dimensionale Tabelle und der Eintrag $Bins(\vec{i})$ für $\vec{i} = (i_1, \ldots, i_t) \in \{0, \ldots, g_1\} \times \cdots \times \{0, \ldots, g_t\}$ wird berechnet mit der Rekurrenzrelation 
+\begin{equation*}
+    Bins((i_1, \ldots, i_t)) = 
+    \begin{cases*}
+        1 & für $(i_1, \ldots, i_t) \in \mathcal{C}$, \\
+        1 + \min_{\vec{c} \in \mathcal{C}} Bins((i_1 - c_1, \ldots, i_t - c_t)) & sonst. \\
+    \end{cases*}
+\end{equation*}
+Jede der Komponenten in $(g_1, \ldots, g_t)$ hat eine Größe von mindestens $\eps \ceil*{n/k}$. 
+Da die Summe der Komponentengrößen höchstens die Anzahl der Knoten $n$ ergibt, kann die Anzahl der Komponenten in $(g_1, \ldots, g_t)$ mit $n / (\eps \ceil{n/k}) \leq n / (\eps \cdot n/k) = k/\eps$ nach oben abgeschätzt werden.
+Daraus folgt, dass die Anzahl der Möglichkeiten einen Vektor $\vec{i} \in (i_1, \ldots, i_t) \in \{0, \ldots, g_1\} \times \cdots \times \{0, \ldots, g_t\}$ zu bilden höchstens ${(k/\eps)}^t$ ist.
+Deshalb hat die $t$-dimensionale Tabelle $Bins(\cdot)$ höchstens ${(k/\eps)}^t$ Einträge. 
+Weiterhin kann jeder Eintrag in Zeit ${(k/\eps)}^t$ berechnet werden, da $\mathcal{C}$ höchstens ${(k/\eps)}^t$ Vektoren enthält.
+Insgesamt ist die Laufzeit dieses Schritts also $\bigO({(k/\eps)}^{2t})$.
+Im dritten Schritt werden die Kapazitäten der Behälter auf $(1 + \eps) \ceil*{n/k}$ erhöht und die ursprünglichen Größen der Komponenten in $\mathcal{S}$ wiederhergestellt.
+Dies kann die Behälterkapazitäten nicht verletzen, da durch das Abrunden nach Definition~\ref{defn:signature} die Größe jeder Komponente um maximal \todo{Mathematisch formulieren?} einen Faktor $(1 + \eps)$ unterschätzt wurde.
+Im letzten Schritt werden dann die übrigen $g_0$ Komponenten in $\mathcal{S}$, deren Größe kleiner als $\eps \ceil*{n/k}$ ist, gierig mit First-Fit gepackt, das bedeutet, jede Komponente wird in den erstmöglichen Behälter gepackt, sodass die Behälterkapazität $(1 + \eps) \ceil*{n/k}$ nicht überschritten wird.
+Wenn in keinem der Behälter mehr Platz ist, dann wird ein neuer Behälter hinzugefügt und die Komponente in diesen gepackt.
+Dieser Schritt kann in Zeit \todo{$\bigO(n)$ möglich?} $\bigO(n^2)$ durchgeführt werden, da es höchstens $n$ Behälter geben kann und $g_0$ höchstens $n$ ist.
 
 \subsection{Erweiterung auf allgemeine Graphen}
-Aufgrund von Theorem \ref{thm:treealg} existiert ein Algorithmus, der das $(k,1+\eps)$-Partitionierungsproblem für konstantes $\eps$ auf Bäumen löst und damit ein PTAS für das $(k,1)$-Partitionierungsproblem ist.
+Aufgrund von Theorem~\ref{thm:treealg} existiert ein Algorithmus, der das $(k,1+\eps)$-Partitionierungsproblem für konstantes $\eps$ auf Bäumen löst und damit ein PTAS für das $(k,1)$-Partitionierungsproblem ist.
 In diesem Abschnitt wird der Algorithmus auf generelle Graphen erweitert.
-Dabei hat der präsentierte Algorithmus für generelle Graphen $G$ mit Kantengewichten einen Approximationsfaktor von $\alpha \in \bigO(\log \, n)$, das heißt die vom Algorithmus gefundene Partitionierung hat Schnittkosten, die höchstens um einen Faktor in $\bigO(\log \, n)$ von den optimalen Schnittkosten entfernt sind.
+Dabei hat der präsentierte Algorithmus für generelle Graphen $G$ mit Kantengewichten einen Approximationsfaktor von $\alpha \in \bigO(\log \, n)$, das heißt, die vom Algorithmus gefundene Partitionierung hat Schnittkosten, die höchstens um einen Faktor in $\bigO(\log \, n)$ von den optimalen Schnittkosten entfernt sind.
 Für diesen Algorithmus wird ein von Räcke entwickeltes Verfahren~\parencite{rc08} verwendet, das für einen Graphen $G$ eine Menge von Dekompositionsbäumen finden, deren Schnittkosten die des ursprünglichen Graphen gut approximieren. 
 Dann wird der Algorithmus der in den vorherigen Sektionen präsentiert wurde, um fast ausgewogene Partitionierungen auf diesen Dekompositionsbäumen zu finden.
 Im Folgenden werden nur die nötigen grundlegenden Konzepte von Dekompositionsbäumen eingeführt, für ein ausführlichere Diskussion von Dekompositionsbäumen siehe \parencite{rc08, ma10, ws11}.
 
 Sei $G = (V, E, \weight)$ ein Graph mit Gewichtsfunktion $\weight : E \rightarrow \reals^+$, dann sind die Schnittkosten $\weight(W)$ eines Schnittes $W \subseteq V$ durch die Summe der Gewichte der Kanten gegeben, die Knoten in $W$ mit Knoten in $V \setminus W$ verbinden.
-
-
