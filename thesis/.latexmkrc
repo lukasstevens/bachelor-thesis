@@ -1,1 +1,1 @@
-$pdf_previewer = 'xdg-open %O %S'
+$pdf_previewer = 'xdg-open %O %S';

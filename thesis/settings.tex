@@ -2,11 +2,16 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[sc]{mathpazo}
-\usepackage[ngerman,american]{babel}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\addto\captionsngerman{
+    \renewcommand{\contentsname}{Inhaltsverzeichnis}
+    \renewcommand{\listfigurename}{Abbildungsverzeichnis}
+    \renewcommand{\listtablename}{Tabellenverzeichnis}
+}
+
 \usepackage[autostyle]{csquotes}
 \usepackage[%
-  backend=biber,
   url=false,
   style=alphabetic,
   maxnames=4,
@@ -25,6 +30,42 @@
 \usepackage[final]{microtype}
 \usepackage{caption}
 \usepackage[hidelinks]{hyperref} % hidelinks removes colored boxes around references and links
+\usepackage[parfill]{parskip}
+\usepackage[textsize=tiny]{todonotes}
+
+% Various math packages
+\usepackage{mathtools}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\newcommand*\Let[2]{\State #1 $\gets$ #2}
+\algrenewcomment[1]{\(\qquad \triangleright\) #1}
+\algrenewcommand\algorithmicrequire{\textbf{Precondition:}}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Satz}[section]
+\newtheorem{lem}[thm]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{bsp}[thm]{Beispiel}
+
+\newtheoremstyle{rem} % name
+    {\topsep}                    % Space above
+    {\topsep}                    % Space below
+    {}                   % Body font
+    {}                           % Indent amount
+    {\bf}                   % Theorem head font
+    {:}                          % Punctuation after theorem head
+    {.5em}                       % Space after theorem head
+    {}  % Theorem head spec (can be left empty, meaning ‘normal’)
+
+\theoremstyle{rem}
+\newtheorem*{remark}{Bemerkung}
+
 
 \bibliography{bibliography}
 
@@ -53,13 +94,13 @@
 % Settings for pgfplots
 \pgfplotsset{compat=newest}
 \pgfplotsset{
-  % For available color names, see http://www.latextemplates.com/svgnames-colors
-  cycle list={TUMBlue\\TUMAccentOrange\\TUMAccentGreen\\TUMSecondaryBlue2\\TUMDarkGray\\},
+    % For available color names, see http://www.latextemplates.com/svgnames-colors
+    cycle list={TUMBlue\\TUMAccentOrange\\TUMAccentGreen\\TUMSecondaryBlue2\\TUMDarkGray\\},
 }
 
 % Settings for lstlistings
 \lstset{%
-  basicstyle=\ttfamily,
+    basicstyle=\ttfamily,
   columns=fullflexible,
   autogobble,
   keywordstyle=\bfseries\color{TUMBlue},

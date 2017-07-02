@@ -19,6 +19,15 @@
 \newcommand*{\getSubmissionDate}{TODO}
 \newcommand*{\getSubmissionLocation}{Munich}
 
+% Own commands
+\newcommand{\eps}{\varepsilon}
+\newcommand{\bigO}{\mathcal{O}}
+\newcommand{\reals}{\mathbb{R}}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\DeclarePairedDelimiter{\card}{|}{|}
+\newcommand{\weight}{\omega}
+\newcommand{\setunion}{\cup}
+
 \begin{document}
 
 % Set page numbering to avoid "destination with the same identifier has been already used" warning for cover page.
@@ -34,12 +43,17 @@
 \input{pages/abstract}
 \microtypesetup{protrusion=false}
 \tableofcontents{}
+\listoftodos[Notizen]
 \microtypesetup{protrusion=true}
 
 \mainmatter{}
 
-\input{chapters/01_introduction}
-% TODO: add more chapters here
+\input{chapters/01_einleitung}
+\input{chapters/02_theorie}
+\input{chapters/03_implementierung}
+\input{chapters/04_ergebnisse}
+\input{chapters/05_diskussion}
+\input{chapters/06_fazit}
 
 \appendix{}
 
@@ -48,5 +62,6 @@
 \listoftables{}
 \microtypesetup{protrusion=true}
 \printbibliography{}
+\todo[inline]{Zitat FF13}
 
 \end{document}
