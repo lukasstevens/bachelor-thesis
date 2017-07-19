@@ -11,6 +11,8 @@
 \newcommand{\calS}{\mathcal{S}}
 \newcommand{\bbS}{\mathbb{S}}
 \newcommand{\tildaS}{\oset{\ \scriptstyle\sim}{\calS}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calV}{\mathcal{V}}
 
 \chapter{Theoretischer Hintergrund}\label{chapter:theorie}
 \section{Berechnungskomplexität von perfekt ausgewogenen Partitionierungen \todo{Titel!}}
@@ -58,7 +60,7 @@ Für dieses Problem wurde von Andreev und Räcke ein polynomieller Algorithmus m
 \section{Ein bikriterieller Graphpartitionerungsalgorithmus}
 Wie im vorherigem Abschnitt gezeigt, ist das $(k,1)$-Partitionierungsproblems schwer zu approximieren. 
 Deshalb wurde ein bikriterieller Ansatz nahegelegt, das bedeutet man approximiert in Hinsicht auf die Ausgeglichenheit der Partitionenierung und in Hinsicht auf die Schnittkosten.
-In diesem Abschnitt wird ein polynomieller bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\bigO(\log\, n)$, wie in \parencite{ff13} beschrieben, vorgestellt.
+In diesem Abschnitt wird ein polynomieller bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\bigO(\log n)$, wie in \parencite{ff13} beschrieben, vorgestellt.
 Dieser Algorithmus arbeitet ausschließlich auf Bäumen, er kann jedoch auf generelle Graphen erweitert werden, indem man den Eingabegraphen vorher in einen Baum mit ähnlichen Schnittkosten umwandelt.
 Für diese Umwandlung wird ein Verfahren verwendet, das von Räcke entwickelt wurde. \parencite{rc08}
 
@@ -265,7 +267,7 @@ Das folgende Lemma aus~\parencite{ff13} zeigt, dass der oben gegebene Algorithmu
 
     
     Die Schnittphase und die Packphase wird zusammengeführt, indem wir als Ausgabe des Algorithmus die Menge $\calS \in \bbS$ mit minimalen Kosten unter den Mengen wählen, für die $\varphi(\calS) \leq k$ gilt.
-    Im nächsten Theorem, welches aus~\parencite{ff13} stammt, wird die Korrektheit und die Laufzeit des Algorithmus gezeigt. \\
+    Im nächsten Satz, der aus~\parencite{ff13} stammt, wird die Korrektheit und die Laufzeit des Algorithmus gezeigt. \\
 
     \begin{thm}\label{thm:treealg}
         Für einen Baum mit positiven Kantengewichten und Parameter $\eps > 0$ und $k \in \{1, \ldots, n\}$ existiert ein Algorithmus, der eine Partitionierung der Knoten von $T$ in $k$ Mengen berechnet, sodass jede der $k$ Mengen höchstens eine Größe von $(1 + \eps) \ceil*{n/k}$ hat und die Schnittkosten höchstens die Schnittkosten einer optimalen perfekt ausgewogenen Partitionierung des Baums entsprechen. 
@@ -291,9 +293,63 @@ Das folgende Lemma aus~\parencite{ff13} zeigt, dass der oben gegebene Algorithmu
 \subsection{Erweiterung auf allgemeine Graphen}
 Aufgrund von Theorem~\ref{thm:treealg} existiert ein Algorithmus, der das $(k,1+\eps)$-Partitionierungsproblem für konstantes $\eps$ auf Bäumen löst und damit ein PTAS für das $(k,1)$-Partitionierungsproblem ist.
 In diesem Abschnitt wird der Algorithmus auf generelle Graphen erweitert.
-Dabei hat der präsentierte Algorithmus für generelle Graphen $G$ mit Kantengewichten einen Approximationsfaktor von $\bigO(\log \, n)$, das heißt, die vom Algorithmus gefundene Partitionierung hat Schnittkosten, die höchstens um einen Faktor in $\bigO(\log \, n)$ von den optimalen Schnittkosten entfernt sind.
-Für diesen Algorithmus wird ein von Räcke entwickeltes Verfahren~\parencite{rc08} verwendet, das für einen Graphen $G$ eine Menge von Dekompositionsbäumen finden, deren Schnittkosten die des ursprünglichen Graphen gut approximieren. 
-Dann wird der Algorithmus der in den vorherigen Sektionen präsentiert wurde, um fast ausgewogene Partitionierungen auf diesen Dekompositionsbäumen zu finden.
-Im Folgenden werden nur die nötigen grundlegenden Konzepte von Dekompositionsbäumen eingeführt, für ein ausführlichere Diskussion von Dekompositionsbäumen siehe \parencite{rc08, ma10, ws11}.
+Dabei hat der präsentierte Algorithmus für generelle Graphen $G$ mit Kantengewichten einen Approximationsfaktor von $\bigO(\log n)$, das heißt, die vom Algorithmus gefundene Partitionierung hat Schnittkosten, die höchstens um einen Faktor in $\bigO(\log n)$ von den optimalen Schnittkosten entfernt sind.
+Für diesen Algorithmus wird ein von Räcke entwickeltes Verfahren(siehe~\parencite{rc08}) verwendet, das für einen Graphen $G$ eine Menge von Dekompositionsbäumen findet, deren Schnittkosten die des ursprünglichen Graphen gut approximieren. 
+Dann wird der Algorithmus, der in den vorherigen Sektionen präsentiert wurde, verwendet, um fast ausgewogene Partitionierungen auf diesen Dekompositionsbäumen zu finden.
+Im Folgenden werden nur die nötigen grundlegenden Konzepte von Dekompositionsbäumen aus~\parencite{rc08} eingeführt.
 
 Sei $G = (V, E, \weight)$ ein Graph mit Gewichtsfunktion $\weight : E \rightarrow \reals^+$, dann sind die Schnittkosten $\weight(W)$ eines Schnittes $W \subseteq V$ durch die Summe der Gewichte der Kanten gegeben, die Knoten in $W$ mit Knoten in $V \setminus W$ verbinden.
+Für den Graph $G$ ist ein Dekompositionsbaum ein Baum $T=(V_T, E_T, \weight_T)$ mit Gewichtsfunktion $\weight_T : E_T \rightarrow \reals^+$, dessen Blätter $L \subset V_T$ bijektiv auf die Knoten $V$ von $G$ abgebildet werden können.
+Genauer wird davon ausgegangen, dass es eine Funktion $m_G : V_T \rightarrow V$ gibt, die Knoten in $T$ auf Knoten in $G$ abbildet und insbesondere eine Bijektion zwischen $L$ und $V$ induziert. 
+Zusätzlich sei $m_T : V \rightarrow L$ die Umkehrfunktion der genannten Bijektion.
+Im Folgenden werden Blattschnitte $K \subseteq L$ und deren Schnittkosten $C(K)$ analysiert, wobei $C(K)$ die Schnittkosten des minimalen Schnitts im Dekompositionsbaum $T$ sind, der $K$ von $L \ K$ trennt.
+Indem die oben definierten Abbildung $m_G$ und $m_T$ verwendet werden, können Schnitte $W$ in $G$ auf Blattschnitte $K$ in $T$ abgebildet werden und umgekehrt, wobei die Notation $m_T(W)$ beziehungsweise $m_G(K)$ benutzt wird.
+In~\parencite{rc08} wurden Eigenschaften von Dekompositionsbäumen gezeigt, die im folgenden Satz zusammengefasst sind.\\
+
+\begin{thm}\label{thm:decomptrees}
+    Für jeden Graph $G=(V, E, \weight)$ mit $n$ Knoten existiert eine Konvexkombination von Dekompositionsbäumen $T_i$ gegeben durch Multiplikatoren $\lambda_i$ mit $\sum_i \lambda_i = 1$, welche in polynomieller Zeit gefunden werden kann und für jeden Schnitt $W$ in $G$ und die zugehörigen Blattschnitte $K_i = m_{T_i}(W)$ folgende Kriterien erfüllt:
+    \begin{itemize}
+        \item $C(K_i) \geq C(W)$ für alle $i$ und
+        \item $\sum_i \lambda_i C(K_i) \leq \bigO(\log n) \cdot C(W)$.
+    \end{itemize}
+\end{thm}
+
+Da $\sum_i \lambda_i = 1$ kann mit dem oben genannten Satz direkt gefolgert werden, dass ein Baum $T_i$ existiert für den $C(K_i) \leq \bigO(\log n) \cdot C(W)$ gilt.
+Deswegen kann mit einer leicht veränderten Version des durch~\ref{thm:treealg} gegebenen Algorithmus eine $(k,1 + \eps)$-Partitionierung erreicht werden, deren Schnittkosten nur um einen Faktor $\bigO(\log n)$ von den optimalen Schnittkosten der $(k, 1)$-Partitionierung entfernt ist.
+Dafür wird der Algorithmus dahingehend angepasst, dass er auf dem Dekompositionsbaum $T$ keine Partitionierung berechnet, sondern eine Blattpartitionierung, das heißt eine Partitionierung $\calL = \{L_1, \ldots, L_k\}$ der $l$ Blätter $L$ von $T$ in $k$ Mengen mit Größe maximal $(1 + \eps) \ceil*{l/k}$.
+Die Schnittkosten $C(\calL)$ einer Partitionierung $\calL$ ist dann das minimale Gewicht der Kanten, die entfernt werden müssen, um die Mengen $L_1, \ldots, L_k$ voneinder zu trennen.
+Um diese Anpassungen umzusetzen, müssen zwei Änderung am Algorithmus der vorherigen Sektionen gemacht werden. 
+Zuerst müssen die Signaturen, die durch Definition~\ref{defn:signature} gegeben sind, nicht Knoten sondern Blätter zählen.
+Zweitens muss an einem Knoten $v$ nicht die Anzahl der Knoten $n_v$ im Teilbaum gewurzelt in $v$ gezählt werden, sondern die Anzahl der Blätter $l_v$ in diesem Teilbaum, um das Ergebnis der Gleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} zu berechnen. 
+Diese Anpassungen sind im folgenden Korollar zusammengefasst.\\
+
+\begin{cor}\label{cor:leafpartitioning}
+        Für einen Baum $T$ mit positiven Kantengewichten und Parameter $\eps > 0$ und $k \in \{1, \ldots, n\}$ existiert ein Algorithmus, der eine Partitionierung der $l$ Blätter von $T$ in $k$ Mengen berechnet, sodass jede der $k$ Mengen höchstens $(1 + \eps) \ceil*{l/k}$ Blätter enthält und die Schnittkosten höchstens die Schnittkosten einer optimalen perfekt ausgewogenen Blattpartitionierung des Baums entsprechen. 
+        Weiterhin ist die Laufzeit für konstantes $\eps$ polynomiell.
+\end{cor}
+
+Mit diesem Ergebnis kann nun das Hauptergebnis von~\parencite{ff13} bewiesen werden, welches zeigt, dass fast ausgeglichene Partitionierungen in generellen Graphen berechnet werden können, die um einen logarithmischen Faktor vom Optimum entfernt sind.\\
+
+\begin{thm}
+    Sei $G = (V, E, \weight)$ ein Graph mit $n$ Knoten, $\eps > 0$ konstant und $k \in \{0, \ldots, n\}$. Es existiert ein Algorithmus, der eine Partitionierung von $V$ in $k$ Mengen mit Größe höchstens $(1 + \eps) \ceil*{n/k}$ berechnet und die Schnittkosten dieser Partitionierung sind höchstens um einen Faktor $\bigO(\log n)$ höher als die Schnittkosten der optimalen perfekt ausgewogenen Partitionierung.
+    Die Laufzeit ist polynomiell für konstantes $\eps$.
+\end{thm}
+\begin{proof}
+    Es wird Satz~\ref{thm:decomptrees} verwendet, um eine Konvexkombination von Bäumen mit den besagten Eigenschaften zu erhalten.
+    Da diese Konvexkombination in polynomieller Zeit gefunden werden kann, ist die Anzahl der Bäume polynomiell.
+    Für jeden dieser Bäume wird der durch Korollar~\ref{cor:leafpartitioning} gegeben Algorithmus verwendet, um eine Partitionierung der Blätter in $k$ Mengen mit Größe höchstens $(1 + \eps) \ceil*{n/k}$ zu berechnen. Dann wird die Blattpartitionierung $\calL^*$ aus dem Dekompositionsbaum $T^*$ ausgewählt, welche die Schnittkosten des entsprechenden Schnitts in $G$ minimiert.
+    Genauer gesagt minimiert $\calL^*$ den Wert $C(m_G(\calL))$ über alle Blattpartitionierungen, wobei für eine Blattpartitionierung $\calL = \{L_1, \ldots, L_k\}$ die Abbildung $m_G(\cdot)$ mit $m_G(\calL) = \{m_G(L_1, \ldots, m_G(L_k)\}$ definiert ist.
+    Der Algorithmus gibt dann die Partitionierung der Knoten in $G$ aus, die durch $m_G(\calL^*)$ gegeben ist.
+
+    Wie oben bereits beschrieben impliziert Satz~\ref{thm:decomptrees}, dass ein Dekompositionsbaum $T^\prime$ existiert, so dass für einen Schnitt $X$ in $G$ die obere Schranke $C(m_{T^\prime}(X)) \leq \bigO(\log n) \cdot C(X)$ gilt.
+    Dies lässt sich auch auf Partitionierungen erweitern, da für eine Blatt- oder Knotenpartitionierung $\mathcal{X} = \{X_1, \ldots, X_k\}$ die Gleichung $C(\mathcal{X}) = \frac{1}{2} \sum_{i=1}^k C(X_i)$ gilt.
+    Wenn nun die Optimallösung $\calV^* = \{ V_1^*, \ldots, V_k^* \}$ des $(k, 1)$-Partitionierungsproblems betrachtet wird, dann folgt für die dazugehörige Blattpartitionierung $m_{T^\prime}(\calV^*) = \{ m_{T^\prime}(L_1), \ldots, m_{T^\prime}(L_k) \}$ die obere Schranke $C(m_{T^\prime}(\calV^*)) \leq \bigO(\log n) \cdot C(\calV^*)$.
+    Korollar~\ref{cor:leafpartitioning} sagt aus, dass die Schnittkosten der für $T^\prime$ berechneten Blattpartitionierung $\calL^\prime$ höchstens die Schnittkosten der optimalen perfekt ausgewogenen Blattpartitionierung in $T^\prime$ betragen, also $C(\calL^\prime) \leq C(m_{T^\prime}(\calV^*))$.
+    Weiterhin kann aus Satz~\ref{thm:decomptrees} die untere Schranke $C(m_G(\calL^\prime)) \leq C(\calL^\prime)$ gefolgert werden.
+    Schlussendlich ergibt sich $C(m_G(\calL^*)) \leq C(m_G(\calL^\prime))$, da $\calL^*$ gewählt wurde, um $C(m_G(\calL))$ über alle Blattpartitionierungen zu minimieren.
+    Dies impliziert $C(m_G(\calL^*)) \leq \bigO(\log n) \cdot C(\calV^*)$, was den Beweis vollendet.
+\end{proof}
+
+In diesem Kapitel wurde der theoretischer Hintergrund des Algorithmus erläutert, dessen empirische Untersuchung Ziel dieser Arbeit ist.  
+Im Folgenden wird die Umsetzung dieses theoretisch fundierten Algorithmus erläutert und genauer auf die konkrete Implementierung eingegangen.
+
