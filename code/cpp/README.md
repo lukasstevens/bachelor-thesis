@@ -8,9 +8,9 @@ For building the project the build system [craftr](https://github.com/craftr-bui
 Therefore you first have to install `ninja-build>=1.7.1` with your package manager. 
 Then you have to install the development version of craftr:
 ```
-pip3 install --user git+https://github.com/craftr-build/craftr@development
+pip3 install --user git+https://github.com/craftr-build/craftr@master
 ```
-The c++ toolchain used for this project is clang so you have to install `clang>=3.8.1` with your package manager.
+The C++ toolchain used for this project is clang so you have to install `clang>=3.8.1` with your package manager.
 
 The project also depends on one library namely `libgmp`. You will need to install it with your package manager.
 
