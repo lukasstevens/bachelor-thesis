@@ -5,9 +5,10 @@
 #include<gtest/gtest.h>
 
 int main(int argc, char** argv) {
-    char* argv_unquoted_c[argc];
-    std::vector<std::string> argv_unquoted(argc);
-    for (size_t i = 0; i < static_cast<size_t>(argc); ++i) {
+    size_t argc_s = static_cast<size_t>(argc);
+    char* argv_unquoted_c[argc_s];
+    std::vector<std::string> argv_unquoted(argc_s);
+    for (size_t i = 0; i < argc_s; ++i) {
         argv_unquoted[i] = argv[i]; 
         if (argv_unquoted[i].front() == '\'' && argv_unquoted[i].back() == '\'') {
             argv_unquoted[i].erase(0);
