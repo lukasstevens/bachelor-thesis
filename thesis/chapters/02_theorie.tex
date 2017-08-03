@@ -16,19 +16,19 @@
 
 \chapter{Theoretischer Hintergrund}\label{chapter:theorie}
 \section{Berechnungskomplexität von perfekt ausgewogenen Partitionierungen \todo{Titel!}}
-Wie bereits im vorherigem Kapitel geschildert, ist das $(2,1)$-Partitionierungsproblem, auch \todo{Minimum-Bisection erklären?} Minimum-Bisection-Problem genannt, ein wohlbekanntes Thema in der Forschung. 
+Wie bereits im vorherigem Kapitel geschildert, ist das $(2,1)$\hyp Partitionierungsproblem, auch \todo{Minimum-Bisection erklären?} Minimum-Bisection-Problem genannt, ein wohlbekanntes Thema in der Forschung. 
 Es ist bereits länger bekannt, dass es sich beim Minimum-Bisection-Problem um ein NP-vollständiges Problem handelt~\parencite{gj79}.
 In jüngerer Vergangenheit wurde von Feige und Krauthgamer ein polynomieller Algorithmus präsentiert, der das Problem mit einem polylogarithmischen Approximationsfaktor löst. \parencite{fk02}
-Wie sich herausstellte, lässt sich dieses Ergebnis jedoch nicht auf auf das $(k,1)$-Partitionierungsproblem übertragen.
-Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$-Partitionierungsproblem, wobei $k$ keine Konstante ist, geben.
+Wie sich herausstellte, lässt sich dieses Ergebnis jedoch nicht auf auf das $(k,1)$\hyp Partitionierungsproblem übertragen.
+Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem, wobei $k$ keine Konstante ist, geben.
 Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist, gezeigt. \\
 
 \begin{thm}\label{thm:np_comp}
-    Vorausgesetzt $P \neq NP$, dann gibt es für das $(k,1)$-Partitionierungsproblem keinen polynomiellen Approximationsalgorithmus mit endlichem Approximationsfaktor.
+    Vorausgesetzt $P \neq NP$, dann gibt es für das $(k,1)$\hyp Partitionierungsproblem keinen polynomiellen Approximationsalgorithmus mit endlichem Approximationsfaktor.
 \end{thm}
 \begin{proof}
-    Um die Aussage zu zeigen, reduzieren wir das $3$-Partitionierungsproblem auf das $(k,1)$-Partitionierungsproblem. 
-    Das $3$-Partitionierungsproblem ist folgendermaßen definiert: Gegeben $n = 3k$ ganze Zahlen $a_1,\ldots, a_n$ und einen Schwellwert $A$, sodass $\frac{A}{4} < a_i < \frac{A}{2}$ für alle $i \in [n]$ gilt, und 
+    Um die Aussage zu zeigen, reduzieren wir das $3$\hyp Partitionierungsproblem auf das $(k,1)$\hyp Partitionierungsproblem. 
+    Das $3$\hyp Partitionierungsproblem ist folgendermaßen definiert: Gegeben $n = 3k$ ganze Zahlen $a_1,\ldots, a_n$ und einen Schwellwert $A$, sodass $\frac{A}{4} < a_i < \frac{A}{2}$ für alle $i \in [n]$ gilt, und 
     \begin{equation*}
         \sum_{i=1}^{n} a_i = kA.
     \end{equation*}
@@ -36,40 +36,40 @@ Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist,
     In \parencite{gj79} wurde die starke NP-Vollständigkeit dieses Problems gezeigt, das heißt, es ist auch schon NP-vollständig, wenn sowohl alle $a_i$, als auch $A$, polynomiell beschränkt sind.
     Seien die $a_i$ und $A$ im Folgenden polynomiell beschränkt.
 
-    \noindent Wir nehmen zum Widerspruch an, dass wir einen Approximationsalgorithmus $\apxalg$ mit endlichem Approximationsfaktor für das $(k,1)$-Partitionierungsproblem haben. 
-    Wir zeigen nun, dass wir $\apxalg$ benutzen können, um eine Instanz des $3$-Partitionierungsproblems zu lösen.
+    \noindent Wir nehmen zum Widerspruch an, dass wir einen Approximationsalgorithmus $\apxalg$ mit endlichem Approximationsfaktor für das $(k,1)$\hyp Partitionierungsproblem haben. 
+    Wir zeigen nun, dass wir $\apxalg$ benutzen können, um eine Instanz des $3$\hyp Partitionierungsproblems zu lösen.
     Dazu konstruieren wir einen Graphen $G$, in dem es für jede der gegebenen Zahlen $a_i$ ein Clique mit $a_i$ Knoten gibt.
 	Man bemerke dabei, dass $G$ in polynomieller Zeit konstruiert werden kann, da alle $a_i$ und $A$ polynomiell beschränkt sind.
-    Wenn es eine Lösung für die Instanz des $3$-Partitionierungsproblems gibt, dann findet $\apxalg$ eine Lösung die keine Kanten in $G$ schneidet. 
+    Wenn es eine Lösung für die Instanz des $3$\hyp Partitionierungsproblems gibt, dann findet $\apxalg$ eine Lösung die keine Kanten in $G$ schneidet. 
     Auf der anderen Seite schneidet $\apxalg$ mindestens eine Kante in $G$, wenn keine Lösung existiert.
-    Mit $\apxalg$ kann also entschieden werden, ob eine Lösung existiert, und somit kann das $3$-Partitionierungsproblem gelöst werden.
-    Dies ist jedoch ein Widerspruch zur Annahme, dass es unter der Voraussetzung $P \neq NP$ keinen Algorithmus gibt, der das $3$-Partitionierungsproblem in polynomieller Zeit löst.
+    Mit $\apxalg$ kann also entschieden werden, ob eine Lösung existiert, und somit kann das $3$\hyp Partitionierungsproblem gelöst werden.
+    Dies ist jedoch ein Widerspruch zur Annahme, dass es unter der Voraussetzung $P \neq NP$ keinen Algorithmus gibt, der das $3$\hyp Partitionierungsproblem in polynomieller Zeit löst.
 \end{proof}
 
 Weiterhin wurde dieses Ergebnis in \parencite{ff13} verfeinert. 
-Dort wurde gezeigt, dass das $(k,1)$-Partitionierungsproblem auch dann NP-vollständig bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
+Dort wurde gezeigt, dass das $(k,1)$\hyp Partitionierungsproblem auch dann NP-vollständig bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
 Insbesondere wurden ungewichtete Bäume mit Maximaldurchmesser $4$, das heißt, die Länge des längsten Pfades zwischen zwei beliebigen Blättern ist höchstens $4$, betrachtet.
-Schon für diese Bäume kann für das $(k,1)$-Partitionierungsproblem kein Approximationsalgorithmus mit Approximationsfaktor $n^c$ für beliebige Konstanten $c < 1$ gefunden werden.
+Schon für diese Bäume kann für das $(k,1)$\hyp Partitionierungsproblem kein Approximationsalgorithmus mit Approximationsfaktor $n^c$ für beliebige Konstanten $c < 1$ gefunden werden.
 Auch für ungewichtete Bäume mit maximalen Knotengrad $5$ kann es keinen polynomiellen Algorithmus geben.
 
-Die vorangegangenen Erkenntisse zeigen, dass auch für bestimmte eingeschränkte Graphen kein Approximationsalgorithmus für das $(k,1)$-Partitionierungsproblem gefunden werden kann, außer es gilt $P=NP$. 
+Die vorangegangenen Erkenntisse zeigen, dass auch für bestimmte eingeschränkte Graphen kein Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem gefunden werden kann, außer es gilt $P=NP$. 
 Deshalb liegt die Verwendung eines bikriteriellen Algorithmus nahe, also ein Algorithmus, der die Anforderung relaxiert, dass alle $k$ Teile die gleiche Größe haben.
-Dabei wird, anstatt das $(k,1)$-Partitionierungsproblem zu lösen, stattdessen das $(k,1+\eps)$-Partitionierungsproblem mit $\eps > 0$ betrachtet.
+Dabei wird, anstatt das $(k,1)$\hyp Partitionierungsproblem zu lösen, stattdessen das $(k,1+\eps)$\hyp Partitionierungsproblem mit $\eps > 0$ betrachtet.
 Für dieses Problem wurde von Andreev und Räcke ein polynomieller Algorithmus mit Approximationsfaktor $\bigO(1/\eps^2 \cdot \log^{1.5} n)$ für konstantes $\eps > 0$ präsentiert. \parencite{ar06} 
 
 \section{Ein bikriterieller Graphpartitionerungsalgorithmus}
-Wie im vorherigem Abschnitt gezeigt, ist das $(k,1)$-Partitionierungsproblems schwer zu approximieren. 
+Wie im vorherigem Abschnitt gezeigt, ist das $(k,1)$\hyp Partitionierungsproblems schwer zu approximieren. 
 Deshalb wurde ein bikriterieller Ansatz nahegelegt, das bedeutet man approximiert in Hinsicht auf die Ausgeglichenheit der Partitionenierung und in Hinsicht auf die Schnittkosten.
 In diesem Abschnitt wird ein polynomieller bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\bigO(\log n)$, wie in \parencite{ff13} beschrieben, vorgestellt.
 Dieser Algorithmus arbeitet ausschließlich auf Bäumen, er kann jedoch auf generelle Graphen erweitert werden, indem man den Eingabegraphen vorher in einen Baum mit ähnlichen Schnittkosten umwandelt.
 Für diese Umwandlung wird ein Verfahren verwendet, das von Räcke entwickelt wurde. \parencite{rc08}
 
 \subsection{Fast ausgewogene Partitionierung von Bäumen}
-In dieser Sektion wird das $(k,1+\eps)$-Partitionierungsproblem auf Bäumen mit Kantengewichten untersucht. 
-Die folgenden Ergebnisse werden zeigen, dass es für Bäume mit Kantengewichten einen polynomiellen Algorithmus gibt, der das Problem löst und ferner eine Lösung nicht schlechter als die Optimallösung des $(k,1)$-Partitionierungsproblems im Bezug auf die Schnittkosten liefert.
-Damit ist dieser Algorithmus ein \todo{PTAS einführen} PTAS für das $(k,1)$-Partitionierungsproblem auf Bäumen. 
+In dieser Sektion wird das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen mit Kantengewichten untersucht. 
+Die folgenden Ergebnisse werden zeigen, dass es für Bäume mit Kantengewichten einen polynomiellen Algorithmus gibt, der das Problem löst und ferner eine Lösung nicht schlechter als die Optimallösung des $(k,1)$\hyp Partitionierungsproblems im Bezug auf die Schnittkosten liefert.
+Damit ist dieser Algorithmus ein \todo{PTAS einführen} PTAS für das $(k,1)$\hyp Partitionierungsproblem auf Bäumen. 
 Gegeben sei ein Baum $T = (V,E,\weight)$ mit $n$ Knoten, wobei $\weight : E \rightarrow \reals^+$ die Gewichtsfunktion ist.
-Prinzipiell löst das folgende Verfahren das $(k,1)$-Partitionierungsproblem in zwei Schritten.
+Prinzipiell löst das folgende Verfahren das $(k,1)$\hyp Partitionierungsproblem in zwei Schritten.
 Im ersten Schritt werden alle Möglichkeiten berechnet den Baum $T$ in Zusammenhangskomponenten zu zerlegen.
 Diese Zusammenhangskomponenten werden der Größe nach gruppiert.
 Dann kann eine Partitionierung von $T$ durch eine Menge von disjunkten Zusammenhangskomponenten dargestellt werden, die zusammen $T$ ergeben. 
@@ -77,14 +77,14 @@ Diese Mengen von Zusammenhangskomponenten werden nun anhand der Größen der ent
 Für jede Äquivalenzklasse $\calS$ wird die Partitionierung mit den geringsten Schnittkosten als Repräsentant für $\calS$ gewählt.
 Im zweiten Schritt werden dann nur die Äquivalenzklassen betrachtet, deren enthaltene Zusammenhangskomponenten sich in $k$ Mengen mit Größe höchstens $\ceil*{n/k}$ packen lassen und somit eine gültige Partitionierung darstellen.
 Anschließend wird als Lösung der Repräsentant der übrigen Äquivalenzklasse ausgewählt, der die niedrigsten Schnittkosten verursacht.
-Offensichtlich kann mit diesem Verfahren eine optimale Lösung für das $(k,1)$-Partitionierungsproblem gefunden werden.
+Offensichtlich kann mit diesem Verfahren eine optimale Lösung für das $(k,1)$\hyp Partitionierungsproblem gefunden werden.
 Die Laufzeit dieses Verfahrens ist jedoch exponentiell in der Anzahl der Knoten $n$, da insbesondere die Anzahl der Äquivalenzklassen exponentiell in $n$ ist.
 
 Um eine polynomieller Laufzeit zu erreichen, werden die Zusammenhangskomponenten in gröbere Äquivalenzklassen eingeordnet.
 Anstatt Komponenten nach der genauen Größe zu gruppieren, werden die möglichen Größen in Intervalle aufgeteilt, das heißt, Komponenten mit verschiedenen Größen werden entsprechend in Intervallen zusammengefasst. 
 Wie oben gehören zwei Mengen zur selben Äquivalenzklasse, wenn sie für jedes der Intervalle gleich viele Komponenten in diesem Größenintervall haben.
 Durch eine geschickte Wahl der Intervalle in Abhängigkeit von $\eps$ kann die Anzahl der Äquivalenzklassen für konstantes $\eps$ auf eine polynomielle Anzahl im Bezug auf $n$ beschränkt werden.
-Diese groben Äquivalenzklassen verursachen jedoch einen Approximationsfehler und man erhält keine perfekt ausgewogene Partitionierung mehr sondern eine $(k, 1+\eps)$-Partitionierung. Die folgende Definition legt die Wahl der Intervalle fest. \\
+Diese groben Äquivalenzklassen verursachen jedoch einen Approximationsfehler und man erhält keine perfekt ausgewogene Partitionierung mehr sondern eine $(k, 1+\eps)$\hyp Partitionierung. Die folgende Definition legt die Wahl der Intervalle fest. \\
 
 \begin{defn}[Signatur]\label{defn:signature}
     Sei $\calS$ eine Menge von Zusammenhangskomponenten über der Knotenmenge $V$ von $T$ und $\eps > 0$. Ein Vektor $\vec{g} = (g_0, \ldots, g_t)$ mit $t = \ceil*{\log_{1+\eps}(1/e)} + 1$ wird Signatur von $\calS$ genannt, wenn $\calS$ genau $g_0$ Komponenten mit Größe in $[1,\, \eps \ceil*{n/k})$ und $g_i$ Komponenten mit Größe in $[{(1+\eps)}^{i-1}\, \cdot\, \eps \ceil*{n/k},\, {(1+\eps)}^i\, \cdot \, \eps \ceil*{n/k})$ für $i \in \{1, \ldots, t\}$ enthält.
@@ -208,8 +208,8 @@ Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven
 
 \subsection{Die Packphase}
 In der ersten Phase gibt der Algorithmus Mengen von Zusammenhangskomponenten $\calS \in \bbS$ und deren zugehörige optimale Schnittkosten aus.
-Um zu überprüfen, ob eine Menge von Zusammenhangskomponenten $\calS$ für eine gültige $(k,1+\eps)$-Partitionierung des Graphen verwendet werden kann, versucht der Algorithmus in der zweiten Phase die Komponenten in $\calS$ in höchstens $k$ Behälter der Größe $(1 + \eps) \ceil*{n/k}$ zu packen.
-Dieses Problem, genannt Bin-Packing-Problem, ist generell NP-vollständig, da es eine Verallgemeinerung des stark NP-vollständigen 3-Partitionierungsproblems (siehe Satz~\ref{thm:np_comp}) ist.
+Um zu überprüfen, ob eine Menge von Zusammenhangskomponenten $\calS$ für eine gültige $(k,1+\eps)$\hyp Partitionierung des Graphen verwendet werden kann, versucht der Algorithmus in der zweiten Phase die Komponenten in $\calS$ in höchstens $k$ Behälter der Größe $(1 + \eps) \ceil*{n/k}$ zu packen.
+Dieses Problem, genannt Bin-Packing-Problem, ist generell NP-vollständig, da es eine Verallgemeinerung des stark NP-vollständigen 3\hyp Partitionierungsproblems (siehe Satz~\ref{thm:np_comp}) ist.
 Jedoch haben Hochbaum und Shmoys in \parencite{hs86} einen Algorithmus entwickelt, der das Problem in polynomieller Zeit für konstantes $\eps$ löst.
 Im Weiteren wird dieser Algorithmus beschrieben, wie er in \parencite{hs86, va13} vorgestellt wurde.
 
@@ -241,16 +241,16 @@ Im letzten Schritt werden dann die übrigen $g_0$ Komponenten in $\calS$, deren 
 Es wird also jede Komponente in den erstmöglichen Behälter gepackt, sodass die Behälterkapazität $(1 + \eps) \ceil*{n/k}$ nicht überschritten wird.
 Wenn in keinem der Behälter mehr Platz ist, dann wird ein neuer Behälter hinzugefügt und die Komponente in diesen gepackt.
 Dieser Schritt kann in Zeit \todo{$\bigO(n)$ möglich?} $\bigO(n^2)$ durchgeführt werden, da $g_0 \leq n$ gilt und es höchstens $n$ Behälter geben kann.
-Zusammenfassend lässt sich sagen, dass für eine gegeben Menge von Zusammenhangskomponenten $\calS$ mit Signatur $\vec{g}$ in Zeit $\bigO({(k/\eps)}^{2t} + n^2)$ geprüft werden kann, ob $\calS$ für eine zulässige $(k, 1 + \eps)$-Partitionierung verwendet werden kann.
+Zusammenfassend lässt sich sagen, dass für eine gegeben Menge von Zusammenhangskomponenten $\calS$ mit Signatur $\vec{g}$ in Zeit $\bigO({(k/\eps)}^{2t} + n^2)$ geprüft werden kann, ob $\calS$ für eine zulässige $(k, 1 + \eps)$\hyp Partitionierung verwendet werden kann.
 
 Vor der Zusammenführung der Schnittphase und der Packphase wird zunächst noch eine Beziehung zwischen den von der Schnittphase gegebenen Mengen von Zusammenhangskomponenten $\calS \in \bbS$ und der Menge von Zusammenhangskomponenten $\calS^*$ der optimalen perfekt ausgewogenen Partitionierung hergestellt.
 Sei $\varphi(\calS)$ die Anzahl der Behälter, die benötigt werden um $\calS$ zu packen.
 Für zwei Mengen von Zusammenhangskomponenten mit derselben Signatur gilt, dass die Komponenten mit mehr als $\eps \ceil*{n/k}$ Knoten immer gleich auf die Behälter verteilt werden.
 Jedoch können im Greedy-Schritt die übrigen kleinen Komponenten so verteilt werden, dass für eine der beiden Mengen mehr Behälter benötigt werden.
-Das folgende Lemma aus~\parencite{ff13} zeigt, dass der oben gegebene Algorithmus für eine Menge von Zusammenhangskomponenten mit derselben Signatur $\vec{g}^*$ wie die Optimallösung $\calS^*$ des $(k, 1)$-Partitionierungsproblems höchstens $k$ Behälter mit Kapazität $(1 + \eps) \ceil*{n/k}$ verwendet. \\
+Das folgende Lemma aus~\parencite{ff13} zeigt, dass der oben gegebene Algorithmus für eine Menge von Zusammenhangskomponenten mit derselben Signatur $\vec{g}^*$ wie die Optimallösung $\calS^*$ des $(k, 1)$\hyp Partitionierungsproblems höchstens $k$ Behälter mit Kapazität $(1 + \eps) \ceil*{n/k}$ verwendet. \\
 
 \begin{lem}\label{lem:bincnt}
-    Sei $\calS^*$ die optimale Menge von Zusammenhangskomponenten für das $(k, 1)$-Partitionierungsproblem und sei $\vec{g}^*$ die Signatur von $\calS^*$. 
+    Sei $\calS^*$ die optimale Menge von Zusammenhangskomponenten für das $(k, 1)$\hyp Partitionierungsproblem und sei $\vec{g}^*$ die Signatur von $\calS^*$. 
     Für eine Menge $\calS \in \bbS$ mit Signature $\vec{g}^*$ erhält man $\varphi(\calS) \leq k$.
 \end{lem}
 \begin{proof}
@@ -290,8 +290,8 @@ Das folgende Lemma aus~\parencite{ff13} zeigt, dass der oben gegebene Algorithmu
         \todo{Laufzeit insgesamt} Laufzeit insgesamt?
     \end{proof}
     
-\subsection{Erweiterung auf allgemeine Graphen}
-Aufgrund von Theorem~\ref{thm:treealg} existiert ein Algorithmus, der das $(k,1+\eps)$-Partitionierungsproblem für konstantes $\eps$ auf Bäumen löst und damit ein PTAS für das $(k,1)$-Partitionierungsproblem ist.
+\subsection{Erweiterung auf allgemeine Graphen}\label{sec:decomptrees}
+Aufgrund von Theorem~\ref{thm:treealg} existiert ein Algorithmus, der das $(k,1+\eps)$\hyp Partitionierungsproblem für konstantes $\eps$ auf Bäumen löst und damit ein PTAS für das $(k,1)$\hyp Partitionierungsproblem ist.
 In diesem Abschnitt wird der Algorithmus auf generelle Graphen erweitert.
 Dabei hat der präsentierte Algorithmus für generelle Graphen $G$ mit Kantengewichten einen Approximationsfaktor von $\bigO(\log n)$, das heißt, die vom Algorithmus gefundene Partitionierung hat Schnittkosten, die höchstens um einen Faktor in $\bigO(\log n)$ von den optimalen Schnittkosten entfernt sind.
 Für diesen Algorithmus wird ein von Räcke entwickeltes Verfahren(siehe~\parencite{rc08}) verwendet, das für einen Graphen $G$ eine Menge von Dekompositionsbäumen findet, deren Schnittkosten die des ursprünglichen Graphen gut approximieren. 
@@ -315,7 +315,7 @@ In~\parencite{rc08} wurden Eigenschaften von Dekompositionsbäumen gezeigt, die 
 \end{thm}
 
 Da $\sum_i \lambda_i = 1$ kann mit dem oben genannten Satz direkt gefolgert werden, dass ein Baum $T_i$ existiert für den $C(K_i) \leq \bigO(\log n) \cdot C(W)$ gilt.
-Deswegen kann mit einer leicht veränderten Version des durch~\ref{thm:treealg} gegebenen Algorithmus eine $(k,1 + \eps)$-Partitionierung erreicht werden, deren Schnittkosten nur um einen Faktor $\bigO(\log n)$ von den optimalen Schnittkosten der $(k, 1)$-Partitionierung entfernt ist.
+Deswegen kann mit einer leicht veränderten Version des durch~\ref{thm:treealg} gegebenen Algorithmus eine $(k,1 + \eps)$\hyp Partitionierung erreicht werden, deren Schnittkosten nur um einen Faktor $\bigO(\log n)$ von den optimalen Schnittkosten der $(k, 1)$\hyp Partitionierung entfernt ist.
 Dafür wird der Algorithmus dahingehend angepasst, dass er auf dem Dekompositionsbaum $T$ keine Partitionierung berechnet, sondern eine Blattpartitionierung, das heißt eine Partitionierung $\calL = \{L_1, \ldots, L_k\}$ der $l$ Blätter $L$ von $T$ in $k$ Mengen mit Größe maximal $(1 + \eps) \ceil*{l/k}$.
 Die Schnittkosten $C(\calL)$ einer Partitionierung $\calL$ ist dann das minimale Gewicht der Kanten, die entfernt werden müssen, um die Mengen $L_1, \ldots, L_k$ voneinder zu trennen.
 Um diese Anpassungen umzusetzen, müssen zwei Änderung am Algorithmus der vorherigen Sektionen gemacht werden. 
@@ -343,7 +343,7 @@ Mit diesem Ergebnis kann nun das Hauptergebnis von~\parencite{ff13} bewiesen wer
 
     Wie oben bereits beschrieben impliziert Satz~\ref{thm:decomptrees}, dass ein Dekompositionsbaum $T^\prime$ existiert, so dass für einen Schnitt $X$ in $G$ die obere Schranke $C(m_{T^\prime}(X)) \leq \bigO(\log n) \cdot C(X)$ gilt.
     Dies lässt sich auch auf Partitionierungen erweitern, da für eine Blatt- oder Knotenpartitionierung $\mathcal{X} = \{X_1, \ldots, X_k\}$ die Gleichung $C(\mathcal{X}) = \frac{1}{2} \sum_{i=1}^k C(X_i)$ gilt.
-    Wenn nun die Optimallösung $\calV^* = \{ V_1^*, \ldots, V_k^* \}$ des $(k, 1)$-Partitionierungsproblems betrachtet wird, dann folgt für die dazugehörige Blattpartitionierung $m_{T^\prime}(\calV^*) = \{ m_{T^\prime}(L_1), \ldots, m_{T^\prime}(L_k) \}$ die obere Schranke $C(m_{T^\prime}(\calV^*)) \leq \bigO(\log n) \cdot C(\calV^*)$.
+    Wenn nun die Optimallösung $\calV^* = \{ V_1^*, \ldots, V_k^* \}$ des $(k, 1)$\hyp Partitionierungsproblems betrachtet wird, dann folgt für die dazugehörige Blattpartitionierung $m_{T^\prime}(\calV^*) = \{ m_{T^\prime}(L_1), \ldots, m_{T^\prime}(L_k) \}$ die obere Schranke $C(m_{T^\prime}(\calV^*)) \leq \bigO(\log n) \cdot C(\calV^*)$.
     Korollar~\ref{cor:leafpartitioning} sagt aus, dass die Schnittkosten der für $T^\prime$ berechneten Blattpartitionierung $\calL^\prime$ höchstens die Schnittkosten der optimalen perfekt ausgewogenen Blattpartitionierung in $T^\prime$ betragen, also $C(\calL^\prime) \leq C(m_{T^\prime}(\calV^*))$.
     Weiterhin kann aus Satz~\ref{thm:decomptrees} die untere Schranke $C(m_G(\calL^\prime)) \leq C(\calL^\prime)$ gefolgert werden.
     Schlussendlich ergibt sich $C(m_G(\calL^*)) \leq C(m_G(\calL^\prime))$, da $\calL^*$ gewählt wurde, um $C(m_G(\calL))$ über alle Blattpartitionierungen zu minimieren.

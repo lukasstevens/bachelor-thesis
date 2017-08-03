@@ -1,8 +1,57 @@
 % !TeX root = ../main.tex
 % Add the above to each chapter to make compiling the PDF easier in some editors.
+\newcommand{\Cpp}{C{}\texttt{++}}
 
 \chapter{Implementierung}\label{chapter:implementierung}
+In diesem Kapitel wird die Implementierung des Algorithmus beschrieben, der in Kapitel~\ref{chapter:theorie} präsentiert wurde.
+Zuerst wird darauf eingegangen, welche Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, verwendet wurden.
+Danach werden die Datenstrukturen erläutert, die benötigt wurden, um den Algorithmus als Programm umzusetzten.
+Zuletzt wird beschrieben, wie der Algorithmus in Code übersetzt wurde.
+
 \section{Drittmaterialien}
+\paragraph{\Cpp}
+Der Quellcode der Implementierung wurde in der Programmiersprache \Cpp\ verfasst.
+Diese Programmiersprache wurde ausgewählt, da sie maschinennahe Programmierung zulässt und eine umfangreiche Standardbibliothek anbietet.
+Weiterhin ist \Cpp\ eine der beliebtesten Programmiersprachen~\parencite{TIO17}, wodurch auch ein reichhaltiges Angebot an Entwicklerwerkzeugen und Dokumentation zur Verfügung steht.
+
+\paragraph{Craftr}
+Um den Quellcode zu kompilieren, wird das Meta-Build-System Craftr verwendet.
+Craftr ist auf Github\footnote{URL des Repositoriums: \url{https://github.com/craftr-build/craftr}} verfügbar und unter den Bedingungen der GPLv3 lizensiert.
+Craftr wird in Python3 entwickelt und baut auf das Build-System Ninja\footnote{Internetseite des Build-Systems Ninja: \url{https://ninja-build.org/}} auf. 
+Zur Kompilierung des \Cpp\hyp Quellcodes wird die Toolchain Clang\footnote{Webpräsenz der Toolchain Clang: \url{http://clang.llvm.org/}} verwendet.
+
+\paragraph{GMP}
+Die Bibliothek GMP\footnote{Internetseite der Bibliothek GMP: \url{https://gmplib.org/}} stellt eine effiziente Implementierung von beliebig großen Integern und rationalen Zahlen zur Verfügung.
+Rationale Zahlen wurden in dieser Arbeit verwendet, um numerische Instabilität aufgrund von Fließkommaberechnungen auszuschließen.
+Die Bibliothek ist mit den Lizenzen LGPLv3 oder GPLv2 verfügbar.
+Die \Cpp\hyp Schnitstelle der Bibiliothek machte eine problemlose Einbindung der Bibliothek möglich.
+
+\paragraph{Doxygen}
+Doxygen\footnote{Internetpräsenz von Doxygen: \url{http://www.stack.nl/~dimitri/doxygen/}} ist unter der GPLv2 lizensiert und ermöglicht, aus annotierten Quelltextdateien eine HTML\hyp Dokumentation zu generieren.
+Auch andere Formate wie Latex oder Postscript werden unterstützt.
+Die Dokumentation beschreibt die externen und internen Schnittstellen des Programms, das den Graphpartitionierungsalgorithmus aus dem vorherigem Kapitel implementiert.
+
+
+\paragraph{HierarchicalDecomposition}
+Das Repositorium HierarchicalDecomposition ist auf Github\footnote{URL des Repositoriums: \url{https://github.com/moritzFuchs/hierarchical-decomposition}} zu finden und stellt eine Implementierung eines Graphdekompositionsalgorithmus von Räcke, Shah und Täubig~\parencite{RST14} bereit.
+Im Gegensatz zu den Ergebnissen aus Satz~\ref{thm:decomptrees} gibt dieser Algorithmus nur einen einzigen Dekompositionsbaum aus und erreicht dabei einen Approximationsfaktor $\bigO(\log^4 n)$.
+Mit diesem Algorithmus ist es möglich, einen Dekompositionsbaum für einen Graphen zu generieren und den Algorithmus dieser Arbeit auf den Dekompositionsbaum anzuwenden.
+
+
+\paragraph{METIS}
+Die Software METIS von Karypis und Kumar~\cite{KK98} benutzt einen heuristischen Ansatz, um das $(k, 1 + \eps)$\hyp Partitionierungsproblem zu lösen. 
+Dabei wird der Graph iterativ verkleinert, indem Kanten kontrahiert werden.
+Im verkleinerten Graph wird dann eine Partitionierung berechnet.
+Danach wird der Graph wieder schrittweise expandiert, wobei in jedem Schritt lokale Verbesserungen der Partitionierung vorgenommen werden.
+In dieser Arbeit wird METIS verwendet, um die Lösungsqualität des implementierten Algorithmus abschätzen zu können.
+
+\paragraph{KaHIP}
+So ähnlich wie METIS handelt es sich bei KaHIP um eine Heuristik von Sanders und Schulz~\cite{SS13}, um das $(k, 1 + \eps)$\hyp Partitionierungsproblem zu lösen.
+Auch hier werden Kanten zunächst kontrahiert und anschließend wieder expandiert.
+Allerdings verwendet KaHIP andere Heuristiken, um die Partitionierung während dem Expandieren zu verbessern.
+
+
+
 \section{Datenstrukturen}
 Baum, Signature, HashMap von Signaturen, Packing
 \section{Algorithmus}
