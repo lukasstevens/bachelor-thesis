@@ -238,7 +238,7 @@ namespace cut {
 
 
     /**
-     * Calculates the upper(exclusive) bounds on the component sizes for each index of a signature.
+     * Calculates the upper (exclusive) bounds on the component sizes for each index of a signature.
      * @param eps The approximation factor.
      * @param node_cnt The number of nodes in the tree.
      * @param part_cnt The number of parts in which the tree should be partitioned.
@@ -249,7 +249,7 @@ namespace cut {
     std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
 
     /**
-     * Calculates the lower(inclusive) bounds on the component sizes for each index of a signature.
+     * Calculates the lower (inclusive) bounds on the component sizes for each index of a signature.
      * @param eps The approximation factor.
      * @param node_cnt The number of nodes in the tree.
      * @param part_cnt The number of parts in which the tree should be partitioned.
@@ -261,7 +261,7 @@ namespace cut {
 
     /**
      * This class represents the signatures for a tree caclulated by Tree::cut(). 
-     * The tree instance MUST outlive the SignatuesForTree instance.
+     * The tree instance MUST outlive the SignaturesForTree instance.
      */
     struct SignaturesForTree {
         public:
@@ -282,8 +282,7 @@ namespace cut {
             SignaturesForTree(SizeType part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<Tree::SignatureMap>> signatures) :
                 part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures), 
                 upper_comp_size_bounds(calculate_upper_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)),
-                lower_comp_size_bounds(calculate_lower_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt))
-        {}
+                lower_comp_size_bounds(calculate_lower_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)) {}
 
             /** 
              * A type representing the edges cut by the cutting phase.
