@@ -52,23 +52,23 @@ Insbesondere wurden ungewichtete Bäume mit Maximaldurchmesser $4$, das heißt, 
 Schon für diese Bäume kann für das $(k,1)$\hyp Partitionierungsproblem kein Approximationsalgorithmus mit Approximationsfaktor $n^c$ für beliebige Konstanten $c < 1$ gefunden werden.
 Auch für ungewichtete Bäume mit maximalen Knotengrad $5$ kann es keinen polynomiellen Algorithmus geben.
 
-Die vorangegangenen Erkenntisse zeigen, dass auch für bestimmte eingeschränkte Graphen kein Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem gefunden werden kann, außer es gilt $P=NP$. 
+Die vorangegangenen Erkenntisse zeigen, dass auch für bestimmte eingeschränkte Graphen kein Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem gefunden werden kann, außer es $P=NP$. 
 Deshalb liegt die Verwendung eines bikriteriellen Algorithmus nahe, also ein Algorithmus, der die Anforderung relaxiert, dass alle $k$ Teile die gleiche Größe haben.
 Dabei wird, anstatt das $(k,1)$\hyp Partitionierungsproblem zu lösen, stattdessen das $(k,1+\eps)$\hyp Partitionierungsproblem mit $\eps > 0$ betrachtet.
 Für dieses Problem wurde von Andreev und Räcke ein polynomieller Algorithmus mit Approximationsfaktor $\bigO(1/\eps^2 \cdot \log^{1.5} n)$ für konstantes $\eps > 0$ präsentiert. \parencite{ar06} 
 
 \section{Ein bikriterieller Graphpartitionerungsalgorithmus}
-Wie im vorherigem Abschnitt gezeigt, ist das $(k,1)$\hyp Partitionierungsproblems schwer zu approximieren. 
+Wie im vorherigem Abschnitt gezeigt, ist es nicht möglich, das $(k,1)$\hyp Partitionierungsproblems zu approximieren. 
 Deshalb wurde ein bikriterieller Ansatz nahegelegt, das bedeutet man approximiert in Hinsicht auf die Ausgeglichenheit der Partitionenierung und in Hinsicht auf die Schnittkosten.
 In diesem Abschnitt wird ein polynomieller bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\bigO(\log n)$, wie in \parencite{ff13} beschrieben, vorgestellt.
 Dieser Algorithmus arbeitet ausschließlich auf Bäumen, er kann jedoch auf generelle Graphen erweitert werden, indem man den Eingabegraphen vorher in einen Baum mit ähnlichen Schnittkosten umwandelt.
 Für diese Umwandlung wird ein Verfahren verwendet, das von Räcke entwickelt wurde. \parencite{rc08}
 
-\subsection{Fast ausgewogene Partitionierung von Bäumen}
+\subsection{Fast ausgewogene Partitionierung von Bäumen}\label{sec:treepartitioning}
 In dieser Sektion wird das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen mit Kantengewichten untersucht. 
 Die folgenden Ergebnisse werden zeigen, dass es für Bäume mit Kantengewichten einen polynomiellen Algorithmus gibt, der das Problem löst und ferner eine Lösung nicht schlechter als die Optimallösung des $(k,1)$\hyp Partitionierungsproblems im Bezug auf die Schnittkosten liefert.
-Damit ist dieser Algorithmus ein \todo{PTAS einführen} PTAS für das $(k,1)$\hyp Partitionierungsproblem auf Bäumen. 
-Gegeben sei ein Baum $T = (V,E,\weight)$ mit $n$ Knoten, wobei $\weight : E \rightarrow \reals^+$ die Gewichtsfunktion ist.
+Damit ist dieser Algorithmus ein \todo{PTAS entfernen} PTAS für das $(k,1)$\hyp Partitionierungsproblem auf Bäumen. 
+Gegeben sei ein Baum $T = (V,E,\weight)$ mit $n$ Knoten, wobei $\weight : E \rightarrow \reals_{> 0}$ die Gewichtsfunktion ist.
 Prinzipiell löst das folgende Verfahren das $(k,1)$\hyp Partitionierungsproblem in zwei Schritten.
 Im ersten Schritt werden alle Möglichkeiten berechnet den Baum $T$ in Zusammenhangskomponenten zu zerlegen.
 Diese Zusammenhangskomponenten werden der Größe nach gruppiert.
@@ -87,7 +87,7 @@ Durch eine geschickte Wahl der Intervalle in Abhängigkeit von $\eps$ kann die A
 Diese groben Äquivalenzklassen verursachen jedoch einen Approximationsfehler und man erhält keine perfekt ausgewogene Partitionierung mehr sondern eine $(k, 1+\eps)$\hyp Partitionierung. Die folgende Definition legt die Wahl der Intervalle fest. \\
 
 \begin{defn}[Signatur]\label{defn:signature}
-    Sei $\calS$ eine Menge von Zusammenhangskomponenten über der Knotenmenge $V$ von $T$ und $\eps > 0$. Ein Vektor $\vec{g} = (g_0, \ldots, g_t)$ mit $t = \ceil*{\log_{1+\eps}(1/e)} + 1$ wird Signatur von $\calS$ genannt, wenn $\calS$ genau $g_0$ Komponenten mit Größe in $[1,\, \eps \ceil*{n/k})$ und $g_i$ Komponenten mit Größe in $[{(1+\eps)}^{i-1}\, \cdot\, \eps \ceil*{n/k},\, {(1+\eps)}^i\, \cdot \, \eps \ceil*{n/k})$ für $i \in \{1, \ldots, t\}$ enthält.
+    Sei $\calS$ eine Menge von Zusammenhangskomponenten über der Knotenmenge $V$ von $T$ und $\eps > 0$. Ein Vektor $\vec{g} = (g_0, \ldots, g_t)$ mit $t = \ceil*{\log_{1+\eps}(1/\eps)} + 1$ wird Signatur von $\calS$ genannt, wenn $\calS$ genau $g_0$ Komponenten mit Größe in $[1,\, \eps \ceil*{n/k})$ und $g_i$ Komponenten mit Größe in $[{(1+\eps)}^{i-1}\, \cdot\, \eps \ceil*{n/k},\, {(1+\eps)}^i\, \cdot \, \eps \ceil*{n/k})$ für $i \in \{1, \ldots, t\}$ enthält.
 \end{defn}
 
 In einer groben Äquivalenzklasse befinden sich alle Mengen von Zusammenhangskomponenten, die dieselbe Signatur haben.
@@ -102,7 +102,7 @@ Die schlussendliche Ausgabe des Algorithmus ist eine Partitionierung des Graphen
 Für die Ausgabe wird unter den Repräsentanten, deren Komponenten sich in höchstens $k$ Behälter packen lassen, der Repräsentant mit den geringsten Schnittkosten ausgewählt.
 Beide Schritte des Algorithmus haben für konstantes $\eps$ eine polynomielle Laufzeit.
 
-\subsection{Die Schnittphase}
+\subsection{Die Schnittphase}\label{sec:cutting}
 Im Folgenden wird beschrieben, wie man mit Hilfe von dynamischer Programmierung für alle möglichen Signaturen $\vec{g}$ den Repräsentanten berechnet, also die Menge von Zusammenhangskomponenten, die optimale Schnittkosten für eine bestimmte Signatur $\vec{g}$ erreicht.
 Dieses Verfahren wurde zuerst von Feldmann und Foschini vorgestellt~\parencite{ff13} und ist wiederum eine Verallgemeinerung der Lösungsmethode für das Bisektionsproblem auf Bäumen. \parencite{mcg78, ws11}
 Zuerst wird eine Wurzel $r \in V$ gewählt, wobei $V$ die Knotenmenge von $T$ ist. 
@@ -148,16 +148,17 @@ Dann müssen die anderen $m - n_v$ Knoten, die durch $\mathcal{F}^*$ überdeckt 
 Weiterhin sei $x$ die Größe der Komponente $S \in \mathcal{F}^*$, die $v$ enthält.
 Wie auch oben müssen die unteren Grenzen in $L_u$ und $L_w$ mit den Signaturen $\vec{g}_u$ und $\vec{g}_w$ in $\mathcal{F}^* \ {S}$ minimale Schnittkosten haben.
 Also muss die Signatur $\vec{g}$ die Summe von $\vec{g}_u$ und $\vec{g}_w$ und $\vec{e}(x)$ sein.
-Damit gilt in diesem Fall
+Damit gilt in diesem Fall\todo{Visualisierung}
 \begin{equation} \label{eq:e_cut}
     \begin{aligned}
         C_v(\vec{g}, m) = \weight(e) + \min \{ & C_w(\vec{g}_w, m - n_v) + C_u(\vec{g}_u, n_v - x) \mid \\ & \qquad 1 \leq x \leq \mu \land \vec{g}_w + \vec{g}_u + \vec{e}(x) = \vec{g} \}.
     \end{aligned}
 \end{equation}
+
 Somit kann $C_v(\vec{g}, m)$ für den Fall, dass $v$ weder ein Blatt ist noch keinen linken Geschwisterknoten hat, korrekt berechnet werden, indem man das Minimum der Werte geben durch~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} bestimmt.
 Es bleiben noch zwei Fälle übrig, also wenn $v$ entweder ein Blatt ist oder $v$ der linkeste unter seinen Geschwisterknoten ist.
 In diesen Fällen existiert das rechte Kind $u$ oder respektive der Vorgänger $w$ nicht.
-Die Definition von $C_v(\cdot, \cdot)$ folgt dann aus den Gleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut}, indem die Funktionswerte $C_u(\vec{g}, x)$ (respektive $C_w(\vec{g}, x)$ für den nicht existierenden Knoten $u$ (respektive $w$) auf $0$ gesetzt werden, wenn $\vec{g} = (0, \cdots, 0)$ und $x = 0$, und auf $\infty$ sonst. 
+Die Definition von $C_v(\cdot, \cdot)$ folgt dann aus den Gleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut}, indem die Funktionswerte $C_u(\vec{g}, x)$ (respektive $C_w(\vec{g}, x)$) für den nicht existierenden Knoten $u$ (respektive $w$) auf $0$ gesetzt werden, wenn $\vec{g} = (0, \cdots, 0)$ und $x = 0$, und auf $\infty$ sonst. 
 Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven Definitionen von $C_v(\cdot, \cdot)$ verwenden werden können, um mit dynamischer Programmierung die Lösungsmenge $\bbS$ in polynomieller Zeit für konstantes $\eps$ zu berechnen. \\
 
 \begin{thm}\label{thm:cutphase}
@@ -291,15 +292,15 @@ Das folgende Lemma aus~\parencite{ff13} zeigt, dass der oben gegebene Algorithmu
     \end{proof}
     
 \subsection{Erweiterung auf allgemeine Graphen}\label{sec:decomptrees}
-Aufgrund von Theorem~\ref{thm:treealg} existiert ein Algorithmus, der das $(k,1+\eps)$\hyp Partitionierungsproblem für konstantes $\eps$ auf Bäumen löst und damit ein PTAS für das $(k,1)$\hyp Partitionierungsproblem ist.
+Aufgrund von Theorem~\ref{thm:treealg} existiert ein Algorithmus, der das $(k,1+\eps)$\hyp Partitionierungsproblem für konstantes $\eps$ auf Bäumen löst und damit ein PTAS\todo{PTAS entfernen} für das $(k,1)$\hyp Partitionierungsproblem ist.
 In diesem Abschnitt wird der Algorithmus auf generelle Graphen erweitert.
 Dabei hat der präsentierte Algorithmus für generelle Graphen $G$ mit Kantengewichten einen Approximationsfaktor von $\bigO(\log n)$, das heißt, die vom Algorithmus gefundene Partitionierung hat Schnittkosten, die höchstens um einen Faktor in $\bigO(\log n)$ von den optimalen Schnittkosten entfernt sind.
 Für diesen Algorithmus wird ein von Räcke entwickeltes Verfahren(siehe~\parencite{rc08}) verwendet, das für einen Graphen $G$ eine Menge von Dekompositionsbäumen findet, deren Schnittkosten die des ursprünglichen Graphen gut approximieren. 
 Dann wird der Algorithmus, der in den vorherigen Sektionen präsentiert wurde, verwendet, um fast ausgewogene Partitionierungen auf diesen Dekompositionsbäumen zu finden.
 Im Folgenden werden nur die nötigen grundlegenden Konzepte von Dekompositionsbäumen aus~\parencite{rc08} eingeführt.
 
-Sei $G = (V, E, \weight)$ ein Graph mit Gewichtsfunktion $\weight : E \rightarrow \reals^+$, dann sind die Schnittkosten $\weight(W)$ eines Schnittes $W \subseteq V$ durch die Summe der Gewichte der Kanten gegeben, die Knoten in $W$ mit Knoten in $V \setminus W$ verbinden.
-Für den Graph $G$ ist ein Dekompositionsbaum ein Baum $T=(V_T, E_T, \weight_T)$ mit Gewichtsfunktion $\weight_T : E_T \rightarrow \reals^+$, dessen Blätter $L \subset V_T$ bijektiv auf die Knoten $V$ von $G$ abgebildet werden können.
+Sei $G = (V, E, \weight)$ ein Graph mit Gewichtsfunktion $\weight : E \rightarrow \reals_{> 0}$, dann sind die Schnittkosten $\weight(W)$ eines Schnittes $W \subseteq V$ durch die Summe der Gewichte der Kanten gegeben, die Knoten in $W$ mit Knoten in $V \setminus W$ verbinden.
+Für den Graph $G$ ist ein Dekompositionsbaum ein Baum $T=(V_T, E_T, \weight_T)$ mit Gewichtsfunktion $\weight_T : E_T \rightarrow \reals_{> 0}$, dessen Blätter $L \subset V_T$ bijektiv auf die Knoten $V$ von $G$ abgebildet werden können.
 Genauer wird davon ausgegangen, dass es eine Funktion $m_G : V_T \rightarrow V$ gibt, die Knoten in $T$ auf Knoten in $G$ abbildet und insbesondere eine Bijektion zwischen $L$ und $V$ induziert. 
 Zusätzlich sei $m_T : V \rightarrow L$ die Umkehrfunktion der genannten Bijektion.
 Im Folgenden werden Blattschnitte $K \subseteq L$ und deren Schnittkosten $C(K)$ analysiert, wobei $C(K)$ die Schnittkosten des minimalen Schnitts im Dekompositionsbaum $T$ sind, der $K$ von $L \ K$ trennt.
