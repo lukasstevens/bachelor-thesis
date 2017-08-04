@@ -3,11 +3,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage[ngerman]{babel}
-\addto\captionsngerman{
-    \renewcommand{\contentsname}{Inhaltsverzeichnis}
-    \renewcommand{\listfigurename}{Abbildungsverzeichnis}
-    \renewcommand{\listtablename}{Tabellenverzeichnis}
-}
 \usepackage{hyphenat}
 
 \usepackage[autostyle]{csquotes}
@@ -92,6 +87,16 @@
 \definecolor{TUMAccentLightBlue}{HTML}{98C6EA}
 \definecolor{TUMAccentBlue}{HTML}{64A0C8}
 
+% German localisation
+\addto\captionsngerman{
+    \renewcommand{\contentsname}{Inhaltsverzeichnis}
+    \renewcommand{\listfigurename}{Abbildungsverzeichnis}
+    \renewcommand{\listtablename}{Tabellenverzeichnis}
+    \renewcommand{\lstlistingname}{Listing}
+    \renewcommand{\lstlistlistingname}{Listingverzeichnis}
+    \renewcommand{\listalgorithmname}{Algorithmenverzeichnis}
+}
+
 % Settings for pgfplots
 \pgfplotsset{compat=newest}
 \pgfplotsset{
@@ -100,10 +105,17 @@
 }
 
 % Settings for lstlistings
-\lstset{%
+\lstset{
+	language=C++,
     basicstyle=\ttfamily,
-  columns=fullflexible,
-  autogobble,
-  keywordstyle=\bfseries\color{TUMBlue},
-  stringstyle=\color{TUMAccentGreen}
+    columns=fullflexible,
+    autogobble,
+    keywordstyle=\bfseries\color{TUMBlue},
+    stringstyle=\color{TUMAccentGreen},
+    commentstyle=\color{TUMGray},
+    morecomment=[l][\color{TUMGray}]{\#},
+    tabsize=2, 
+    aboveskip=\intextsep,
+    belowskip=\intextsep,
+    frame=single
 }
