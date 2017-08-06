@@ -100,18 +100,22 @@ namespace cut {
             SignatureMap const& right_child_sigs, 
             std::vector<SizeType> const& comp_size_bounds) {
 
+        // The maximum amount of nodes in a Signature at the current node is the frontier size
+        // which is left_sibling_size + node_subtree_size plus 1
+        SignatureMap node_sigs(static_cast<size_t>(left_siblings_size + node_subtree_size) + 1);
+
         // Iterate over all calculated signatures of the left sibling and the rightmost child according
         // to the dynamic programming scheme described in the paper FF13.
-        SignatureMap node_sigs(static_cast<size_t>(left_siblings_size + node_subtree_size) + 1);
-        SizeType left_sibling_sigs_size = 0;
-        for (auto const& left_sibling_sigs_with_size : left_sibling_sigs) {
+        for (SizeType left_sibling_node_cnt = 0; static_cast<size_t>(left_sibling_node_cnt) < left_sibling_sigs.size(); ++left_sibling_node_cnt) {
+            auto const& left_sibling_sigs_with_node_cnt = left_sibling_sigs[static_cast<size_t>(left_sibling_node_cnt)];
 
-            SizeType child_sigs_size = 0;
-            for (auto const& child_sigs_with_size : right_child_sigs) {
-                for (auto const& left_sibling_sig : left_sibling_sigs_with_size) {
-                    for (auto const& child_sig : child_sigs_with_size) {
+            for (SizeType child_node_cnt = 0; static_cast<size_t>(child_node_cnt) < right_child_sigs.size(); ++child_node_cnt) {
+                auto const& child_sigs_with_node_cnt = right_child_sigs[static_cast<size_t>(child_node_cnt)];
+                
+                for (auto const& left_sibling_sig : left_sibling_sigs_with_node_cnt) {
+                    for (auto const& child_sig : child_sigs_with_node_cnt) {
                         // First case: The edge from the current node to its parent is not cut.
-                        SizeType frontier_size = left_sibling_sigs_size + child_sigs_size;
+                        SizeType frontier_size = left_sibling_node_cnt + child_node_cnt;
                         size_t frontier_size_size_t = static_cast<size_t>(frontier_size);
                         EdgeWeightType cut_cost = left_sibling_sig.second + child_sig.second;
                         Signature sig = left_sibling_sig.first + child_sig.first;
@@ -123,9 +127,9 @@ namespace cut {
                         }
 
                         // Second case: The edge from the current node to its parent is cut.
+                        SizeType const node_comp_size = node_subtree_size - child_node_cnt;
                         // Check if the current size of the component which includes the current node is smaller than
                         // the maximum allowed size.
-                        SizeType const node_comp_size = node_subtree_size - child_sigs_size;
                         if (node_comp_size >= comp_size_bounds.back()) {
                             continue;
                         } else {
@@ -146,10 +150,7 @@ namespace cut {
                         }
                     }
                 }
-                ++child_sigs_size;
             }
-
-            ++left_sibling_sigs_size;
         }
         return node_sigs;
     }
