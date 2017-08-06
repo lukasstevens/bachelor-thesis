@@ -167,6 +167,7 @@ namespace cut {
 
         // Iterate over all nodes except the root starting with the node one the bottom left.
         for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
+            SizeType left_siblings_size = 0; 
             for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
                 Node const& node = this->levels[lvl_idx][node_idx];
                 SizeType const node_subtree_size = this->tree_sizes[lvl_idx][node_idx];
@@ -192,14 +193,10 @@ namespace cut {
                     child_sigs = &signatures[lvl_idx + 1][node.children_idx_range.second - 1];
                 }
 
-
-                SizeType left_siblings_size = 0; 
-                for (size_t left_node_idx = 0; left_node_idx < node_idx; ++left_node_idx) {
-                    left_siblings_size += this->tree_sizes[lvl_idx][left_node_idx];
-                }
+                
                 signatures[lvl_idx][node_idx] = cut_at_node(node, node_subtree_size, left_siblings_size,
                         *left_sibling_sigs, *child_sigs, comp_size_bounds);
-
+                left_siblings_size += node_subtree_size;
             }
         }
 
