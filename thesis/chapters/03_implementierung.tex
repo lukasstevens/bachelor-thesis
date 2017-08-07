@@ -5,14 +5,14 @@
 \chapter{Implementierung}\label{chapter:implementierung}
 In diesem Kapitel wird die Implementierung des Algorithmus beschrieben, der in Kapitel~\ref{chapter:theorie} präsentiert wurde.
 Zuerst wird darauf eingegangen, welche Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, verwendet wurden.
-Danach werden die Datenstrukturen erläutert, die benötigt wurden, um den Algorithmus als Programm umzusetzten.
-Zuletzt wird beschrieben, wie der Algorithmus in Code übersetzt wurde.
+Danach wird erläutert wird anhand von Pseudocode erläutert, wie der Algorithmus als Programm umgesetzt wurde. 
+\todo[inline]{Danach Datenstrukturen, Zuletzt evtl. noch einzelne \Cpp\hyp Ausschnitte} 
 
 \section{Drittmaterialien}
 \paragraph{\Cpp}
-Der Quellcode der Implementierung wurde in der Programmiersprache \Cpp\ verfasst.
+Der Quellcode der Implementierung wurde in der Programmiersprache \Cpp{} verfasst.
 Diese Programmiersprache wurde ausgewählt, da sie maschinennahe Programmierung zulässt und eine umfangreiche Standardbibliothek anbietet.
-Weiterhin ist \Cpp\ eine der beliebtesten Programmiersprachen~\parencite{TIO17}, wodurch auch ein reichhaltiges Angebot an Entwicklerwerkzeugen und Dokumentation zur Verfügung steht.
+Weiterhin ist \Cpp{} eine der beliebtesten Programmiersprachen~\parencite{TIO17}, wodurch auch ein reichhaltiges Angebot an Entwicklerwerkzeugen und Dokumentation zur Verfügung steht.
 
 \paragraph{Craftr}
 Um den Quellcode zu kompilieren, wird das Meta-Build-System Craftr verwendet.
@@ -42,36 +42,176 @@ Im Gegensatz zu den Ergebnissen aus Satz~\ref{thm:decomptrees} gibt dieser Algor
 Mit diesem Algorithmus ist es möglich, einen Dekompositionsbaum für einen Graphen zu generieren und den Algorithmus dieser Arbeit auf den Dekompositionsbaum anzuwenden.
 
 \paragraph{METIS}
-Die Software METIS von Karypis und Kumar~\cite{KK98} benutzt einen heuristischen Ansatz, um das $(k, 1 + \eps)$\hyp Partitionierungsproblem zu lösen. 
+Die Software METIS von Karypis und Kumar~\cite{KK98} benutzt einen heuristischen Ansatz, um eine $(k, 1 + \eps)$\hyp Partitionierung zu finden. 
 Dabei wird der Graph iterativ verkleinert, indem Kanten kontrahiert werden.
 Im verkleinerten Graph wird dann eine Partitionierung berechnet.
 Danach wird der Graph wieder schrittweise expandiert, wobei in jedem Schritt lokale Verbesserungen der Partitionierung vorgenommen werden.
 In dieser Arbeit wird METIS verwendet, um die Lösungsqualität des implementierten Algorithmus abschätzen zu können.
 
 \paragraph{KaHIP}
-So ähnlich wie METIS handelt es sich bei KaHIP um eine Heuristik von Sanders und Schulz~\cite{SS13}, um das $(k, 1 + \eps)$\hyp Partitionierungsproblem zu lösen.
+So ähnlich wie METIS handelt es sich bei KaHIP um eine Heuristik von Sanders und Schulz~\cite{SS13}, um eine $(k, 1 + \eps)$\hyp Partitionierung zu finden.
 Auch hier werden Kanten zunächst kontrahiert und anschließend wieder expandiert.
 Allerdings verwendet KaHIP andere Heuristiken, um die Partitionierung während dem Expandieren zu verbessern.
 
+\section{Algorithmus}
+In Sektion~\ref{sec:treepartitioning} wurde ein Überblick gegeben, wie das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen approximiert werden kann. 
+Der Algorithmus ist zweiphasig und besteht aus einer Schnittphase und einer Packphase.
+Im Folgenden wird auf die Implementierung dieser Phasen eingegangen, welche in Sektion~\ref{sec:cutting} beziehungsweise~\ref{sec:packing} erläutert wurden.
+Zuletzt werden die Ergebnisse der Schnittphase und der Packphase zusammengeführt.
+
+\subsection{Schnittphase}
+\todo[inline]{Zeiten}
+Sei $T=(V,E)$ ein Baum mit Wurzel $r$.
+In der Schnittphase, die in Sektion~\ref{sec:cutting} beschrieben wurde, wird eine Menge von Äquivalenzklassen berechnet, wobei jede Äquivalenzklasse eine Möglichkeit darstellt, $T$ in Komponenten bestimmter Größe zu zerschneiden.
+Jede dieser Äquivalenzklassen wird nach Definition~\ref{defn:signature} durch eine Signatur repräsentiert.
+Um diese Signaturen zu berechnen, wird dynamische Programmierung verwendet, welche durch die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} gegeben ist.
+Aus diesen Rekursionsgleichungen wird ersichtlich, dass für die Berechnungen der Signaturen an einem Knoten $v \neq r$ die Signaturen an seinem rechtestem Kind $u$ und an seinem linken Geschwisterknoten $w$ benötigt werden.
+Im Folgenden wird beschrieben, wie der Baum traversiert werden kann, so dass die Signaturen an $u$ und $w$ bereits berechnet sind, wenn $v \neq r$ betrachtet wird. 
+Dafür wird zunächst der Begriff Level definiert. \\
+
+\begin{defn}[Level]\label{def:level}
+    Sei $T = (V,E)$ ein Baum mit Wurzel $r$ und sei für jeden Knoten $v \in V$ eine Ordnung seiner Kindknoten gegeben.
+    Ein Level $L_T(l)$ ist als die Menge aller Knoten, die eine Distanz von $l$ zu $r$ haben.
+    Die Knoten in $L_T(l)$ erhalten eine Ordnung, die sich aus der Ordnung der Kindknoten ableitet.
+\end{defn}
+
+Beginnend mit Level $k$ werden alle Level bis Level $1$ durchlaufen.
+Danach wird noch die Wurzel $r$ betrachtet, welche der einzige Knoten im Level $0$ ist. 
+In jedem Level werden die Knoten hinsichtlich ihrer Ordnung besucht.
+Da die Ordnung der Geschwisterknoten in einem Level erhalten bleibt, wird der linke Geschisterknoten $w$ von $v$ besucht, bevor $v$ betrachtet wird.
+Weiterhin werden durch dieses Verfahren vor $v$ alle Kinder von $v$ besucht, da die Distanz der Kinder von $v$ zu~$r$ echt größer ist als die Distanz von $v$~zu~$r$.
+Das oben beschriebene Iterationsschema wird durch Algorithmus~\ref{alg:iteration} formalisiert.
+
+\begin{algorithm}
+    \caption{Iterationsschema der Schnittphase}\label{alg:iteration}
+    \begin{algorithmic}[1]
+        \Let{$k$}{$\max_{L_T(l) \neq \emptyset} l$} \Comment{Wie wird das Maximum korrekt geschrieben?}
+        \For{$l \in \{k, k - 1, \ldots, 1\}$}
+            \ForAll{$v \in L_T(l)$} \Comment{Die Knoten werden ihrer Ordnung nach durchlaufen.}
+                \State \Call{cut\_at\_node}{$v$}
+            \EndFor
+        \EndFor
+        \ForAll{$v \in L_T(0)$} \Comment{$L_T(0) = \{r\}$}
+            \State \Call{cut\_at\_root}{$v$}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+\newcommand{\canfun}{\textproc{cut\_at\_node}}
+\newcommand{\carfun}{\textproc{cut\_at\_root}}
+
+Der Algorithmus~\ref{alg:iteration} verwendet die Funktionen \canfun{} und \carfun{}.
+Zuerst wird die Implementierung der Funktion \canfun{} betrachtet, welche am Knoten $v \neq r$ für alle Knotenanzahlen $m \in \nats_0$ und für alle Signaturen $\vec{g} \in \nats_0^t$ die Schnittkosten $C_v(\vec{g}, m)$ berechnet.
+Hierbei gilt $t = \ceil{\log_{1+\eps}(1/\eps)} + 1$ nach Definition~\ref{defn:signature}.
+Die Kostenfunktion $C_v : \nats_0^t \times \nats_0 \rightarrow \reals_{\geq 0} \cup \{\infty\}$ weist dem Paar $(\vec{g}, m)$ den Wert $\infty$ zu, falls die Signatur $\vec{g}$ mit Knotenanzahl $m$ am Knoten $v$ nicht erreicht werden kann.
+Wir führen die Notation $C^m_v(\vec{g}) \coloneqq C_v(\vec{g}, m)$ ein.
+Dann können wir $C_v$ als eine Tabelle $T(C_v)$ speichern, die das Schlüssel-Wert-Paar $(m,C^m_v)$ genau dann enthält, wenn eine Signatur $\vec{g}$ existiert, sodass $C^m_v(\vec{g}) < \infty$.
+Umgekehrt gilt $C_v(\vec{g}, m) = \infty$ für alle $\vec{g}$, falls der Schlüssel $m$ nicht in $T(C_v)$ ist.
+Des Weiteren wird $C_v^m$ für alle Schlüssel $m$ in $T(C_v)$ auch als Tabelle abgespeichert.
+Dabei enthält $T(C_v^m)$ das Schlüssel-Wert-Paar $(\vec{g}, c)$ genau dann, wenn $c < \infty$.
+
+Nun betrachten wir, wie die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} verwendet werden, um die Tabelle $T(C_v)$ für einen Knoten $v \neq r$ zu berechnen.
+Sei im Folgenden $w$ der linke Geschwisterknoten von $v$ und $u$ das rechteste Kind von $v$.
+Aus den Gleichungen wird ersichtlich, dass sich die Kosten $C_v$ aus den Kosten $C_w$ und $C_u$ sowie dem Gewicht $w(v, p)$ der Kante von $v$ zu seinem Elternknoten $p$ berechnen.
+Wir wissen, dass nicht-unendliche Schnittkosten immer erreicht werden können, indem alle Kanten geschnitten werden.
+Deshalb müssen wir nur die Kombinationen aus Knotenanzahlen und Signaturen in $C_w$ und $C_u$ betrachten, die zu Schnittkosten kleiner als unendlich führen und damit in den Tabellen $T(C_w)$ und $T(C_u)$ enthalten sind.
+Wir erinnern uns, dass $C_x((0,\ldots, 0),0) = 0$ für alle $x$ gilt, auch wenn $x$ im Baum $T$ nicht existiert.
+Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $(0, T(C^0_x))$ beziehungsweise $((0,\ldots,0), 0)$.
+Insgesamt erhalten wir das Iterationsschema in Algorithmus~\ref{alg:canfun}.
+Dabei ist $T(C).keys$ die Menge aller Schlüssel in der Tabelle $T(C)$ und $T(C_x)[m]$ gibt die Tabelle $T(C^m_x)$ zurück, falls $T(C)$ das Schlüssel-Wert-Paar $(m, T(C^m_x))$ enthält.
+Andernfalls ist $T(C_x)[m]$ nicht definiert.
+
+\begin{algorithm}
+    \caption{Implementierung von \canfun{}}\label{alg:canfun}
+    \begin{algorithmic}[1]
+        \Function{cut\_at\_node}{Node $v$}
+        \ForAll{$m_w \in T(C_w).keys$}
+            \ForAll{$m_u \in T(C_u).keys$}
+                \ForAll{$\vec{g}_w \in T(C_w)[m_w].keys$}
+                    \ForAll{$\vec{g}_u \in T(C_u)[m_u].keys$}
+                        \State \Call{edge\_not\_cut}{$m_w$, $\vec{g}_w$, $m_u$, $\vec{g}_u$}
+                        \State \Call{edge\_cut}{$m_w$, $\vec{g}_w$, $m_u$, $\vec{g}_u$}
+                    \EndFor
+                \EndFor
+            \EndFor
+        \EndFor
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+\newcommand{\encfun}{\textproc{edge\_not\_cut}}
+\newcommand{\ecfun}{\textproc{edge\_cut}}
+
+Da sowohl die Rekursionsgleichung~\eqref{eq:e_not_cut} als auch~\eqref{eq:e_cut} angewendet werden kann, um eine neue Kombination aus Signatur und Knotenanzahl zu erhalten, werden diese beiden Fälle separat durch \encfun{} beziehungsweise \ecfun{} implementiert.
+Im ersteren Fall wird die Kante $e$, welche von $v$ zu seinem Elternknoten $p$ geht, nicht geschnitten.
+\todo{Verweis auf Visualisierung} In Sektion~\ref{sec:cutting} wurde die Menge $L_x$ eingeführt, die für einen Knoten $x$ die Knoten der Teilbäume gewurzelt in $x$ und dessen Geschwisterknoten enthält.
+Des Weiteren ist $\mathcal{F}_x$ eine untere Grenze von $L_x$, wenn alle Zusammenhangskomponente in $\mathcal{F}_x$ auch eine Teilmenge von $L_x$ sind und die restlichen Knoten, die nicht von $\mathcal{F}_x$ überdeckt werden, eine Zusammenhangskomponente mit der Wurzel $r$ bilden.
+Sei im Folgenden $\mathcal{F}_w$ die untere Grenze zu $C_w(\vec{g}_w, m_w)$ und $\mathcal{F}_u$ die untere Grenze zu $C_u(\vec{g}_u, m_u)$.
+Da $L_v = L_w \cup L_u \cup \{v\}$ gilt und $e$ nicht geschnitten wird, bleibt $v$ in der Zusammenhangskomponente mit der Wurzel $r$ und wir vereinigen $\mathcal{F}_w$ mit $\mathcal{F}_u$, um eine untere Grenze $\mathcal{F}_v$ für $L_v$ zu erhalten.
+Diese untere Grenze $\mathcal{F}_v$ enthält $m_w + m_u$ Knoten, hat Schnittkosten $C_w(\vec{g}_w, m_w) + C_u(\vec{g}_u, m_u)$ und die Signatur $\vec{g}_w + \vec{g}_u$.
+Die obigen Überlegungen sind als Pseudocode in Algorithmus~\ref{alg:encfun} zu sehen.
+Ähnlich zur vorherigen Schreibweise gilt $T(C_x)[n][\vec{h}] = d$, wenn die Tabelle $T(C^n_x)$ existiert und der Eintrag $(\vec{h}, d)$ in $T(C^n_x)$ enthalten ist.
+Falls dies nicht der Fall ist, gilt $T(C_x)[n][\vec{h}] = \infty$.
+Die Zuweisung an $T(C_v)[m][\vec{g}]$ in Zeile~\ref{alg:encfun:line:assign} erstellt die entsprechenden Einträge in den Tabellen $T(C_x)$ und $T(C_x^n)$, wenn diese nicht vorhanden sind.
+
+\begin{algorithm}
+    \caption{Implementierung von \textproc{edge\_not\_cut}}\label{alg:encfun}
+    \begin{algorithmic}[1]
+        \Function{edge\_not\_cut}{Integer $m_w$, Signatur $\vec{g}_w$, Integer $m_u$, Signatur $\vec{g}_u$}
+            \Let{$m$}{$m_w + m_u$}
+            \Let{$c$}{$T(C_w)[m_w][\vec{g}_w] + T(C_u)[m_u][\vec{g}_u]$}
+            \Let{$\vec{g}$}{$\vec{g}_w + \vec{g}_u$}
+            \Let{$T(C_v)[m][\vec{g}]$}{$\min\{c, T(C_v)[m][\vec{g}]\}$}\label{alg:encfun:line:assign}
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+Im zweiten Fall wird die Kante $e$ geschnitten.
+\todo{Verweise auf Visualisierung} Damit ist $v$ nicht in der Zusammenhangskomponente, die die Wurzel $r$ enthält, und es folgt, dass $L_v$ den in $v$ gewurzelten Teilbaum vollständig enthalten muss. 
+Sei $S$ die Zusammenhangskomponente, in der $v$ liegt und sein $\card{S} \coloneqq x$.
+Dann muss $L_u$ alle Knoten des in $v$ gewurzelten Teilbaums enthalten, die nicht in $S$ sind.
+Weiterhin haben wir $L_v = L_w \cup L_u \cup \{v\}$. 
+Insgesamt erhalten wir eine untere Grenze $\mathcal{F}_v$ für $L_v$, indem wir $\mathcal{F}_v = \mathcal{F}_w \cup \mathcal{F}_u \cup S$ setzen.
+Diese untere Grenze ist jedoch nur zulässig, wenn $\card{S} = x \leq (1+\eps)\ceil{n/k}$ gilt.
+Ist $\mathcal{F}_v$ zulässig, dann ist die Anzahl der Knoten in $\mathcal{F}_v$ gleich $x + m_w + m_u$, die Schnittkosten sind $\weight(v,p) + C_w(\vec{g}_w, m_w) + C_u(\vec{g}_u, m_u)$ und die Signatur ist $\vec{e}(x) + \vec{g}_w + \vec{g}_u$.
+Dabei ist $p$ der Elternknoten von $v$ und $\vec{e}(x)$ ist die Signatur, die eine Komponente der Größe $x$ enthält.
+Die vorangegangenen Überlegungen werden durch Algorithmus~\ref{alg:ecfun} implementiert.
+
+\begin{algorithm}
+    \caption{Implementierung von \textproc{edge\_cut}}\label{alg:ecfun}
+    \begin{algorithmic}[1]
+        \Function{edge\_cut}{Integer $m_w$, Signatur $\vec{g}_w$, Integer $m_u$, Signatur $\vec{g}_u$}
+            \Let{$x$}{$n_v - m_u$} \Comment{$n_v$ ist die Größe des in $v$ gewurzelten Teilbaums.}
+            \If{$x > (1+\eps)\ceil{n/k}$}
+                \Return
+            \Else
+                \Let{$m$}{$x + m_w + m_u$}
+                \Let{$p$}{$parent(v)$} \Comment{$parent(v)$ gibt den Elternknoten von $v$ zurück.}
+                \Let{$c$}{$\weight(v, p) + T(C_w)[m_w][\vec{g}_w] + T(C_u)[m_u][\vec{g}_u]$} 
+                \LineComment{$\vec{e}(x)$ ist die Signatur mit einer Komponente der Größe x.} 
+                \Let{$\vec{g}$}{$\vec{e}(x) + \vec{g}_w + \vec{g}_u$} 
+                \Let{$T(C_v)[m][\vec{g}]$}{$\min\{c, T(C_v)[m][\vec{g}]\}$}
+            \EndIf
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{rem}
+    In Sektion~\ref{sec:cutting} haben wir den Fall, dass $v$ weder einen linken Geschwisterknoten $w$ noch ein rechtestes Kind $u$ hat, speziell behandelt.
+    Für diesen Fall gilt $C_v((0,\ldots,0), 0) = 0)$ und $C_v(\vec{e}(1), 1) = \weight(e)$. 
+    Alle anderen Funktionswert sind unendlich.
+    Da $w$ und $u$ nicht existieren, haben wir $T(C_w) = T(C_u) = \{(0, \{((0, \ldots, 0), 0)\} \}$.
+    Mit diesen Tabellen setzt Algorithmus~\ref{alg:encfun} den Eintrag $T(C_v)[0][(0,\ldots, 0)]$ auf den Wert $0$ und Algorithmus~\ref{alg:ecfun} den Eintrag $T(C_v)[1][\vec{e}(1)]$ auf $\weight(v,p)$, wobei $p$ der Elternknoten von $v$ ist.
+    Damit wird dieser Spezialfall bereits durch die oben genannten Algorithmen abgedeckt.
+\end{rem}
+
+
+\subsection{Packphase}
+\subsection{Partitionierung}
+
 \section{Datenstrukturen}
 \subsection{Bäume und Knoten}
-In Sektion~\ref{sec:treepartitioning} wurde ein Überblick gegeben, wie das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen approximiert werden kann. 
-In der Schnittphase, die in Sektion~\ref{sec:cutting} beschrieben wurde, wird eine Menge von Äquivalenzklassen berechnet, wobei jede Äquivalenzklasse eine Möglichkeit darstellt, den Baum in Komponenten bestimmter Größe zu zerschneiden.
-Um diese Menge von Äquivalenzklassen zu berechnen, wird dynamische Programmierung verwendet.
-Die dynamische Programmierung ist durch die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} gegeben.
-Aus diesen Rekursionsgleichungen wird ersichtlich, dass für die Berechnungen der Signaturen an einem Knoten $v$ die Signaturen an seinem rechtestem Kind $u$ und an seinem linken Geschwisterknoten $w$ benötigt werden.
-Im Folgenden wird beschrieben, wie der Algorithmus den Baum traversiert, so dass die Signaturen an $u$ und $w$ bereits berechnet sind, wenn $v$ betrachtet wird. 
-Sei $T=(V,E)$ ein Baum mit Wurzel $r$.
-Für jeden Knoten in $V$ legen wir eine Ordnung seiner Kindknoten fest.
-\todo{Vlt. als Definition} Dann ist das Level $l$ von $T$ als die Menge aller Knoten definiert, die eine Distanz von $l$ zu $r$ haben. 
-Die Knoten in Level $l$ erhalten eine Ordnung, die sich von der oben genannten Ordnung ableitet.
-Sei $k$ die maximalen Distanz zur Wurzel $r$ über alle Knoten in $V$.
-Dann startet der Algorithmus beim Level $k$ und durchläuft alle Level bis er bei Level $0$ ankommt.
-In jedem Level werden die Knoten hinsichtlich ihrer Ordnung besucht.
-Da die Ordnung der Geschwisterknoten in einem Level erhalten wird, besucht der Algorithmus den linken Geschisterknoten $w$ von $v$, bevor er $v$ besucht.
-Weiterhin werden durch dieses Verfahren vor $v$ alle Kinder von $v$ besucht, da die Distanz der Kinder von $v$ zu $r$ echt größer ist als die Distanz von $v$ zu $r$.
-Listing~\ref{lst:structnode} zeigt, wie ein Knoten gemäß der vorangegangenen Überlegungen definiert ist.
-
+Listing~\ref{lst:structnode} zeigt, wie ein Knoten definiert ist.
 \begin{lstlisting}[caption={Definition von \texttt{struct Node}}, label={lst:structnode}]
 struct Node {
     public:
@@ -104,31 +244,32 @@ Um das Traversieren des Baums zu vereinfachen, werden die Knoten des Baums in Le
 Da jedes Level als \texttt{std::vector<Node>} abgespeichert wird, haben die Knoten innerhalb eines Levels eine Ordnung.
 Die Felder \texttt{has\_left\_sibling} und \texttt{tree\_sizes} haben diesselbe Struktur wie \texttt{levels} und dienen als Lookup-Tabellen.
 Wenn der Knoten $v$ an der Stelle \texttt{levels[i][j]} abgespeichert ist, dann gibt uns der Lookup \texttt{tree\_sizes[i][j]} die Größe des Teilbaums gewurzelt in $v$ und \texttt{has\_left\_sibling[i][j]}, ob $v$ einen linken Geschisterknoten hat.
-Wenn wir den Baum nach dem oben gegeben Verfahren traversieren, dann verspricht diese Implementierung eine hohe Effizienz des Caches, da jedes Level des Baums ein \texttt{std::vector<Node>} ist und die Knoten daher hintereinander im Speicher abgelegt sind.
+Wenn wir den Baum mit dem oben beschriebenen Verfahren traversieren, dann verspricht diese Implementierung eine hohe Cacheeffizienz, da die Knoten in einem Level in der selben Reihenfolge besucht werden, wie sie im Speicher abgelegt sind.
 
 \subsection{Signaturen}
 Um in der Schnittphase die Äquivalenzklassen zu berechnen, werden diese nach Definition~\ref{defn:signature} durch eine Signatur repräsentiert.
 Eine Signatur ist ein Vektor mit der Länge $t = \ceil{\log_{1+\eps}(1/\eps)} + 1$ und enthält ausschließlich nicht-negative Integer.
 Weiterhin folgt aus den Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut}, dass Vektoradditionen durchgeführt werden müssen.
-In der Standardbibliothek von \Cpp\ gibt es dafür den Container \texttt{valarray}, der ein Array fester Länge ist und zusätzlich noch mathematische Operationen, darunter auch komponentenweise Addition, zulässt. 
+In der Standardbibliothek von \Cpp{} gibt es dafür den Container \texttt{valarray}, der ein Array fester Länge ist und zusätzlich noch mathematische Operationen, darunter auch komponentenweise Addition, zulässt. 
 Das Listing~\ref{lst:signature} zeigt, wie eine Signatur im \Cpp\hyp Code definiert ist.
 \begin{lstlisting}[caption={Definition von \texttt{Signature}}, label={lst:signature}]
 using Signature = std::valarray<SizeType>;
 \end{lstlisting}
 
-Außerdem muss an jedem Knoten $v$ die Abbildung $C_v : \mathbb{N}^t_0 \rightarrow \reals_{\geq 0} \cup \{\infty\}$, welche einer Signatur ihre minimalen Schnittkosten zuweist, gespeichert und berechnet werden.
-Wenn die minimalen Schnittkosten unendlich sind, dann ist es nicht möglich diese Signatur am Knoten $v$ zu erreichen.
-Wir können diese Eigenschaft nutzen und anstattdessen die Abbildung $C_v^\prime : \mathcal{S}_v \rightarrow \reals_{\geq 0}$ speichern, wobei $\mathcal{S}_v$ die Menge aller Signaturen ist, die am Knoten $v$ möglich sind.
+Außerdem muss an jedem Knoten $v$ die Abbildung $C_v : \mathbb{N}_0 \times \mathbb{N}^t_0 \rightarrow \reals_{\geq 0} \cup \{\infty\}$, welche einer Anzahl von Knoten und einer Signatur die minimalen Schnittkosten zuweist.
+Im Folgenden wird die Notation $C_v(m)$ verwendet, um die Abbildung $C_v(m) : \mathbb{N}^t_0 \rightarrow \reals_{\geq 0} \cup \{\infty\}$ zu beschreiben, welche eine Signatur für eine gegeben Anzahl an Knoten $m$ auf die minimalen Schnittkosten abbildet.
+Da unendliche Schnittkosten bedeuten, dass eine Signatur nicht erreicht werden kann, können wir anstattdessen die Abbildung $C_v^\prime(m) : \mathbb{N}_0 \times \mathcal{S}_v(m) \rightarrow \reals_{\geq 0}$ speichern, wobei $\mathcal{S}_v(m)$ die Menge aller Signaturen ist, die am Knoten $v$ mit $m$ Knoten in der Signatur möglich sind.
 Den Signaturen, die am Knoten $v$ nicht erreicht werden können, wird dann implizit eine Wert von $\infty$ zugewiesen.
-Um $C^\prime_v$ zu speichern, müssen wir festlegen, wie die Menge von Signaturen $\mathcal{S}_v$ gespeichert wird.
-
-
+Da die Kardinalität von $\mathcal{S}_v$ mit Gleichung~\eqref{eq:sigcount} polynomiell in $n$ und $k$ beschränkt ist, können wir die Abbildung $C_v^\prime$ als Tabelle abspeichern.
+Eine Möglichkeit eine Tabelle zu speichern ist ein balancierter Suchbaum, wobei die Elemente anhand der lexikographischen Größe der Signaturen sortiert werden.
+Die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} verlangen, dass von allen Möglichkeiten, eine Signatur zu erreichen, diejenige ausgewählt wird, welche die geringsten Schnittkosten verursacht.
+Das bedeutet, dass für jede Signatur, die am Knoten $v$ berechnet wird, geprüft werden muss, ob diese Signatur bereits in der Tabelle eingetragen ist.
+Wenn die Signatur bereits einmal berechnet wurde, dann wird das Minimum der Schnittkosten der beiden Signaturen gewählt; andernfalls wird eine neuer Eintrag in der Tabelle für diese Signatur eingefügt.
+In einem balancierten Suchbaum beansprucht jede dieser Überprüfungen eine logarithmische Laufzeit in der Anzahl der Signaturen in der Tabelle, wenn der lexikographische Vergleich zweier Signaturen in konstanter Zeit durchgeführt werden kann.
+Der lexikographische Vergleich hat konstante Laufzeit, da die Signaturen für konstantes $\eps$ eine konstante Länge haben.
+Die Tabelle wurde jedoch mit einer Hashtabelle implementiert, da dies die Laufzeit verbessert.
 
 \subsection{Packing}
 
-\section{Algorithmus}
-\subsection{Schnittphase}
-\subsection{Packphase}
-\subsection{Partitionierung}
 \section{Verwendung}
 Kompilieren des Programms, Interaktion mit dem Programm

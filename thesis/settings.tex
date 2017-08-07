@@ -31,11 +31,12 @@
 % Various math packages
 \usepackage{mathtools}
 
-\usepackage{algorithm}
+\usepackage[chapter]{algorithm}
 \usepackage[noend]{algpseudocode}
+\makeatletter\renewcommand{\ALG@name}{Algorithmus}
 \newcommand*\Let[2]{\State #1 $\gets$ #2}
 \algrenewcomment[1]{\(\qquad \triangleright\) #1}
-\algrenewcommand\algorithmicrequire{\textbf{Precondition:}}
+\algnewcommand{\LineComment}[1]{\State \(\triangleright\) #1}
 
 \usepackage{amsthm}
 \usepackage{amssymb}
@@ -49,18 +50,8 @@
 \newtheorem{defn}[thm]{Definition}
 \newtheorem{bsp}[thm]{Beispiel}
 
-\newtheoremstyle{rem} % name
-    {\topsep}                    % Space above
-    {\topsep}                    % Space below
-    {}                   % Body font
-    {}                           % Indent amount
-    {\bf}                   % Theorem head font
-    {:}                          % Punctuation after theorem head
-    {.5em}                       % Space after theorem head
-    {}  % Theorem head spec (can be left empty, meaning ‘normal’)
-
-\theoremstyle{rem}
-\newtheorem*{remark}{Bemerkung}
+\theoremstyle{definition}
+\newtheorem*{rem}{Bemerkung}
 
 
 \bibliography{bibliography}

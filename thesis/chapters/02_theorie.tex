@@ -179,11 +179,11 @@ Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven
     Die Komponente $g_i$ der Signatur $\vec{g}$ zu $\mathcal{F}$ zählt Komponenten mit Größe mindestens der unteren Schranke des $i$-ten Intervalls, wie in Definition~\ref{defn:signature} spezifiziert.
     Deshalb kann man $g_i$ mit $\card{L_v}/({(1 + \eps)}^{i - 1} \cdot \eps n/k) \leq k/({(1 + \eps)}^{i - 1} \cdot \eps)$ für $i \in \{1, \ldots, t\}$ beschränken und mit $\card{L_v}$ für den Fall $i = 0$.
     Insgesamt kann man die Anzahl an Signaturen $\vec{g}$ an einem Knoten $v$ mit
-    \begin{equation*}
+    \begin{equation}\label{eq:sigcount}
         \card{L_v} \cdot \prod^t_{i=1} \frac{k}{{(1 + \eps)}^{i - 1} \cdot \eps} 
         = \card{L_v} \cdot {\left( \frac{k}{\eps} \right)}^t \cdot {\left( \frac{1}{1 + \eps} \right)}^{\frac{(t-1)t}{2}} 
         \leq \card{L_v} \cdot {\left( \frac{k}{\sqrt{\eps}} \right)}^t
-    \end{equation*}
+    \end{equation}
     nach oben beschränken. 
     Die Ungleichung gilt, da $t - 1 = \ceil*{\log_{1 + \eps}(1/\eps)}$. 
     Ferner kann $t - 1$ für $\eps \leq 1$ mit $\ceil*{1/\eps \cdot \log(1/\eps)}$ nach oben abgeschätzt werden, weil dann $1 + \eps \geq 2^\eps$ gilt.
@@ -207,7 +207,7 @@ Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven
     Deshalb ist die Laufzeit für die Schnittphase insgesamt $\bigO(\gamma^2 n^4) = \bigO(n^4{(k/\sqrt{\eps})}^{2+2 \ceil{1/\eps \cdot \log(1/\eps)}})$ und damit polynomiell für konstantes $\eps$.
 \end{proof}
 
-\subsection{Die Packphase}
+\subsection{Die Packphase}\label{sec:packing}
 In der ersten Phase gibt der Algorithmus Mengen von Zusammenhangskomponenten $\calS \in \bbS$ und deren zugehörige optimale Schnittkosten aus.
 Um zu überprüfen, ob eine Menge von Zusammenhangskomponenten $\calS$ für eine gültige $(k,1+\eps)$\hyp Partitionierung des Graphen verwendet werden kann, versucht der Algorithmus in der zweiten Phase die Komponenten in $\calS$ in höchstens $k$ Behälter der Größe $(1 + \eps) \ceil*{n/k}$ zu packen.
 Dieses Problem, genannt Bin-Packing-Problem, ist generell NP-vollständig, da es eine Verallgemeinerung des stark NP-vollständigen 3\hyp Partitionierungsproblems (siehe Satz~\ref{thm:np_comp}) ist.
