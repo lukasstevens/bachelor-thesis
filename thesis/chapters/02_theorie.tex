@@ -138,7 +138,7 @@ Seien nun $x$ der Knoten in $L_u$ von $\mathcal{F}^*$ überdeckt, dann sind $m -
 Dann muss die Signatur $\vec{g}$ zu $\mathcal{F}^*$ die Summe der Signaturen $\vec{g}_u$ und $\vec{g}_w$ sein, sodass $\vec{g}_u$ (beziehungsweise $\vec{g}_w$) minimale Schnittkosten unter den unteren Grenzen von $L_u$ (beziehungsweise $L_w$), die $x$ Knoten (beziehungsweise $m - x$) Knoten überdecken, hat.
 Falls dies nicht der Fall wäre, könnte diese untere Grenze von $L_u$ (beziehungsweise $L_w$) durch eine untere Grenze mit geringeren Kosten ausgetauscht werden, was ein Widerspruch zur Optimalität von $\mathcal{F}^*$ wäre.
 Also gilt im Fall, dass $v$ eine rechtestes Kind $u$ hat und $v$ einen Vorgänger $w$ hat und die Kante $e$ von $v$ zu seinem Elternknoten nicht geschnitten wird, dass 
-\begin{equation} \label{eq:e_not_cut}
+\begin{equation}\label{eq:e_not_cut}
     C_v(\vec{g}, m) = \min \left\{ C_w(\vec{g}_w, m - x) + C_u(\vec{g}_u, x) \mid 0 \leq x \leq m \land \vec{g}_w + \vec{g}_u = \vec{g} \right\}.
 \end{equation}
 
@@ -149,7 +149,7 @@ Weiterhin sei $x$ die Größe der Komponente $S \in \mathcal{F}^*$, die $v$ enth
 Wie auch oben müssen die unteren Grenzen in $L_u$ und $L_w$ mit den Signaturen $\vec{g}_u$ und $\vec{g}_w$ in $\mathcal{F}^* \ {S}$ minimale Schnittkosten haben.
 Also muss die Signatur $\vec{g}$ die Summe von $\vec{g}_u$ und $\vec{g}_w$ und $\vec{e}(x)$ sein.
 Damit gilt in diesem Fall\todo{Visualisierung}
-\begin{equation} \label{eq:e_cut}
+\begin{equation}\label{eq:e_cut}
     \begin{aligned}
         C_v(\vec{g}, m) = \weight(e) + \min \{ & C_w(\vec{g}_w, m - n_v) + C_u(\vec{g}_u, n_v - x) \mid \\ & \qquad 1 \leq x \leq \mu \land \vec{g}_w + \vec{g}_u + \vec{e}(x) = \vec{g} \}.
     \end{aligned}
@@ -169,8 +169,8 @@ Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven
     Andernfalls muss in einer Optimallösung $\calS \in \bbS$ mit Signatur $\vec{g}$ Zusammenhangskomponente der Größe $x$ sein, die die Wurzel $r$ enthält.
     Diese Zusammenhangskomponente kann Größe höchstens $\mu$ haben und muss Größe mindestens $1$ haben.
     Sei nun $u$ das rechteste Kind der Wurzel $r$, dann können die Schnittkosten der $C(\vec{g})$ der Optimallösung $\calS$ in lineare Zeit mit der Formel
-    \begin{equation} \label{eq:root}
-        C(\vec{g}) = \min \left\{ C_u(\vec{g} - \vec{e}(x), n - x) \mid 1 \leq x < \mu \right\}
+    \begin{equation}\label{eq:root}
+        C(\vec{g}) = \min \left\{ C_u(\vec{g} - \vec{e}(x), n - x) \mid 1 \leq x \leq \mu \right\}
     \end{equation}
     berechnet werden.
     Die Menge von Zusammenhangskomponenten $\calS$ mit der Signatur $\vec{g}$ kann wiederum rekursiv mit Hilfe von dynamischer Programmierung und den rekursiven Formeln für $C_v$ berechnet werden.

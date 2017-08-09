@@ -119,7 +119,7 @@ Wir erinnern uns, dass $C_x((0,\ldots, 0),0) = 0$ für alle $x$ gilt, auch wenn 
 Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $(0, T(C^0_x))$ beziehungsweise $((0,\ldots,0), 0)$.
 Insgesamt erhalten wir das Iterationsschema in Algorithmus~\ref{alg:canfun}.
 Dabei ist $T(C).keys$ die Menge aller Schlüssel in der Tabelle $T(C)$ und $T(C_x)[m]$ gibt die Tabelle $T(C^m_x)$ zurück, falls $T(C)$ das Schlüssel-Wert-Paar $(m, T(C^m_x))$ enthält.
-Andernfalls ist $T(C_x)[m]$ nicht definiert.
+Andernfalls gibt $T(C_x)[m]$ eine leere Tabelle zurück.
 
 \begin{algorithm}
     \caption{Implementierung von \canfun{}}\label{alg:canfun}
@@ -150,7 +150,7 @@ Sei im Folgenden $\mathcal{F}_w$ die untere Grenze zu $C_w(\vec{g}_w, m_w)$ und 
 Da $L_v = L_w \cup L_u \cup \{v\}$ gilt und $e$ nicht geschnitten wird, bleibt $v$ in der Zusammenhangskomponente mit der Wurzel $r$ und wir vereinigen $\mathcal{F}_w$ mit $\mathcal{F}_u$, um eine untere Grenze $\mathcal{F}_v$ für $L_v$ zu erhalten.
 Diese untere Grenze $\mathcal{F}_v$ enthält $m_w + m_u$ Knoten, hat Schnittkosten $C_w(\vec{g}_w, m_w) + C_u(\vec{g}_u, m_u)$ und die Signatur $\vec{g}_w + \vec{g}_u$.
 Die obigen Überlegungen sind als Pseudocode in Algorithmus~\ref{alg:encfun} zu sehen.
-Ähnlich zur vorherigen Schreibweise gilt $T(C_x)[n][\vec{h}] = d$, wenn die Tabelle $T(C^n_x)$ existiert und der Eintrag $(\vec{h}, d)$ in $T(C^n_x)$ enthalten ist.
+Ähnlich zur vorherigen Schreibweise gilt $T(C_x)[n][\vec{h}] = d$, der Eintrag $(\vec{h}, d)$ in $T(C_x)[n]$ enthalten ist.
 Falls dies nicht der Fall ist, gilt $T(C_x)[n][\vec{h}] = \infty$.
 Die Zuweisung an $T(C_v)[m][\vec{g}]$ in Zeile~\ref{alg:encfun:line:assign} erstellt die entsprechenden Einträge in den Tabellen $T(C_x)$ und $T(C_x^n)$, wenn diese nicht vorhanden sind.
 
@@ -171,11 +171,13 @@ Im zweiten Fall wird die Kante $e$ geschnitten.
 Sei $S$ die Zusammenhangskomponente, in der $v$ liegt und sein $\card{S} \coloneqq x$.
 Dann muss $L_u$ alle Knoten des in $v$ gewurzelten Teilbaums enthalten, die nicht in $S$ sind.
 Weiterhin haben wir $L_v = L_w \cup L_u \cup \{v\}$. 
-Insgesamt erhalten wir eine untere Grenze $\mathcal{F}_v$ für $L_v$, indem wir $\mathcal{F}_v = \mathcal{F}_w \cup \mathcal{F}_u \cup S$ setzen.
+Insgesamt erhalten wir eine untere Grenze $\mathcal{F}_v$ für $L_v$, indem wir $\mathcal{F}_v = \{S\} \cup \mathcal{F}_w \cup \mathcal{F}_u$ setzen.
 Diese untere Grenze ist jedoch nur zulässig, wenn $\card{S} = x \leq (1+\eps)\ceil{n/k}$ gilt.
 Ist $\mathcal{F}_v$ zulässig, dann ist die Anzahl der Knoten in $\mathcal{F}_v$ gleich $x + m_w + m_u$, die Schnittkosten sind $\weight(v,p) + C_w(\vec{g}_w, m_w) + C_u(\vec{g}_u, m_u)$ und die Signatur ist $\vec{e}(x) + \vec{g}_w + \vec{g}_u$.
 Dabei ist $p$ der Elternknoten von $v$ und $\vec{e}(x)$ ist die Signatur, die eine Komponente der Größe $x$ enthält.
 Die vorangegangenen Überlegungen werden durch Algorithmus~\ref{alg:ecfun} implementiert.
+
+\todo[inline]{Was ist wenn, $x = (1+\eps)\ceil{n/k}$}
 
 \begin{algorithm}
     \caption{Implementierung von \textproc{edge\_cut}}\label{alg:ecfun}
@@ -205,8 +207,35 @@ Die vorangegangenen Überlegungen werden durch Algorithmus~\ref{alg:ecfun} imple
     Damit wird dieser Spezialfall bereits durch die oben genannten Algorithmen abgedeckt.
 \end{rem}
 
+Der Algorithmus~\ref{alg:canfun} berechnet die Signaturen für alle Knoten $v \neq r$, wobei $r$ die Wurzel des Baums ist.
+Um die Schnittphase abzuschließen, wird nun noch betrachtet, wie die Funktion \carfun{} die Signaturen an der Wurzel $r$ mit der Rekursionsgleichung~\eqref{eq:root} berechnet.
+Am rechtesten Kind $u$ von $r$ gilt $L_u = V \setminus \{r\}$.
+Für die untere Grenze $\mathcal{F}_u$ zu $C_u(\vec{g}_u, m_u)$ gilt, dass die verbleibenden $n - m_u$ Knoten eine Zusammenhangskomponente $S$ mit der Wurzel $r$ bilden.
+Nun fügen $S$ zu $\mathcal{F}_u$ hinzu und erhalten eine untere Grenze $\mathcal{F}_r$, die alle Knoten in $v$ überdeckt.
+Damit stellt $\mathcal{F}_r$ eine Zerlegung des Baums in Zusammenhangskomponenten dar.
+Weiterhin haben wir für $\mathcal{F}_r$ die Signatur $\vec{g}_u + \vec{e}(n - m_u)$ und Schnittkosten $C_u(\vec{g}_u, m_u)$.
+Insgesamt definieren wir die Funktion \carfun{}, wie in Algorithmus~\ref{alg:carfun} zu sehen.
+
+\begin{algorithm}
+    \caption{Implementierung von \carfun{}}\label{alg:carfun}
+    \begin{algorithmic}
+        \Function{cut\_at\_root}{Node $r$}
+           \For{$x \in \{1, \ldots, (1+\eps)\ceil{n/k}\}$} 
+                \ForAll{$(\vec{g}_u, c) \in T(C_u)[n - x]$}
+                    \Let{$\vec{g}$}{$\vec{g}_u + \vec{e}(x)$}
+                    \Let{$T(C_r)[n][\vec{g}]$}{$\min\{c, T(C_r)[n][\vec{g}]$}\}
+                \EndFor
+           \EndFor
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
 
 \subsection{Packphase}
+In der vorherigen Sektion wurde beschrieben, wie wir eine Menge von Signaturen und deren Kosten an der Wurzel $r$ berechnen, die alle eine Möglichkeit darstellen den Baum $T$ in Zusammenhangskomponenten zu zerlegen.
+Eine Zerlegung in Zusammenhangskomponenten stellt jedoch noch keine Partitionierung von $T$ dar.
+Deshalb muss in der Packphase geprüft werden, ob sich die Zusammenhangskomponenten in einer Signatur $\vec{g}$ in $k$ Behälter der Größe $(1+\eps)\ceil{n/k}$ packen lassen.
+Wenn dies der Fall ist, dann repräsentiert $\vec{g}$ eine valide Partitionierung des Graphen.
+
 \subsection{Partitionierung}
 
 \section{Datenstrukturen}
@@ -219,7 +248,7 @@ struct Node {
         EdgeWeightType const parent_edge_weight;
         size_t const parent_idx;
         std::pair<size_t const, size_t const> const children_idx_range;
-}
+    }
 \end{lstlisting}
 \todo[inline]{Listings besprechen}
 
@@ -237,7 +266,7 @@ struct Tree {
         std::vector<std::vector<Node>> levels;
         std::vector<std::vector<bool>> has_left_sibling;
         std::vector<std::vector<SizeType>> tree_sizes;
-}
+    }
 \end{lstlisting}
 \todo{Evtl. die Typendefinitionen für SizeType etc. auch zeigen?} Hierbei ist \texttt{SizeType} der Integertyp, der verwendet wird, um Knoten zu zählen.
 Um das Traversieren des Baums zu vereinfachen, werden die Knoten des Baums in Leveln gespeichert.
