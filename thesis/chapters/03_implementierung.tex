@@ -169,8 +169,7 @@ Die Zuweisung an $T(C_v)[m][\vec{g}]$ in Zeile~\ref{alg:encfun:line:assign} erst
 Im zweiten Fall wird die Kante $e$ geschnitten.
 \todo{Verweise auf Visualisierung} Damit ist $v$ nicht in der Zusammenhangskomponente, die die Wurzel $r$ enthält, und es folgt, dass $L_v$ den in $v$ gewurzelten Teilbaum vollständig enthalten muss. 
 Sei $S$ die Zusammenhangskomponente, in der $v$ liegt und sein $\card{S} \coloneqq x$.
-Dann muss $L_u$ alle Knoten des in $v$ gewurzelten Teilbaums enthalten, die nicht in $S$ sind.
-Weiterhin haben wir $L_v = L_w \cup L_u \cup \{v\}$. 
+Dann muss die untere Grenze $\mathcal{F}_u$ zur Signatur $\vec{g}_u$ alle Knoten des in $v$ gewurzelten Teilbaums überdecken, die nicht in $S$ sind.
 Insgesamt erhalten wir eine untere Grenze $\mathcal{F}_v$ für $L_v$, indem wir $\mathcal{F}_v = \{S\} \cup \mathcal{F}_w \cup \mathcal{F}_u$ setzen.
 Diese untere Grenze ist jedoch nur zulässig, wenn $\card{S} = x \leq (1+\eps)\ceil{n/k}$ gilt.
 Ist $\mathcal{F}_v$ zulässig, dann ist die Anzahl der Knoten in $\mathcal{F}_v$ gleich $x + m_w + m_u$, die Schnittkosten sind $\weight(v,p) + C_w(\vec{g}_w, m_w) + C_u(\vec{g}_u, m_u)$ und die Signatur ist $\vec{e}(x) + \vec{g}_w + \vec{g}_u$.
@@ -233,8 +232,8 @@ Insgesamt definieren wir die Funktion \carfun{}, wie in Algorithmus~\ref{alg:car
 \subsection{Packphase}
 In der vorherigen Sektion wurde beschrieben, wie wir eine Menge von Signaturen und deren Kosten an der Wurzel $r$ berechnen, die alle eine Möglichkeit darstellen den Baum $T$ in Zusammenhangskomponenten zu zerlegen.
 Eine Zerlegung in Zusammenhangskomponenten stellt jedoch noch keine Partitionierung von $T$ dar.
-Deshalb muss in der Packphase geprüft werden, ob sich die Zusammenhangskomponenten in einer Signatur $\vec{g}$ in $k$ Behälter der Größe $(1+\eps)\ceil{n/k}$ packen lassen.
-Wenn dies der Fall ist, dann repräsentiert $\vec{g}$ eine valide Partitionierung des Graphen.
+Deshalb muss in der Packphase geprüft werden, ob sich die Zusammenhangskomponenten zu einer Signatur $\vec{g}$ in $k$ Behälter der Größe $(1+\eps)\ceil{n/k}$ packen lassen.
+Wenn dies der Fall ist, dann können die Zusammenhangskomponenten zu $\vec{g}$ für eine valide Partitionierung verwendet werden.
 
 \subsection{Partitionierung}
 
