@@ -208,21 +208,17 @@ namespace cut {
         root_sigs = SignatureMap(node_cnt_size_t + 1);
         SignatureMap& child_sigs = signatures[1].back();
 
-        for (SizeType child_sigs_node_cnt = 0; 
-                static_cast<size_t>(child_sigs_node_cnt) < child_sigs.size(); ++child_sigs_node_cnt) {
-            SizeType const root_comp_node_cnt = node_cnt - child_sigs_node_cnt;
-            if (root_comp_node_cnt < comp_size_bounds.back()) {
-                for (auto const& sig : child_sigs[static_cast<size_t>(child_sigs_node_cnt)]) {
-                    Signature root_sig(sig.first);
-                    size_t i = 0;
-                    while(root_comp_node_cnt >= comp_size_bounds[i]) { ++i; }
-                    root_sig[i] += 1;
+        for (SizeType root_comp_node_cnt = comp_size_bounds.back() - 1; root_comp_node_cnt > 0; --root_comp_node_cnt) {
+            for (auto const& sig : child_sigs[static_cast<size_t>(node_cnt - root_comp_node_cnt)]) {
+                Signature root_sig(sig.first);
+                size_t i = 0;
+                while(root_comp_node_cnt >= comp_size_bounds[i]) { ++i; }
+                root_sig[i] += 1;
 
-                    auto prev_cut_cost_it = root_sigs[node_cnt_size_t].find(root_sig);
-                    if (prev_cut_cost_it == root_sigs[node_cnt_size_t].end()
-                            || sig.second < prev_cut_cost_it->second) {
-                        root_sigs[node_cnt_size_t][root_sig] = sig.second;
-                    }
+                auto prev_cut_cost_it = root_sigs[node_cnt_size_t].find(root_sig);
+                if (prev_cut_cost_it == root_sigs[node_cnt_size_t].end()
+                        || sig.second < prev_cut_cost_it->second) {
+                    root_sigs[node_cnt_size_t][root_sig] = sig.second;
                 }
             }
         }
