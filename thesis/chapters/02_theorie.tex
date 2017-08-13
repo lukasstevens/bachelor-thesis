@@ -146,7 +146,7 @@ Nun kann es noch sein, dass $v$ kein Blatt ist und $v$ einen linken Geschwisterk
 Sei $n_v$ die Anzahl der Knoten im Teilbaum gewurzelt in $v$, die durch $\mathcal{F}^*$ überdeckt werden.
 Dann müssen die anderen $m - n_v$ Knoten, die durch $\mathcal{F}^*$ überdeckt werden, in $L_w$ enthalten sein.
 Weiterhin sei $x$ die Größe der Komponente $S \in \mathcal{F}^*$, die $v$ enthält.
-Wie auch oben müssen die unteren Grenzen in $L_u$ und $L_w$ mit den Signaturen $\vec{g}_u$ und $\vec{g}_w$ in $\mathcal{F}^* \ {S}$ minimale Schnittkosten haben.
+Wie auch oben müssen die unteren Grenzen in $L_u$ und $L_w$ mit den Signaturen $\vec{g}_u$ und $\vec{g}_w$ in $\mathcal{F}^* \setminus {S}$ minimale Schnittkosten haben.
 Also muss die Signatur $\vec{g}$ die Summe von $\vec{g}_u$ und $\vec{g}_w$ und $\vec{e}(x)$ sein.
 Damit gilt in diesem Fall\todo{Visualisierung}
 \begin{equation}\label{eq:e_cut}
@@ -223,13 +223,13 @@ Im zweiten Schritt werden die größeren Komponenten in $\calS$ folgendermaßen 
 Für eine Bin-Packing-Instanz $\vec{i} = (i_1, \ldots, i_t)$ definiere $Bins(\vec{i})$ als die minimale Anzahl an Behältern, die für das Packen der Komponenten in $\vec{i}$ benötigt werden.
 Weiterhin wird für die gegebene Instanz $(g_1, \ldots, g_t)$ die Menge $\mathcal{C} = \left\{ \vec{c} \mid Bins(\vec{c}) = 1 \right\}$ definiert, also die Menge aller Möglichkeiten einen einzigen Behälter zu füllen.
 Bei $Bins(\cdot)$ handelt es sich um eine $t$-dimensionale Tabelle und der Eintrag $Bins(\vec{i})$ für $\vec{i} = (i_1, \ldots, i_t) \in \{0, \ldots, g_1\} \times \cdots \times \{0, \ldots, g_t\}$ wird berechnet mit der Rekurrenzrelation 
-\begin{equation*}
-    Bins((i_1, \ldots, i_t)) = 
+\begin{equation}\label{eq:packing}
+    Bins(\vec{i}) = 
     \begin{cases*}
         1 & für $(i_1, \ldots, i_t) \in \mathcal{C}$, \\
         1 + \min_{\vec{c} \in \mathcal{C}} Bins((i_1 - c_1, \ldots, i_t - c_t)) & sonst. \\
     \end{cases*}
-\end{equation*}
+\end{equation}
 Jede der Komponenten in $(g_1, \ldots, g_t)$ hat eine Größe von mindestens $\eps \ceil*{n/k}$. 
 Da die Summe der Komponentengrößen höchstens die Anzahl der Knoten $n$ ergibt, kann die Anzahl der Komponenten in $(g_1, \ldots, g_t)$ mit $n / (\eps \ceil{n/k}) \leq n / (\eps \cdot n/k) = k/\eps$ nach oben abgeschätzt werden.
 Daraus folgt, dass die Anzahl der Möglichkeiten einen Vektor $\vec{i} \in (i_1, \ldots, i_t) \in \{0, \ldots, g_1\} \times \cdots \times \{0, \ldots, g_t\}$ zu bilden höchstens ${(k/\eps)}^t$ ist.
