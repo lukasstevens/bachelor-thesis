@@ -162,13 +162,21 @@ namespace pack {
 
             for (auto const& prev_packing_signature : prev_partial_packing) {
                 for (auto const& bin_signature : bin_signatures) {
+
                     Signature packing_signature = prev_packing_signature.first - bin_signature; 
-                    if (packing_signature.max() <= 0) {
-                        packing_signature = 0;
-                        curr_partial_packing[packing_signature] = prev_packing_signature.first;
-                        return true;
+                    bool all_comp_cnts_leq_zero = true;
+                    for (auto& comp_cnt : packing_signature) {
+                        if (comp_cnt <= 0) {
+                            comp_cnt = 0;
+                        } else {
+                            all_comp_cnts_leq_zero = false;
+                        }
                     }
                     curr_partial_packing[packing_signature] = prev_packing_signature.first;
+
+                    if (all_comp_cnts_leq_zero) {
+                        return true;
+                    }
                 }
             }
             return false;
