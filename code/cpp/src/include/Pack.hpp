@@ -206,16 +206,18 @@ namespace pack {
                 is_packing_complete = calculate_partial_packing(partial_packings[idx - 1], partial_packings[idx], bin_signatures);
             }
 
-            Signature complete_packing(component_sizes.size());
+            Signature curr_packing(component_sizes.size());
             for (size_t bin_idx = partial_packings.size() - 1; bin_idx > 0; --bin_idx) {
-                Signature curr_bin_signature = partial_packings[bin_idx][complete_packing] - complete_packing;
+                Signature curr_bin_signature = partial_packings[bin_idx][curr_packing] - curr_packing;
+
                 std::vector<T> curr_bin;
                 for (size_t component_idx = 0; component_idx < curr_bin_signature.size(); ++component_idx) {
                     auto back = curr_bin.end();
                     curr_bin.insert(back, curr_bin_signature[component_idx], component_sizes[component_idx]);
                 }
                 this->bins.push_back(curr_bin);
-                complete_packing += curr_bin_signature;
+
+                curr_packing = partial_packings[bin_idx][curr_packing];
             }
         }
 
