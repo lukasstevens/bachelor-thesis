@@ -237,7 +237,8 @@ Deshalb hat die $t$-dimensionale Tabelle $Bins(\cdot)$ höchstens ${(k/\eps)}^t$
 Weiterhin kann jeder Eintrag in Zeit ${(k/\eps)}^t$ berechnet werden, da $\mathcal{C}$ höchstens ${(k/\eps)}^t$ Vektoren enthält.
 Insgesamt ist die Laufzeit dieses Schritts also $\bigO({(k/\eps)}^{2t})$.
 Im dritten Schritt werden die Kapazitäten der Behälter auf $(1 + \eps) \ceil*{n/k}$ erhöht und die ursprünglichen Größen der Komponenten in $\calS$ wiederhergestellt.
-Dies kann die Behälterkapazitäten nicht verletzen, da durch das Abrunden nach Definition~\ref{defn:signature} die Größe jeder Komponente um maximal \todo{Mathematisch formulieren?} einen Faktor $(1 + \eps)$ unterschätzt wurde.
+Dies kann die Behälterkapazitäten nicht verletzen, da durch das Abrunden nach Definition~\ref{defn:signature} die Größe jeder Komponente um maximal einen Faktor $(1 + \eps)$ unterschätzt wurde.
+Dieser Schritt kann in Zeit $\bigO(n)$ durchgeführt werden.
 Im letzten Schritt werden dann die übrigen $g_0$ Komponenten in $\calS$, deren Größe kleiner als $\eps \ceil*{n/k}$ ist, greedy mit First-Fit gepackt. 
 Es wird also jede Komponente in den erstmöglichen Behälter gepackt, sodass die Behälterkapazität $(1 + \eps) \ceil*{n/k}$ nicht überschritten wird.
 Wenn in keinem der Behälter mehr Platz ist, dann wird ein neuer Behälter hinzugefügt und die Komponente in diesen gepackt.
