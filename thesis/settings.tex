@@ -28,9 +28,6 @@
 \usepackage[parfill]{parskip}
 \usepackage[textsize=tiny]{todonotes}
 
-% Various math packages
-\usepackage{mathtools}
-
 \usepackage[chapter]{algorithm}
 \usepackage[noend]{algpseudocode}
 \makeatletter\renewcommand{\ALG@name}{Algorithmus}
@@ -39,7 +36,18 @@
 \algnewcommand{\LineComment}[1]{\State \(\triangleright\) #1}
 
 \usepackage{amsthm}
+\begingroup
+    \makeatletter
+    \@for\theoremstyle:=definition,remark,plain\do{%
+        \expandafter\g@addto@macro\csname th@\theoremstyle\endcsname{%
+            \addtolength\thm@preskip\parskip
+            }%
+        }
+\endgroup
+\usepackage{mathtools}
 \usepackage{amssymb}
+
+%\setlength{\topsep}{10pt}
 
 \theoremstyle{plain}
 \newtheorem{thm}{Satz}[section]

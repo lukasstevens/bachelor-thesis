@@ -3,9 +3,9 @@
 \newcommand{\Cpp}{C{}\texttt{++}}
 
 \chapter{Implementierung}\label{chapter:implementierung}
-In diesem Kapitel wird die Implementierung des Algorithmus beschrieben, der in Kapitel~\ref{chapter:theorie} präsentiert wurde.
-Zuerst wird darauf eingegangen, welche Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, verwendet wurden.
-Danach wird erläutert wird anhand von Pseudocode erläutert, wie der Algorithmus als Programm umgesetzt wurde. 
+Bevor wird die Implementierung näher betrachteten, werden die verwendeten Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, vorgestellt.
+Danach wird anhand von Pseudocode erläutert, wie der Algorithmus als Programm umgesetzt wurde. 
+Zuletzt werden die Datenstrukturen beschrieben, welche für die Implementierung verwendet wurden.
 \todo[inline]{Danach Datenstrukturen, Zuletzt evtl. noch einzelne \Cpp\hyp Ausschnitte} 
 
 \section{Drittmaterialien}
@@ -66,12 +66,12 @@ In der Schnittphase, die in Sektion~\ref{sec:cutting} beschrieben wurde, wird ei
 Jede dieser Äquivalenzklassen wird nach Definition~\ref{defn:signature} durch eine Signatur repräsentiert.
 Um diese Signaturen zu berechnen, wird dynamische Programmierung verwendet, welche durch die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} gegeben ist.
 Aus diesen Rekursionsgleichungen wird ersichtlich, dass für die Berechnungen der Signaturen an einem Knoten $v \neq r$ die Signaturen an seinem rechtestem Kind $u$ und an seinem linken Geschwisterknoten $w$ benötigt werden.
-Im Folgenden wird beschrieben, wie der Baum traversiert werden kann, so dass die Signaturen an $u$ und $w$ bereits berechnet sind, wenn $v \neq r$ betrachtet wird. 
-Dafür wird zunächst der Begriff Level definiert. \\
+Im Folgenden wird beschrieben, wie der Baum traversiert werden kann, sodass die Signaturen an $u$ und $w$ bereits berechnet sind, wenn $v \neq r$ betrachtet wird. 
+Dafür wird zunächst der Begriff Level definiert.
 
 \begin{defn}[Level]\label{def:level}
     Sei $T = (V,E)$ ein Baum mit Wurzel $r$ und sei für jeden Knoten $v \in V$ eine Ordnung seiner Kindknoten gegeben.
-    Ein Level $L_T(l)$ ist als die Menge aller Knoten, die eine Distanz von $l$ zu $r$ haben.
+    Ein Level $L_T(l)$ ist die Menge aller Knoten, die eine Distanz von $l$ zu $r$ haben.
     Die Knoten in $L_T(l)$ erhalten eine Ordnung, die sich aus der Ordnung der Kindknoten ableitet.
 \end{defn}
 
@@ -79,7 +79,7 @@ Beginnend mit Level $k$ werden alle Level bis Level $1$ durchlaufen.
 Danach wird noch die Wurzel $r$ betrachtet, welche der einzige Knoten im Level $0$ ist. 
 In jedem Level werden die Knoten hinsichtlich ihrer Ordnung besucht.
 Da die Ordnung der Geschwisterknoten in einem Level erhalten bleibt, wird der linke Geschisterknoten $w$ von $v$ besucht, bevor $v$ betrachtet wird.
-Weiterhin werden durch dieses Verfahren vor $v$ alle Kinder von $v$ besucht, da die Distanz der Kinder von $v$ zu~$r$ echt größer ist als die Distanz von $v$~zu~$r$.
+Weiterhin werden durch dieses Verfahren auch jedes Kind $u$ von $v$ vor $v$ besucht, da die Distanzu von $u$ zu~$r$ echt größer ist als die Distanz von $v$ zu~$r$.
 Das oben beschriebene Iterationsschema wird durch Algorithmus~\ref{alg:iteration} formalisiert.
 Hier ist $T(C_r)[n]$ eine Tabelle, die alle Signaturen an der Wurzel mit endlichen optimalen Schnittkosten und $n$ Knoten enthält.
 Da an der Wurzel alle Knoten des Baums überdeckt sein müssen, um später eine Partitionierung berechnen zu können, werden nur Signaturen benötigt, die $n$ Knoten überdecken.
@@ -90,7 +90,7 @@ Wie $T(C_r)[n]$ berechnet werden kann, wird im Anschluss beschrieben.
     \begin{algorithmic}[1]
         \Function{cut}{Baum $T$}
             \Let{$k$}{$\max_{L_T(l) \neq \emptyset} l$} \Comment{Wie wird das Maximum korrekt geschrieben?}
-            \For{$l \in \{k, k - 1, \ldots, 1\}$}
+            \For{$l = k, k - 1, \ldots, 1$}
                 \ForAll{$v \in L_T(l)$} \Comment{Die Knoten werden der Ordnung nach durchlaufen.}
                     \State \Call{cut\_at\_node}{$v$}
                 \EndFor
@@ -113,16 +113,14 @@ Die Kostenfunktion $C_v : \nats_0^t \times \nats_0 \rightarrow \reals_{\geq 0} \
 Wir führen die Notation $C^m_v(\vec{g}) \coloneqq C_v(\vec{g}, m)$ ein.
 Dann können wir $C_v$ als eine Tabelle $T(C_v)$ speichern, die das Schlüssel-Wert-Paar $(m,C^m_v)$ genau dann enthält, wenn eine Signatur $\vec{g}$ existiert, sodass $C^m_v(\vec{g}) < \infty$.
 Umgekehrt gilt $C_v(\vec{g}, m) = \infty$ für alle $\vec{g}$, falls der Schlüssel $m$ nicht in $T(C_v)$ ist.
-Des Weiteren wird $C_v^m$ für alle Schlüssel $m$ in $T(C_v)$ auch als Tabelle abgespeichert.
+Ein Wert $C_v^m$ in der Tabelle $T(C_v)$ wird auch als Tabelle abgespeichert.
 Dabei enthält $T(C_v^m)$ das Schlüssel-Wert-Paar $(\vec{g}, c)$ genau dann, wenn $c < \infty$.
 
 Nun betrachten wir, wie die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} verwendet werden, um die Tabelle $T(C_v)$ für einen Knoten $v \neq r$ zu berechnen.
 Sei im Folgenden $w$ der linke Geschwisterknoten von $v$ und $u$ das rechteste Kind von $v$.
 Aus den Gleichungen wird ersichtlich, dass sich die Kosten $C_v$ aus den Kosten $C_w$ und $C_u$ sowie dem Gewicht $w(v, p)$ der Kante von $v$ zu seinem Elternknoten $p$ berechnen.
-Wir wissen, dass nicht-unendliche Schnittkosten immer erreicht werden können, indem alle Kanten geschnitten werden.
-Deshalb müssen wir nur die Kombinationen aus Knotenanzahlen und Signaturen in $C_w$ und $C_u$ betrachten, die zu Schnittkosten kleiner als unendlich führen und damit in den Tabellen $T(C_w)$ und $T(C_u)$ enthalten sind.
-Wir erinnern uns, dass $C_x((0,\ldots, 0),0) = 0$ für alle $x$ gilt, auch wenn $x$ im Baum $T$ nicht existiert.
-Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $(0, T(C^0_x))$ beziehungsweise $((0,\ldots,0), 0)$.
+Wir erinnern uns, dass $C_x((0,\ldots, 0),0) = 0$ für alle $x$ mit $x \notin V$ gilt. 
+Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $(0, T(C^0_x))$ beziehungsweise $((0,\ldots,0), 0)$, das heißt $T(C_x) = \{(0, \{(0, \ldots, 0), 0)\}\}$.
 Insgesamt erhalten wir das Iterationsschema in Algorithmus~\ref{alg:canfun}.
 Dabei ist $T(C).keys$ die Menge aller Schlüssel in der Tabelle $T(C)$ und $T(C_x)[m]$ gibt die Tabelle $T(C^m_x)$ zurück, falls $T(C)$ das Schlüssel-Wert-Paar $(m, T(C^m_x))$ enthält.
 Andernfalls gibt $T(C_x)[m]$ eine leere Tabelle zurück.
@@ -165,9 +163,9 @@ Wie in Sektion~\ref{sec:cutting} erklärt wurde, erhalten wir für diesen Fall d
 Wir erhalten die Signatur $\vec{g}$ mit $m$ Knoten, indem wir $\vec{g} = \vec{g}_w + \vec{g}_u$ und $m = m_w + m_u$ setzen.
 Die Kosten dieser Signatur berechnen sich durch die Summe von $C_w(\vec{g}_w, m_w)$ und $C_u(\vec{g}_u, m_u)$.
 Dementsprechend ist die Rekursionsgleichung in Algorithmus~\ref{alg:encfun} implementiert.
-Ähnlich zur vorherigen Schreibweise gilt $T(C_x)[n][\vec{h}] = d$, der Eintrag $(\vec{h}, d)$ in $T(C_x)[n]$ enthalten ist.
-Falls dies nicht der Fall ist, gilt $T(C_x)[n][\vec{h}] = \infty$.
-Die Zuweisung an $T(C_v)[m][\vec{g}]$ in Zeile~\ref{alg:encfun:line:assign} erstellt die entsprechenden Einträge in den Tabellen $T(C_x)$ und $T(C_x^n)$, wenn diese nicht vorhanden sind.
+Ähnlich zur vorherigen Schreibweise gilt $T(C_x)[n][\vec{h}] = d$, falls der Eintrag $(\vec{h}, d)$ in $T(C_x)[n]$ enthalten ist.
+Wenn dies nicht der Fall ist, gilt $T(C_x)[n][\vec{h}] = \infty$.
+Weiterhin erstellt die Zuweisung an $T(C_v)[m][\vec{g}]$ in Zeile~\ref{alg:encfun:line:assign} die entsprechenden Einträge in den Tabellen $T(C_x)$ und $T(C_x^n)$, wenn diese nicht vorhanden sind.
 
 \begin{algorithm}
     \caption{Implementierung von \textproc{edge\_not\_cut}}\label{alg:encfun}
@@ -191,7 +189,7 @@ Für diesen Fall wurde in Sektion~\ref{sec:cutting} eine zweite Rekursionsgleich
 \end{equation*}
 
 Da die Kante von $v$ zu seinem Elternknoten geschnitten wird, ist $v$ nicht in der Zusammenhangskomponente, die auch die Wurzel $r$ enthält.
-Die Zusammhangskomponente, in der $v$ erhalten ist, besteht ausschließlich aus Knoten des in $v$ gewurzelten Teilbaums und überdeckt zusammen mit den Zusammenhangskomponenten, die durch $\vec{g}_u$ repräsentiert werden, den gesamten Teilbaum.
+Deswegen besteht die Zusammhangskomponente, in der $v$ erhalten ist, ausschließlich aus Knoten des in $v$ gewurzelten Teilbaums und überdeckt zusammen mit den Zusammenhangskomponenten, die durch $\vec{g}_u$ repräsentiert werden, den gesamten Teilbaum.
 Deshalb erhalten wir eine Signatur $\vec{g}$ mit $m$ Knoten, indem wir $m = m_w + m_u + (n_v - m_u) = m_w + n_v$ und $\vec{g} = \vec{g}_w + \vec{g}_u + \vec{e}(n_v - m_u)$ setzen, wobei $n_v$ die Anzahl der Knoten des in $v$ gewurzelten Teilbaums ist und $\vec{e}(x)$ die Signatur mit genau einer Zusammenhangskomponente der Größe $x$ beschreibt.
 Die Kosten der berechneten Signatur sind dann die addierten Kosten $C_w(\vec{g}_w, m_w)$ und $C_u(\vec{g}_u, m_u)$ plus die Kosten der geschnittenen Kante $e$. 
 Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
@@ -218,24 +216,24 @@ Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
 \begin{rem}
     In Sektion~\ref{sec:cutting} haben wir den Fall, dass $v$ weder einen linken Geschwisterknoten $w$ noch ein rechtestes Kind $u$ hat, speziell behandelt.
     Für diesen Fall gilt $C_v((0,\ldots,0), 0) = 0)$ und $C_v(\vec{e}(1), 1) = \weight(e)$. 
-    Alle anderen Funktionswert sind unendlich.
+    Alle anderen Funktionswerte sind unendlich.
     Da $w$ und $u$ nicht existieren, haben wir $T(C_w) = T(C_u) = \{(0, \{((0, \ldots, 0), 0)\} \}$.
     Mit diesen Tabellen setzt Algorithmus~\ref{alg:encfun} den Eintrag $T(C_v)[0][(0,\ldots, 0)]$ auf den Wert $0$ und Algorithmus~\ref{alg:ecfun} den Eintrag $T(C_v)[1][\vec{e}(1)]$ auf $\weight(v,p)$, wobei $p$ der Elternknoten von $v$ ist.
     Damit wird dieser Spezialfall bereits durch die oben genannten Algorithmen abgedeckt.
 \end{rem}
 
-Der Algorithmus~\ref{alg:canfun} berechnet die Signaturen für alle Knoten $v \neq r$, wobei $r$ die Wurzel des Baums ist.
 Um die Schnittphase abzuschließen, wird nun betrachtet, wie die Funktion \carfun{} die Signaturen an der Wurzel $r$ mit der Rekursionsgleichung~\eqref{eq:root} berechnet.
-In Sektion~\ref{sec:cutting} wurde festgelegt, dass die Knoten, die nicht durch die Zusammenhangskomponenten in einer Signatur überdeckt werden, eine Zusammenhangskomponente mit der Wurzel $r$ bilden.
-Dementsprechend können wir eine Signatur $\vec{g}$ mit $n$ Knoten erhalten, deren Zusammenhangskomponenten alle Knoten im Baum überdecken, wenn wir zu einer Knotenanzahl $x \leq (1+\eps)\ceil{n/k}$ eine Signatur $\vec{g}_u$ mit $m_u = n - x$ Knoten am rechtesten Kind $u$ der Wurzel $r$ finden.
-Weiterhin gilt $\vec{g} = \vec{g}_u + \vec{e}(x)$ und die Kosten sind $C_u(\vec{g}_u, m_u)$, da an der Wurzel keine weiteren Kanten geschnitten werden können.
+In Sektion~\ref{sec:cutting} wurde festgelegt, dass die Knoten, die nicht durch die Zusammenhangskomponenten zu einer Signatur überdeckt werden, eine Zusammenhangskomponente mit der Wurzel $r$ bilden.
+Dementsprechend können wir eine Signatur $\vec{g}$ mit $n$ Knoten erhalten, wenn wir zu einer Knotenanzahl $x \leq (1+\eps)\ceil{n/k}$ eine Signatur $\vec{g}_u$ mit $m_u = n - x$ Knoten am rechtesten Kind $u$ der Wurzel $r$ finden.
+Die Zusammenhangskomponenten, die mit dieser Signatur assoziiert sind, überdecken dann alle Knoten des Baums.
+Weiterhin gilt $\vec{g} = \vec{g}_u + \vec{e}(x)$ und die Kosten sind $C_u(\vec{g}_u, m_u)$, da an der Wurzel keine weiteren Kanten geschnitten werden.
 Damit erhalten wir Algorithmus~\ref{alg:carfun}.
 
 \begin{algorithm}
     \caption{Berechnung der Signaturen an der Wurzel mit \carfun{}}\label{alg:carfun}
     \begin{algorithmic}[1]
         \Function{cut\_at\_root}{Node $r$}
-           \For{$x \in \{1, \ldots, (1+\eps)\ceil{n/k}\}$} 
+           \For{$x = 1, \ldots, (1+\eps)\ceil{n/k}$} 
                 \ForAll{$(\vec{g}_u, c) \in T(C_u)[n - x]$}
                     \Let{$\vec{g}$}{$\vec{g}_u + \vec{e}(x)$}
                     \Let{$T(C_r)[n][\vec{g}]$}{$\min\{c, T(C_r)[n][\vec{g}]$}\}
@@ -245,7 +243,22 @@ Damit erhalten wir Algorithmus~\ref{alg:carfun}.
     \end{algorithmic}
 \end{algorithm}
 
-\todo[inline]{Bemerkung: Wie wissen wir für eine Signatur welche Kanten geschnitten wurden?}
+\begin{rem}\label{rem:components}
+    In den oben genannten Algorithmen werden nur die Signaturen berechnet.
+    Um anschließend die Packphase durchführen zu können, müssen wir allerdings wissen, welche Zusammenhangskomponenten eine Signatur repräsentiert.
+    Dies kann erreicht werden, indem zu einer Signatur $\vec{g}$ mit Kosten $c$ die Signaturen $\vec{g}_w$ und $\vec{g}_u$ mit den Knotenanzahlen $m_w$ beziehungsweise $m_u$ speichern, welche verwendet wurden, um $\vec{g}$ zu erreichen.
+    Wenn $\vec{g} = \vec{g}_w + \vec{g}_u$ gilt, dann wurde die Kante von $v$ zu seinem Elternknoten nicht geschnitten.
+    Andernfalls wurde die Kante geschnitten.
+    Damit können alle Kanten gefunden werden, die geschnitten wurden, um die Kosten $c$ mit der Signatur $\vec{g}$ zu erreichen.
+    Anhand der geschnittenen Kanten können die Zusammenhangskomponenten zu $\vec{g}$ rekonstruiert werden.
+
+    Mit dem Packingalgorithmus aus Sektion~\ref{sec:cutting} können wir anhand der Signatur berechnen, ob sich die dazugehörigen Komponenten, die größer als $\eps \ceil{n/k}$ sind, in $k$ Behälter der Größe $(1+\eps) \ceil{n/k}$ packen lassen.
+    Nur wenn das der Fall ist, werden die Informationen über die vorherigen Signaturen benötigt.
+    Deswegen werden die vorherigen Signaturen in der \Cpp{}\hyp Implementierung anfangs nicht gespeichert.
+    Erst wenn eine Signatur $\vec{g}$ betrachtet wird, deren große Komponenten sich in $k$ Behälter packen lassen, werden die Signaturen erneut mit den oben genannte Informationen berechnet
+    Dabei werden alle Signaturen herausgefiltert, die in mindestens einer Komponente größer sind als $\vec{g}$.
+    Dadurch wird die Laufzeit und der Speicherbedarf verringert.
+\end{rem}
 
 \subsection{Packphase}\label{sec:packingimpl}
 In der vorherigen Sektion wurde beschrieben, wie wir eine Menge von Signaturen und deren Kosten an der Wurzel $r$ berechnen, die alle eine Möglichkeit darstellen den Baum $T$ in Zusammenhangskomponenten zu zerlegen.
@@ -265,8 +278,8 @@ Um die dynamische Programmierung auszuführen, die durch die Rekursionsgleichung
 Dies ist die Menge aller Möglichkeiten einen einzigen Behälter zu füllen, ohne die Kapazität zu verletzen.
 Wir bezeichnen im Folgenden einen Vektor $\vec{c} \in \mathcal{C}$ als Behältersignatur.
 Wir berechnen die Menge der Behältersignaturen $\mathcal{C}$ schrittweise durch die Mengen $C_i$.
-Dabei ist $C_i$ die Menge aller Behältersignaturen, die nur Komponenten verwenden, die von Einträgen $g_1$ bis $g_i$ gezählt werden.
-Eine Behältersignatur wird durch das Tupel $(\vec{c}, m_c)$ repräsentiert, wobei $c_i$ die Anzahl der Komponenten der Größe $s_i$ im Behälter zählt und $m_c$ der dadurch gegebenen Füllstand des Behälters ist.
+Dabei ist $C_i$ die Menge aller Behältersignaturen, die nur Komponenten der Einträge $1$ bis $i$ verwenden.
+Mit der Behältersignatur $\vec{c_i}$ wird der Füllstand $m_c$ abgespeichert, wobei $c_i$ die Anzahl der Komponenten der Größe $s_i$ im Behälter zählt.
 Daraus folgt, dass $C_i$ das Tupel $(\vec{c}, m_c)$ mit $m_c \leq \ceil{n/k}$ genau dann enthält, wenn ein Tupel $(\vec{d}, m_d) \in C_{i-1}$ existiert, sodass $\vec{c} = \vec{d} + k \cdot \vec{e}(s_i)$ und $m_c = m_d + k \cdot s_i$ für ein $k \in \{0, \ldots, g_i\}$.
 Hierbei ist $\vec{e}(x)$ die Signatur, die nur eine Komponente der Größe $x$ enthält und deren erste Komponente weggelassen wird.
 Für $\mathcal{C}$ gilt dann $\mathcal{C} = \{ \vec{c} \mid (\vec{c}, m_c) \in C_t)\}$.
@@ -279,10 +292,10 @@ Mit diesen Ergebnissen erhalten wir Algorithmus~\ref{alg:cabisi}.
         \LineComment{Namensgebung Signatur gut?}
         \Function{calculate\_bin\_signatures}{Signatur $(g_1, \ldots, g_t)$, Vektor $(s_1, \ldots, s_t)$}
             \Let{$C_0$}{$\{(\vec{0}, 0)\}$}
-            \For{$i \in \{1, \ldots, t\}$}
+            \For{$i = 1, \ldots, t$}
                 \Let{$C_i$}{$\emptyset$} \Comment{Ist das notwendig?}
                 \ForAll{$(\vec{a}, m_a) \in C_{i-1}$}
-                    \For{$k \in \{0, \ldots, g_i$\}}
+                    \For{$k = 0, \ldots, g_i$}
                        \Let{$\vec{b}$}{$\vec{a} + k \cdot \vec{e}(s_i)$} 
                        \Let{$m_b$}{$m_a + k \cdot s_i$}
                        \If{$m_b \leq \ceil{n/k}$}
@@ -305,7 +318,7 @@ Mit diesen Ergebnissen erhalten wir Algorithmus~\ref{alg:cabisi}.
 Nun können wir die Rekursionsgleichung~\eqref{eq:packing} verwenden, um eine optimale Lösung der Bin-Packing-Instanz zu berechnen, die durch $(g_1, \ldots, g_t)$ und $(s_1, \ldots, s_t)$ gegeben ist.
 Dafür bezeichnen wir den aktuellen Zustand eines Packings mit dem Vektor $\vec{p}$, der anfangs nur den Wert $(g_1, \ldots, g_t)$ annehmen kann.
 Dann wird iterativ $(\max\{0, p_1 - c_1\}, \ldots, \max\{0, p_t - c_t\})$ für alle Behältersignaturen $\vec{c} \in \mathcal{C}$ berechnet, um neue mögliche Zustände zu erhalten.
-Sobald wir das erste Mal bei $\vec{p} = \vec{0}$ ankommen, haben wir alle Komponenten der Signatur $(g_1, \ldots, g_t)$ gepackt und wir wissen die minimale Anzahl an Behältern, die dafür benötigt wird..
+Sobald wir das erste Mal bei $\vec{p} = \vec{0}$ ankommen, haben wir alle Komponenten der Signatur $(g_1, \ldots, g_t)$ gepackt und wir wissen die minimale Anzahl an Behältern, die dafür benötigt wird.
 Indem jeweils der Zustand des vorherigen Schritts zum momentanen Zustand $\vec{p}$ gespeichert wird, kann am Schluss zurückverfolgt werden, welche Behältersignaturen im jeweiligen Schritt verwendet wurden, um die Komponenten in $(g_1, \ldots, g_t)$ zu packen.
 Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
 \todo[inline]{Ist das ausführlich genug?}
@@ -317,7 +330,7 @@ Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
         \Function{pack\_perfect}{Signatur $(g_1, \ldots, g_t)$}
             \Let{$\mathcal{C}$}{\Call{calculate\_bin\_signatures}{$(g_1, \ldots, g_t)$, $\vec{s}$}}
             \Let{$P_0$}{$\{(g_1, \ldots, g_t)\}$}
-            \For{$i \in \{1, 2, \ldots \}$}
+            \For{$i = 1, 2, \ldots$}
                 \Let{$P_i$}{$\emptyset$} \Comment{Ist das notwendig?}
                 \ForAll{$\vec{p} \in P_{i-1}$}
                 \ForAll{$\vec{c} \in \mathcal{C}$}
@@ -341,7 +354,7 @@ Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
         \Function{backtrack\_packing}{Integer $k$, Tabelle $Prev$}
             \Let{$\vec{q}$}{$(0, \ldots, 0)$}
             \Let{$L$}{$[]$} \Comment{$L$ wird als leere Liste initialisiert.}
-            \For{$i \in \{k, k - 1, \ldots, 1\}$}
+            \For{$i = k, k - 1, \ldots, 1$}
                 \State{$L.append(Prev[i][\vec{q}] - \vec{q})$} \Comment{$L.append(x)$ hängt $x$ an das Ende von $L$ an.}
                 \Let{$\vec{q}$}{$Prev[i][\vec{q}]$} 
             \EndFor
@@ -351,6 +364,7 @@ Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
 \end{algorithm}
 
 \todo{Ausführlicher?} Im dritten Schritt werden im Packing, welches wir mit der Funktion \textproc{pack\_perfect} berechnen können, die ursprünglichen Größen der Zusammenhangskomponenten, die von der Signatur $(g_1, \ldots, g_t)$ repräsentiert werden, wiederhergestellt. 
+Die Zusammenhangskomponenten zu einer einer Signatur können mit den Ideen aus Bemerkung~\ref{rem:components} gefunden werden.
 Gleichzeitig wird die Kapazität der Behälter auf $(1+\eps)\ceil{n/k}$ erhöht.
 Zuletzt werden noch die restlichen Komponenten $g_0$ mit einer Größe kleiner als $\eps \ceil{n/k}$ greedy mit First-Fit gepackt.
 \todo{Begründung für diese Implementierung?} Dieses Verfahren wurde naiv implementiert, das heißt es wird für jede dieser Komponenten über alle Behälter iteriert, bis ein Behälter gefunden wird, in dem noch Platz ist.
@@ -480,6 +494,8 @@ template<typename T> struct ValarrayHasher {
 \end{lstlisting}
 
 \subsection{Packing}
+Behätersignaturen sind Signaturen, Packingzustand ist Signatur, Packing ist vector von vector von int.
+Alles nicht besonders interessant
 \todo[inline]{Soll dieses Kapitel weggelassen werden? Auf die Algorithmen wird auch nicht genau eingegangen.}
 
 \section{Verwendung}
