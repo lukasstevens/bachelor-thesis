@@ -1,3 +1,4 @@
+#include<cstdint>
 #include<map>
 #include<iostream>
 
@@ -5,14 +6,16 @@
 
 #include "Cut.hpp"
 
-using namespace cut;
-
 TEST(BuildTree, TwoNodes) {
-    std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> tree_map;
+    using IdType = int32_t;
+    using EdgeWeightType = int32_t;
+    using Tree = cut::Tree<IdType, EdgeWeightType>;
+
+    std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
     tree_map[1][2] = 3;
     Tree tree = Tree::build_tree(tree_map, 1);
-    Node root = tree.levels[0][0];
-    Node child = tree.levels[1][0];
+    Tree::Node root = tree.levels[0][0];
+    Tree::Node child = tree.levels[1][0];
     ASSERT_EQ(tree.levels.size(), 2);
     ASSERT_EQ(tree.levels[0].size(), 1);
     ASSERT_EQ(tree.levels[1].size(), 1);
@@ -36,7 +39,11 @@ TEST(BuildTree, TwoNodes) {
 }
 
 TEST(BuildTree, ThreeNodeChain) {
-    std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> tree_map;
+    using IdType = int32_t;
+    using EdgeWeightType = int32_t;
+    using Tree = cut::Tree<IdType, EdgeWeightType>;
+
+    std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
     tree_map[1][2] = 4;
     tree_map[2][3] = 5;
     Tree tree = Tree::build_tree(tree_map, 1);
@@ -44,11 +51,11 @@ TEST(BuildTree, ThreeNodeChain) {
     for (auto level : tree.levels) {
         ASSERT_EQ(level.size(), 1);
     }
-    Node root = tree.levels[0][0];
-    Node fst_child = tree.levels[1][0];
-    Node snd_child = tree.levels[2][0];
+    Tree::Node root = tree.levels[0][0];
+    Tree::Node fst_child = tree.levels[1][0];
+    Tree::Node snd_child = tree.levels[2][0];
 
-    Node node_arr[] = {root, fst_child, snd_child};
+    Tree::Node node_arr[] = {root, fst_child, snd_child};
     for (size_t idx = 0; idx < 3; ++idx) {
         if (idx < 2) {
             ASSERT_EQ(node_arr[idx].children_idx_range.first, 0);
@@ -69,7 +76,11 @@ TEST(BuildTree, ThreeNodeChain) {
 }
 
 TEST(BuildTree, ThreeNodes) {
-    std::map<Node::IdType, std::map<Node::IdType, Node::EdgeWeightType>> tree_map;
+    using IdType = int32_t;
+    using EdgeWeightType = int32_t;
+    using Tree = cut::Tree<IdType, EdgeWeightType>;
+
+    std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
     tree_map[1][2] = 4;
     tree_map[1][3] = 5;
     Tree tree = Tree::build_tree(tree_map, 1);
@@ -77,9 +88,9 @@ TEST(BuildTree, ThreeNodes) {
     ASSERT_EQ(tree.levels[0].size(), 1);
     ASSERT_EQ(tree.levels[1].size(), 2);
 
-    Node root = tree.levels[0][0];
-    Node fst_child = tree.levels[1][0];
-    Node snd_child = tree.levels[1][1];
+    Tree::Node root = tree.levels[0][0];
+    Tree::Node fst_child = tree.levels[1][0];
+    Tree::Node snd_child = tree.levels[1][1];
 
     ASSERT_EQ(root.children_idx_range.first, 0);
     ASSERT_EQ(root.children_idx_range.second, 2);

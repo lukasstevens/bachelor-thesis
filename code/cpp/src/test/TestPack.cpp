@@ -1,3 +1,5 @@
+#include<cstdint>
+
 #include <gtest/gtest.h>
 
 #include "Cut.hpp"
@@ -9,27 +11,32 @@ using TestParams = std::pair<std::string, std::string>;
 class TestPack : public testing::TestWithParam<TestParams> {};
 
 TEST_P(TestPack, PacksAsExpected) {
+    using IdType = int32_t;
+    using EdgeWeightType = int32_t;
+    using Tree = cut::Tree<IdType, EdgeWeightType>;
+
     std::string tree_name;
     std::string params_name;
     std::tie(tree_name, params_name) = this->GetParam();
 
-    cut::Tree tree = testutils::get_tree(tree_name);
-    cut::SignaturesForTree signatures = testutils::get_signatures_for_tree(tree_name, params_name, tree);
+    Tree tree = testutils::get_tree<IdType, EdgeWeightType>(tree_name);
+    cut::SignaturesForTree<IdType, EdgeWeightType> signatures 
+        = testutils::get_signatures_for_tree<IdType, EdgeWeightType>(tree_name, params_name, tree);
 
-    part::Partitioning partitioning;
-    cut::Signature best_signature;
-    cut::Node::EdgeWeightType opt_cut_cost;
+    part::Partitioning<Tree::SizeType> partitioning;
+    Tree::Signature best_signature;
+    EdgeWeightType opt_cut_cost;
     std::tie(partitioning, best_signature, opt_cut_cost) = part::calculate_best_packing(signatures);
 
-    part::Partitioning should_partitioning;
-    cut::Signature should_best_signature;
-    cut::Node::EdgeWeightType should_opt_cut_cost;
+    part::Partitioning<Tree::SizeType> should_partitioning;
+    Tree::Signature should_best_signature;
+    EdgeWeightType should_opt_cut_cost;
     std::tie(should_partitioning, should_best_signature, should_opt_cut_cost) = 
-        testutils::get_opt_partitioning(tree_name, params_name);
+        testutils::get_opt_partitioning<IdType, EdgeWeightType>(tree_name, params_name);
 
     EXPECT_EQ(should_partitioning, partitioning);
     EXPECT_EQ(should_opt_cut_cost, opt_cut_cost);
-    valarrutils::ValarrayEqual<cut::SizeType> valarr_eq;
+    valarrutils::ValarrayEqual<Tree::SizeType> valarr_eq;
     EXPECT_TRUE(valarr_eq(should_best_signature, best_signature));
 }
 

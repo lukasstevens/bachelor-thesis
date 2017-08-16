@@ -5,7 +5,8 @@
 #include "Cut.hpp"
 #include "ValarrayUtils.hpp"
 
-using namespace cut;
+using SizeType = int;
+using Signature = cut::Signature<SizeType>;
 
 TEST(SignatureOperators, Equals) {
     valarrutils::ValarrayEqual<SizeType> eq;

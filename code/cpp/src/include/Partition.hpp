@@ -13,12 +13,18 @@ namespace part {
      * Each entry represents one part in the partitioning.
      * One entry is a set of node ids which represents all nodes in that part.
      */
-    using Partitioning = std::vector<std::set<cut::Node::IdType>>;  
+    template<typename IdType>
+        using Partitioning = std::vector<std::set<IdType>>;  
 
     /**
      * Calculates the best feasible packing for the signatures given by \p signatures.
      * @param signatures The signatures and tree to use for the calculations.
      * @returns The components, the best signature and the cut cost as a tuple.
      */
-    std::tuple<Partitioning, cut::Signature, cut::Node::EdgeWeightType> calculate_best_packing(cut::SignaturesForTree const& signatures);
+    template<typename IdType, typename EdgeWeightType>
+        std::tuple<Partitioning<IdType>, cut::Signature<IdType>, EdgeWeightType> 
+            calculate_best_packing(cut::SignaturesForTree<IdType, EdgeWeightType> const& signatures);
 }
+
+// Include template implementation file.
+#include "Partition.ipp"

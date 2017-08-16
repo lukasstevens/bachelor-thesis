@@ -1,3 +1,4 @@
+#include<cstdint>
 #include<fstream>
 #include<set>
 #include<string>
@@ -12,12 +13,16 @@ class TestCut : public testing::TestWithParam<TestParams> {};
 
 
 TEST_P(TestCut, CutsAsExpected) {
+    using IdType = int32_t;
+    using EdgeWeightType = int32_t;
+    using Tree = cut::Tree<IdType, EdgeWeightType>;
+
     std::string tree_name = this->GetParam().first;
     std::string params_name = this->GetParam().second;
 
-    auto params = testutils::get_algorithm_params(tree_name, params_name);
-    cut::Tree tree = testutils::get_tree(tree_name);
-    auto should_signatures = testutils::get_signatures_for_tree(tree_name, params_name, tree);
+    auto params = testutils::get_algorithm_params<Tree::SizeType>(tree_name, params_name);
+    Tree tree = testutils::get_tree<IdType, EdgeWeightType>(tree_name);
+    auto should_signatures = testutils::get_signatures_for_tree<IdType, EdgeWeightType>(tree_name, params_name, tree);
 
     auto signatures = tree.cut(params.eps, params.part_cnt);
     ASSERT_EQ(should_signatures.signatures.size(), signatures.signatures.size());
@@ -28,7 +33,7 @@ TEST_P(TestCut, CutsAsExpected) {
             auto const& node_sigs = signatures.signatures[lvl_idx][node_idx];
             EXPECT_EQ(should_node_sigs.size(), node_sigs.size());
 
-            cut::SizeType node_sigs_size = 0;
+            Tree::SizeType node_sigs_size = 0;
             for (auto const& should_node_sigs_with_size : should_node_sigs) {
                 auto const& node_sigs_with_size = node_sigs.at(static_cast<size_t>(node_sigs_size));
                 EXPECT_EQ(should_node_sigs_with_size.size(), node_sigs_with_size.size());
@@ -58,8 +63,9 @@ INSTANTIATE_TEST_CASE_P(
             TestParams("6", "1")
             ));
 
-void test_comp_size_bounds(cut::RationalType eps, cut::SizeType node_cnt, cut::SizeType part_cnt, 
-        size_t should_length, std::vector<cut::SizeType>& should_upper, std::vector<cut::SizeType>& should_lower) {
+template<typename SizeType>
+void test_comp_size_bounds(cut::RationalType eps, SizeType node_cnt, SizeType part_cnt, 
+        size_t should_length, std::vector<SizeType>& should_upper, std::vector<SizeType>& should_lower) {
 
     auto upper = cut::calculate_upper_component_size_bounds(eps, node_cnt, part_cnt);
 
@@ -71,12 +77,13 @@ void test_comp_size_bounds(cut::RationalType eps, cut::SizeType node_cnt, cut::S
 }
 
 TEST(ComponentSizeBounds, One) {
+    using SizeType = int32_t;
 
-    std::vector<cut::SizeType> should_upper_comp_size_bounds({
+    std::vector<SizeType> should_upper_comp_size_bounds({
             9, 13, 20, 26
             });
 
-    std::vector<cut::SizeType> should_lower_comp_size_bounds({
+    std::vector<SizeType> should_lower_comp_size_bounds({
             1, 9 , 13, 20 
             });
 
@@ -86,12 +93,13 @@ TEST(ComponentSizeBounds, One) {
 }
 
 TEST(ComponentSizeBounds, Two) {
+    using SizeType = int32_t;
 
-    std::vector<cut::SizeType> should_upper_comp_size_bounds({
+    std::vector<SizeType> should_upper_comp_size_bounds({
             5, 7, 9, 12, 16, 21
             });
 
-    std::vector<cut::SizeType> should_lower_comp_size_bounds({
+    std::vector<SizeType> should_lower_comp_size_bounds({
             1, 5, 7, 9, 12, 16 
             });
 
@@ -100,12 +108,13 @@ TEST(ComponentSizeBounds, Two) {
 }
 
 TEST(ComponentSizeBounds, Three) {
+    using SizeType = int32_t;
 
-    std::vector<cut::SizeType> should_upper_comp_size_bounds({
+    std::vector<SizeType> should_upper_comp_size_bounds({
             6, 8, 11, 16, 20
             });
 
-    std::vector<cut::SizeType> should_lower_comp_size_bounds({
+    std::vector<SizeType> should_lower_comp_size_bounds({
             1, 6, 8, 11, 16
             });
 
@@ -114,12 +123,13 @@ TEST(ComponentSizeBounds, Three) {
 }
 
 TEST(ComponentSizeBounds, Four) {
+    using SizeType = int32_t;
 
-    std::vector<cut::SizeType> should_upper_comp_size_bounds({
+    std::vector<SizeType> should_upper_comp_size_bounds({
             6, 8, 12, 17, 19
             });
 
-    std::vector<cut::SizeType> should_lower_comp_size_bounds({
+    std::vector<SizeType> should_lower_comp_size_bounds({
             1, 6, 8, 12, 17
             });
 
@@ -128,12 +138,13 @@ TEST(ComponentSizeBounds, Four) {
 }
 
 TEST(ComponentSizeBounds, Five) {
+    using SizeType = int32_t;
 
-    std::vector<cut::SizeType> should_upper_comp_size_bounds({
+    std::vector<SizeType> should_upper_comp_size_bounds({
             3, 4, 5, 6, 8, 11, 12
             });
 
-    std::vector<cut::SizeType> should_lower_comp_size_bounds({
+    std::vector<SizeType> should_lower_comp_size_bounds({
             1, 3, 4, 5, 6, 8, 11
             });
 

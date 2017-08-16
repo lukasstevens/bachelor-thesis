@@ -1,3 +1,4 @@
+#include<cstdint>
 #include<iostream>
 #include<sstream>
 #include<unordered_map>
@@ -17,12 +18,16 @@ using namespace cut;
 // A single line follows containing integers k, e_n, e_d where k is the number of parts into which
 // the tree shall be partitioned and e_n/e_d describes the approximation parameter epsilon.
 TEST(Run, DISABLED_FromStdinVerbose) {
+    using IdType = int32_t;
+    using EdgeWeightType = int32_t;
+    using Tree = Tree<int32_t, int32_t>;
+
     Tree tree;
     std::cin >> tree;
 
     std::cerr << tree.as_graphviz();
 
-    SizeType part_cnt;
+    Tree::SizeType part_cnt;
     int64_t eps_num;
     int64_t eps_denom;
     std::cin >> part_cnt >> eps_num >> eps_denom;
@@ -38,9 +43,9 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     std::cerr << signatures << std::endl;
 
-    std::vector<std::set<Node::IdType>> partitioning;
-    Signature signature;
-    Node::EdgeWeightType cut_cost;
+    std::vector<std::set<Tree::SizeType>> partitioning;
+    Tree::Signature signature;
+    EdgeWeightType cut_cost;
     std::tie(partitioning, signature, cut_cost) = part::calculate_best_packing(signatures);
 
     ASSERT_LE(partitioning.size(), static_cast<size_t>(part_cnt));
@@ -69,7 +74,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     std::cerr << "digraph tree {\n\tedge[dir=none]\n";
 
-    auto get_part_idx = [partitioning](Node::IdType node_id){
+    auto get_part_idx = [partitioning](IdType node_id){
         size_t idx = 0;
         for (auto const& part : partitioning) {
             if (part.find(node_id) != part.end()) {
@@ -91,8 +96,8 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
         for (size_t node_idx = 0; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
-            Node& node = tree.levels[lvl_idx][node_idx];
-            Node& parent = tree.levels[lvl_idx - 1][node.parent_idx];
+            Tree::Node& node = tree.levels[lvl_idx][node_idx];
+            Tree::Node& parent = tree.levels[lvl_idx - 1][node.parent_idx];
             std::cerr << "\t" << parent.id;
             std::cerr << " -> " << node.id;
             std::cerr << "[label=\"" << node.parent_edge_weight << "\"";
@@ -105,11 +110,11 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     int32_t invis_node = -1;
     for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx > 0; --lvl_idx) {
-        std::vector<Node>& lvl = tree.levels[lvl_idx];
+        std::vector<Tree::Node>& lvl = tree.levels[lvl_idx];
         std::stringstream node_ordering; 
         node_ordering << "{rank=same " << lvl[0].id;
         for (size_t node_idx = 1; node_idx < tree.levels[lvl_idx].size(); ++node_idx) {
-            Node& node = lvl[node_idx];
+            Tree::Node& node = lvl[node_idx];
             std::cerr << "\t" << invis_node << "[label=\"\", width=0.1, style=invis]\n";
             std::cerr << "\t" << tree.levels[lvl_idx - 1][node.parent_idx].id;
             std::cerr << " -> " << invis_node << "[style=invis]\n";
@@ -127,10 +132,14 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 }
 
 TEST(Run, DISABLED_FromStdinCutting) {
+    using IdType = int32_t;
+    using EdgeWeightType = int32_t;
+    using Tree = Tree<IdType, EdgeWeightType>;
+
     Tree tree;
     std::cin >> tree;
 
-    SizeType part_cnt;
+    Tree::SizeType part_cnt;
     int64_t eps_num;
     int64_t eps_denom;
     std::cin >> part_cnt >> eps_num >> eps_denom;
