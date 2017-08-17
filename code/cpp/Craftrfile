@@ -1,44 +1,64 @@
 # bachelorthesis
 import os
 import shutil
+import subprocess
+from craftr.foreignbuild import make
 
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
-includes = ['src/include', 'deps/include']
+includes = ['src/include', 'build/metis/include']
+
+metislib = Framework()
+metis = make('Makefile', 'install', cwd='../deps/metis', 
+    outputs=[path.join(project_dir, 'build/metis/lib/libmetis.a')])
 
 mylib = Framework(
-  include = [local(x) for x in includes],
-  std = 'c++11',
-  warn = 'all',
-  debug = options.debug,
-  optimize = 'debug' if options.debug else 'speed',
-  libs = ['m', 'gmpxx', 'gmp']
-)
+        include = [local(x) for x in includes],
+        std = 'c++11',
+        warn = 'all',
+        debug = options.debug,
+        optimize = 'debug' if options.debug else 'speed',
+        libs = ['m', 'gmpxx', 'gmp']
+        )
 
 mylib_lib = cxx.static_library(
-  inputs = cxx.compile_cpp(sources = glob('src/main/*.cpp'), frameworks = [mylib]),
-  output = 'mylib'
-)
+        inputs = cxx.compile_cpp(sources = glob('src/main/*.cpp'), frameworks = [mylib, metislib]),
+        output = 'mylib'
+        )
 cxx.extend_framework(mylib, mylib_lib)
 
 test_bin = cxx.executable(
-  inputs = cxx.compile_cpp(sources = glob('src/test/*.cpp'), frameworks = [googletest, mylib]),
-  output = 'test'
-)
+        inputs = cxx.compile_cpp(sources = glob('src/test/*.cpp'), frameworks = [googletest, mylib]),
+        output = 'test'
+        )
 
 test = runtarget(test_bin)
 
-run = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinVerbose', '--gtest_also_run_disabled_tests')
+run = runtarget(test_bin, 
+        '--gtest_filter=Run.DISABLED_FromStdinVerbose', '--gtest_also_run_disabled_tests')
 
-run_cutting = runtarget(test_bin, '--gtest_filter=Run.DISABLED_FromStdinCutting', '--gtest_also_run_disabled_tests')
+run_cutting = runtarget(test_bin, 
+        '--gtest_filter=Run.DISABLED_FromStdinCutting', '--gtest_also_run_disabled_tests')
 
 gdb = gentarget([['gdb', '--args', test_bin]], pool='console', explicit=True)
 
 docs = gentarget([['doxygen', '.doxygen.config']], explicit=True, cwd=project_dir)
 
+
 # Symlink resource file for execution 
 try:
-    os.symlink('../src/test/resources', 'resources')
+    os.symlink(os.path.join(project_dir, 'src/test/resources'), 
+            os.path.join(project_dir, 'build/resources'))
 except:
     pass
+
+# Configure metis
+print("Configuring METIS")
+subprocess.call(['make', 'config', 
+    'cc=\"' + session.options['craftr.lang.cxx.toolkit'] + '\"',
+    'prefix=\"' + os.path.join(project_dir, 'build/metis') + '\"',
+    ], 
+    cwd=os.path.join(project_dir, 'deps/metis'))
+print("Finished configuring METIS")
+
