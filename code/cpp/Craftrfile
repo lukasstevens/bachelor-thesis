@@ -7,11 +7,19 @@ from craftr.foreignbuild import make
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
-includes = ['src/include', 'src/main', 'build/metis/include']
+includes = ['src/include', 'src/main', 
+        'build/metis/include', 'deps/KaHIP/deploy/kaHIP_interface.h']
 
 metislib = Framework()
 metis = make('Makefile', 'install', cwd='../deps/metis', 
-    outputs=[path.join(project_dir, 'build/metis/lib/libmetis.a')])
+        outputs=[os.path.join(project_dir, 'build/metis/lib/libmetis.a')])
+cxx.extend_framework(metislib, metis)
+
+kahiplib = Framework()
+kahip = gentarget([['./compile.sh']],
+        cwd=os.path.join(project_dir, 'deps/KaHIP'),
+        outputs=[os.path.join(project_dir, 'deps/KaHIP/deploy/libkahip.a')])
+cxx.extend_framework(kahiplib, kahip)
 
 mylib = Framework(
         include = [local(x) for x in includes],
@@ -21,9 +29,10 @@ mylib = Framework(
         optimize = 'debug' if options.debug else 'speed',
         libs = ['m', 'gmpxx', 'gmp']
         )
-
 mylib_lib = cxx.static_library(
-        inputs = cxx.compile_cpp(sources = glob('src/main/*.cpp'), frameworks = [mylib, metislib]),
+        inputs = cxx.compile_cpp(
+            sources = glob('src/main/*.cpp'), 
+            frameworks = [mylib, metislib, kahiplib]),
         output = 'mylib'
         )
 cxx.extend_framework(mylib, mylib_lib)
