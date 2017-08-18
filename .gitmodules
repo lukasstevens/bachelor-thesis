@@ -1,6 +1,8 @@
 [submodule "code/cpp/deps/KaHIP"]
 	path = code/cpp/deps/KaHIP
 	url = https://github.com/schulzchristian/KaHIP
+    ignore = dirty
 [submodule "code/cpp/deps/metis"]
 	path = code/cpp/deps/metis
 	url = https://github.com/lukasstevens/metis-mirror
+    ignore = dirty
