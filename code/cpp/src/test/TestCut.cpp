@@ -13,16 +13,16 @@ class TestCut : public testing::TestWithParam<TestParams> {};
 
 
 TEST_P(TestCut, CutsAsExpected) {
-    using IdType = int32_t;
-    using EdgeWeightType = int32_t;
-    using Tree = cut::Tree<IdType, EdgeWeightType>;
+    using Id = int32_t;
+    using EdgeWeight = int32_t;
+    using Tree = cut::Tree<Id, EdgeWeight>;
 
     std::string tree_name = this->GetParam().first;
     std::string params_name = this->GetParam().second;
 
     auto params = testutils::get_algorithm_params<Tree::SizeType>(tree_name, params_name);
-    Tree tree = testutils::get_tree<IdType, EdgeWeightType>(tree_name);
-    auto should_signatures = testutils::get_signatures_for_tree<IdType, EdgeWeightType>(tree_name, params_name, tree);
+    Tree tree = testutils::get_tree<Id, EdgeWeight>(tree_name);
+    auto should_signatures = testutils::get_signatures_for_tree<Id, EdgeWeight>(tree_name, params_name, tree);
 
     auto signatures = tree.cut(params.eps, params.part_cnt);
     ASSERT_EQ(should_signatures.signatures.size(), signatures.signatures.size());

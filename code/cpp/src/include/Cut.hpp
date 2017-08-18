@@ -19,8 +19,8 @@
 
 /** 
  * This namespace contains all classes, functions and type definitions which are needed for the cutting phase.
- * Almost all structs and functions in this namespace use the template parameters IdType and EdgeWeightType.
- * IdType is the type for node ids and EdgeWeightType is the type with which edge weights of the Tree are stored.
+ * Almost all structs and functions in this namespace use the template parameters Id and EdgeWeight.
+ * Id is the type for node ids and EdgeWeight is the type with which edge weights of the Tree are stored.
  * @see Node
  * @see Tree
  */
@@ -29,17 +29,17 @@ namespace cut {
 
     /**
      * This class represents a node in the tree.
-     * IdType is the type of the node id and EdgeWeightType is the type for storing the edge weights.
+     * Id is the type of the node id and EdgeWeight is the type for storing the edge weights.
      */
-    template<typename IdType, typename EdgeWeightType>
+    template<typename Id, typename EdgeWeight>
         struct Node {
             public:
-                IdType const id; /**< The id of a node */
+                Id const id; /**< The id of a node */
                 /** 
                  * The weight of the edge which connects a node to its parent.
                  * If there is no parent node the value of this member is arbitrary
                  */
-                EdgeWeightType const parent_edge_weight; 
+                EdgeWeight const parent_edge_weight; 
                 size_t const parent_idx; /**< The index of the parent of a node in the level above */
                 /**
                  * The children of a node described by their indices in the level below this node.
@@ -55,7 +55,7 @@ namespace cut {
                  * @param children_idx_range The range of indices in which children of this are located
                  * in the level below this node.
                  */
-                Node(IdType id, EdgeWeightType parent_edge_weight, 
+                Node(Id id, EdgeWeight parent_edge_weight, 
                         size_t parent_idx, std::pair<size_t, size_t> children_idx_range);
         };
 
@@ -71,8 +71,8 @@ namespace cut {
      * @see ValarrayEqual
      * @see Signature
      */
-    template<typename SizeType, typename EdgeWeightType>
-        using SignatureMap = std::vector<std::unordered_map<Signature<SizeType>, EdgeWeightType, 
+    template<typename SizeType, typename EdgeWeight>
+        using SignatureMap = std::vector<std::unordered_map<Signature<SizeType>, EdgeWeight, 
               valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
 
     /**
@@ -101,14 +101,14 @@ namespace cut {
      * This is used in cut_edges_for_signature().
      * @see Tree::SignatureMap
      */
-    template<typename SizeType, typename EdgeWeightType>
+    template<typename SizeType, typename EdgeWeight>
         using SignatureMapWithPrev = std::map<SizeType, 
-              std::unordered_map<Signature<SizeType>, std::pair<EdgeWeightType, PreviousSignatures<SizeType>>,
+              std::unordered_map<Signature<SizeType>, std::pair<EdgeWeight, PreviousSignatures<SizeType>>,
               valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
 
     using RationalType = mpq_class; /**< The type of a rational. **/
 
-    template<typename Idtype, typename EdgeWeightType>
+    template<typename Idtype, typename EdgeWeight>
         struct SignaturesForTree;
 
     /**
@@ -118,15 +118,15 @@ namespace cut {
      * For an explanation of the types 
      * @see Node
      */
-    template<typename IdType, typename EdgeWeightType>
+    template<typename Id, typename EdgeWeight>
         struct Tree {
             public:
-                using SizeType = IdType; /**< SizeType is the type for counting nodes. It is the same as IdType. */
-                using Node = Node<IdType, EdgeWeightType>; /**< Type of a Node according to template parameters */
+                using SizeType = Id; /**< SizeType is the type for counting nodes. It is the same as Id. */
+                using Node = Node<Id, EdgeWeight>; /**< Type of a Node according to template parameters */
                 using Signature = Signature<SizeType>; /**< Type of a signature. */
-                using SignatureMap = SignatureMap<SizeType, EdgeWeightType>; /**< The type to save the signatures at a node */
+                using SignatureMap = SignatureMap<SizeType, EdgeWeight>; /**< The type to save the signatures at a node */
                 /** Similar to SignatureMap only with information about previous signatures. */
-                using SignatureMapWithPrev = SignatureMapWithPrev<SizeType, EdgeWeightType>;
+                using SignatureMapWithPrev = SignatureMapWithPrev<SizeType, EdgeWeight>;
 
                 std::vector<std::vector<Node>> levels; /**< The levels of the tree. */
                 std::vector<std::vector<bool>> has_left_sibling; /**< Lookup table saving if a node has a left sibling */
@@ -146,7 +146,7 @@ namespace cut {
                  * @param root_id The id of the root in the tree.
                  * @returns The tree built from \p tree.
                  */
-                static Tree build_tree(std::map<IdType, std::map<IdType, EdgeWeightType>> const& tree, IdType root_id);
+                static Tree build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree, Id root_id);
 
                 /**
                  * Similiar to the overloaded function. Uses a random root. 
@@ -156,7 +156,7 @@ namespace cut {
                  *
                  * @see build_tree()
                  */
-                static Tree build_tree(std::map<IdType, std::map<IdType, EdgeWeightType>> const& tree);
+                static Tree build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree);
 
                 /**
                  * Calculates the sizes of the subtrees in the tree.
@@ -173,7 +173,7 @@ namespace cut {
                  *
                  * @see SignaturesForTree
                  */
-                SignaturesForTree<IdType, EdgeWeightType> cut(RationalType eps, SizeType part_cnt);
+                SignaturesForTree<Id, EdgeWeight> cut(RationalType eps, SizeType part_cnt);
 
                 /**
                  * Calculates the signatures of the tree with information about the previous signatures.
@@ -190,7 +190,7 @@ namespace cut {
                  * Returns <code>(std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::max())</code>
                  * if no node with id \p node_id exists.
                  */
-                std::pair<size_t, size_t> get_node_idx(IdType node_id) const;
+                std::pair<size_t, size_t> get_node_idx(Id node_id) const;
 
                 /**
                  * Outputs the tree in the graphviz format.
@@ -254,8 +254,8 @@ namespace cut {
      * @param tree The tree to build populate.
      * @returns The inputstream.
      */
-    template<typename IdType, typename EdgeWeightType>
-        std::istream& operator>>(std::istream& is, Tree<IdType, EdgeWeightType>& tree);
+    template<typename Id, typename EdgeWeight>
+        std::istream& operator>>(std::istream& is, Tree<Id, EdgeWeight>& tree);
 
     /**
      * Prints a Tree to the outputstream.
@@ -264,8 +264,8 @@ namespace cut {
      * @param tree The tree to print.
      * @returns The outputstream.
      */
-    template<typename IdType, typename EdgeWeightType>
-        std::ostream& operator<<(std::ostream& os, Tree<IdType, EdgeWeightType> const& tree);
+    template<typename Id, typename EdgeWeight>
+        std::ostream& operator<<(std::ostream& os, Tree<Id, EdgeWeight> const& tree);
 
     /**
      * Calculates the upper (exclusive) bounds on the component sizes for each index of a signature.
@@ -295,13 +295,13 @@ namespace cut {
      * This class represents the signatures for a tree caclulated by Tree::cut(). 
      * The tree instance MUST outlive the SignaturesForTree instance.
      */
-    template<typename IdType, typename EdgeWeightType>
+    template<typename Id, typename EdgeWeight>
         struct SignaturesForTree {
             public:
-                using SizeType = IdType; /**< A type to count the nodes of the tree. */
-                using Tree = Tree<IdType, EdgeWeightType>; /**< The type of the tree with the given template parameters. */
+                using SizeType = Id; /**< A type to count the nodes of the tree. */
+                using Tree = Tree<Id, EdgeWeight>; /**< The type of the tree with the given template parameters. */
                 using Signature = Signature<SizeType>; /**< The signature type with the given template parameters. */
-                using SignatureMap = SignatureMap<IdType, EdgeWeightType>; /**< The type to save the signatures at a node. */
+                using SignatureMap = SignatureMap<Id, EdgeWeight>; /**< The type to save the signatures at a node. */
 
                 SizeType const part_cnt; /**< The number of parts in the partition. */
                 RationalType const eps; /**< The approximation parameter. */
@@ -325,7 +325,7 @@ namespace cut {
                 /** 
                  * A type representing the edges cut by the cutting phase.
                  */
-                using CutEdges = std::set<std::pair<IdType, IdType>>; 
+                using CutEdges = std::set<std::pair<Id, Id>>; 
 
                 /**
                  * Calculates the edges which were cut to arrive at \p signature at the root.
@@ -339,7 +339,7 @@ namespace cut {
                  * @param cut_edges The edges to cut.
                  * @returns A vector of sets. Each set identifies one connected component in the Tree by the node ids in that set.
                  */
-                std::vector<std::set<IdType>> components_for_cut_edges(CutEdges const& cut_edges) const;
+                std::vector<std::set<Id>> components_for_cut_edges(CutEdges const& cut_edges) const;
 
         };
 
@@ -350,20 +350,20 @@ namespace cut {
      * @param signatures The signatures to print.
      * @returns The outputstream.
      */
-    template<typename IdType, typename EdgeWeightType>
-        std::ostream& operator<<(std::ostream& os, SignaturesForTree<IdType, EdgeWeightType> const& signatures);
+    template<typename Id, typename EdgeWeight>
+        std::ostream& operator<<(std::ostream& os, SignaturesForTree<Id, EdgeWeight> const& signatures);
 
 
     /**
      * This class is used to build a SignaturesForTree object.
      * We need this class since the members of the SignaturesForTree class are constant.
      */
-    template<typename IdType, typename EdgeWeightType>
+    template<typename Id, typename EdgeWeight>
         struct SignaturesForTreeBuilder {
             public:
-                using Tree = Tree<IdType, EdgeWeightType>; /**< The tree type with the given template parameters. */
-                using SizeType = IdType; /**< The type to count nodes of the tree */
-                using SignatureMap = SignatureMap<SizeType, EdgeWeightType>; /**< The type to save the signatures at a node */
+                using Tree = Tree<Id, EdgeWeight>; /**< The tree type with the given template parameters. */
+                using SizeType = Id; /**< The type to count nodes of the tree */
+                using SignatureMap = SignatureMap<SizeType, EdgeWeight>; /**< The type to save the signatures at a node */
                 
                 /** 
                  * The tree for which the signatures were calculated. 
@@ -400,7 +400,7 @@ namespace cut {
                  * Finishes building the signatures.
                  * @returns The finished SignaturesForTree object.
                  */
-                SignaturesForTree<IdType, EdgeWeightType> finish();
+                SignaturesForTree<Id, EdgeWeight> finish();
 
             private:
                 SizeType part_cnt; /**< The number of parts in the partition. */
@@ -435,8 +435,8 @@ namespace cut {
      * @param builder The builder.
      * @returns The inputstream.
      */
-    template<typename IdType, typename EdgeWeightType>
-        std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder<IdType, EdgeWeightType>& builder);
+    template<typename Id, typename EdgeWeight>
+        std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder<Id, EdgeWeight>& builder);
 }
 
 // Include template implementation.

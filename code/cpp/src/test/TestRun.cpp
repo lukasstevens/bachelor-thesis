@@ -18,8 +18,8 @@ using namespace cut;
 // A single line follows containing integers k, e_n, e_d where k is the number of parts into which
 // the tree shall be partitioned and e_n/e_d describes the approximation parameter epsilon.
 TEST(Run, DISABLED_FromStdinVerbose) {
-    using IdType = int32_t;
-    using EdgeWeightType = int32_t;
+    using Id = int32_t;
+    using EdgeWeight = int32_t;
     using Tree = Tree<int32_t, int32_t>;
 
     Tree tree;
@@ -45,7 +45,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     std::vector<std::set<Tree::SizeType>> partitioning;
     Tree::Signature signature;
-    EdgeWeightType cut_cost;
+    EdgeWeight cut_cost;
     std::tie(partitioning, signature, cut_cost) = part::calculate_best_packing(signatures);
 
     ASSERT_LE(partitioning.size(), static_cast<size_t>(part_cnt));
@@ -74,7 +74,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     std::cerr << "digraph tree {\n\tedge[dir=none]\n";
 
-    auto get_part_idx = [partitioning](IdType node_id){
+    auto get_part_idx = [partitioning](Id node_id){
         size_t idx = 0;
         for (auto const& part : partitioning) {
             if (part.find(node_id) != part.end()) {
@@ -132,9 +132,9 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 }
 
 TEST(Run, DISABLED_FromStdinCutting) {
-    using IdType = int32_t;
-    using EdgeWeightType = int32_t;
-    using Tree = Tree<IdType, EdgeWeightType>;
+    using Id = int32_t;
+    using EdgeWeight = int32_t;
+    using Tree = Tree<Id, EdgeWeight>;
 
     Tree tree;
     std::cin >> tree;

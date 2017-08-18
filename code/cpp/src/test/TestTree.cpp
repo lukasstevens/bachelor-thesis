@@ -7,11 +7,11 @@
 #include "Cut.hpp"
 
 TEST(BuildTree, TwoNodes) {
-    using IdType = int32_t;
-    using EdgeWeightType = int32_t;
-    using Tree = cut::Tree<IdType, EdgeWeightType>;
+    using Id = int32_t;
+    using EdgeWeight = int32_t;
+    using Tree = cut::Tree<Id, EdgeWeight>;
 
-    std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
+    std::map<Id, std::map<Id, EdgeWeight>> tree_map;
     tree_map[1][2] = 3;
     Tree tree = Tree::build_tree(tree_map, 1);
     Tree::Node root = tree.levels[0][0];
@@ -39,11 +39,11 @@ TEST(BuildTree, TwoNodes) {
 }
 
 TEST(BuildTree, ThreeNodeChain) {
-    using IdType = int32_t;
-    using EdgeWeightType = int32_t;
-    using Tree = cut::Tree<IdType, EdgeWeightType>;
+    using Id = int32_t;
+    using EdgeWeight = int32_t;
+    using Tree = cut::Tree<Id, EdgeWeight>;
 
-    std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
+    std::map<Id, std::map<Id, EdgeWeight>> tree_map;
     tree_map[1][2] = 4;
     tree_map[2][3] = 5;
     Tree tree = Tree::build_tree(tree_map, 1);
@@ -76,11 +76,11 @@ TEST(BuildTree, ThreeNodeChain) {
 }
 
 TEST(BuildTree, ThreeNodes) {
-    using IdType = int32_t;
-    using EdgeWeightType = int32_t;
-    using Tree = cut::Tree<IdType, EdgeWeightType>;
+    using Id = int32_t;
+    using EdgeWeight = int32_t;
+    using Tree = cut::Tree<Id, EdgeWeight>;
 
-    std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
+    std::map<Id, std::map<Id, EdgeWeight>> tree_map;
     tree_map[1][2] = 4;
     tree_map[1][3] = 5;
     Tree tree = Tree::build_tree(tree_map, 1);

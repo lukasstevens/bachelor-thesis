@@ -5,15 +5,15 @@
 
 namespace part {
 
-template<typename IdType, typename EdgeWeightType>
-    std::tuple<Partitioning<IdType>, cut::Signature<IdType>, EdgeWeightType> 
-        calculate_best_packing(cut::SignaturesForTree<IdType, EdgeWeightType> const& signatures) {
+template<typename Id, typename EdgeWeight>
+    std::tuple<Partitioning<Id>, cut::Signature<Id>, EdgeWeight> 
+        calculate_best_packing(cut::SignaturesForTree<Id, EdgeWeight> const& signatures) {
 
-        using Signature = cut::Signature<IdType>;
-        using SizeType = IdType;
+        using Signature = cut::Signature<Id>;
+        using SizeType = Id;
 
         auto const& root_sigs = signatures.signatures[0][0].at(signatures.tree.tree_sizes[0][0]);
-        using SignatureWithCost = std::pair<EdgeWeightType, Signature>;
+        using SignatureWithCost = std::pair<EdgeWeight, Signature>;
         auto compare = [](SignatureWithCost left, SignatureWithCost right){
             return left.first > right.first;
         };
@@ -26,7 +26,7 @@ template<typename IdType, typename EdgeWeightType>
 
         while (!prio_q.empty()) {
             Signature curr_sig;
-            EdgeWeightType curr_cut_cost;
+            EdgeWeight curr_cut_cost;
             std::tie(curr_cut_cost, curr_sig) = prio_q.top();
             prio_q.pop();
 
@@ -73,7 +73,7 @@ template<typename IdType, typename EdgeWeightType>
                     continue;
                 } else {
                     std::vector<std::vector<SizeType>> bins = curr_packing.get_bins();
-                    std::vector<std::set<IdType>> partitioning(bins.size());
+                    std::vector<std::set<Id>> partitioning(bins.size());
                     std::vector<bool> used_comp(comps_for_curr_sig.size());
                     for (size_t bin_idx = 0; bin_idx < bins.size(); ++bin_idx) {
                         for (auto const comp_size : bins[bin_idx]) {
@@ -93,6 +93,6 @@ template<typename IdType, typename EdgeWeightType>
             }
         }
 
-        return std::make_tuple(std::vector<std::set<IdType>>(), Signature(), std::numeric_limits<SizeType>::max());
+        return std::make_tuple(std::vector<std::set<Id>>(), Signature(), std::numeric_limits<SizeType>::max());
     }
 }

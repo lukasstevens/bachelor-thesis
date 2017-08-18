@@ -1,23 +1,23 @@
 namespace cut {
 
-    template<typename IdType, typename EdgeWeightType>
-        Node<IdType, EdgeWeightType>::Node(IdType id, EdgeWeightType parent_edge_weight, 
+    template<typename Id, typename EdgeWeight>
+        Node<Id, EdgeWeight>::Node(Id id, EdgeWeight parent_edge_weight, 
                 size_t parent_idx, std::pair<size_t, size_t> children_idx_range) : 
             id(id), parent_edge_weight(parent_edge_weight), parent_idx(parent_idx), children_idx_range(children_idx_range) {}
 
 
-    template<typename IdType, typename EdgeWeightType>
-        Tree<IdType, EdgeWeightType> Tree<IdType, EdgeWeightType>::build_tree(std::map<IdType, std::map<IdType, EdgeWeightType>> const& tree_map, IdType root_id) {
+    template<typename Id, typename EdgeWeight>
+        Tree<Id, EdgeWeight> Tree<Id, EdgeWeight>::build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree_map, Id root_id) {
             Tree tree;
             // Use a struct to represent an incomplete node since the child_idx_range is not known.
             struct NodeStub {
-                IdType const id; 
-                EdgeWeightType const parent_edge_weight;
+                Id const id; 
+                EdgeWeight const parent_edge_weight;
                 size_t const parent_idx;
                 bool const has_left_sibling;
                 size_t const level;
 
-                NodeStub(IdType id, EdgeWeightType p_e_w, size_t p_i, bool h_l_s, size_t lvl) :
+                NodeStub(Id id, EdgeWeight p_e_w, size_t p_i, bool h_l_s, size_t lvl) :
                     id(id), parent_edge_weight(p_e_w), parent_idx(p_i), has_left_sibling(h_l_s), level(lvl) {}
             };
 
@@ -60,8 +60,8 @@ namespace cut {
             return tree;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        void Tree<IdType, EdgeWeightType>::calculate_subtree_sizes() {
+    template<typename Id, typename EdgeWeight>
+        void Tree<Id, EdgeWeight>::calculate_subtree_sizes() {
             Tree& tree = *this;
             for (auto const& lvl : tree.levels) {
                 tree.tree_sizes.emplace_back(lvl.size(), 1);
@@ -79,14 +79,14 @@ namespace cut {
             }
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        Tree<IdType, EdgeWeightType> Tree<IdType, EdgeWeightType>::build_tree(
-                std::map<IdType, std::map<IdType, EdgeWeightType>> const& tree_map) {
+    template<typename Id, typename EdgeWeight>
+        Tree<Id, EdgeWeight> Tree<Id, EdgeWeight>::build_tree(
+                std::map<Id, std::map<Id, EdgeWeight>> const& tree_map) {
             return build_tree(tree_map, tree_map.begin()->first);
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        SignatureMap<IdType, EdgeWeightType> Tree<IdType, EdgeWeightType>::cut_at_node(
+    template<typename Id, typename EdgeWeight>
+        SignatureMap<Id, EdgeWeight> Tree<Id, EdgeWeight>::cut_at_node(
                 Tree::Node const& node, 
                 Tree::SizeType node_subtree_size,
                 Tree::SizeType left_siblings_size,
@@ -116,7 +116,7 @@ namespace cut {
                             // First case: The edge from the current node to its parent is not cut.
                             Tree::SizeType frontier_size = left_sibling_node_cnt + child_node_cnt;
                             size_t frontier_size_size_t = static_cast<size_t>(frontier_size);
-                            EdgeWeightType cut_cost = left_sibling_sig.second + child_sig.second;
+                            EdgeWeight cut_cost = left_sibling_sig.second + child_sig.second;
                             Tree::Signature sig = left_sibling_sig.first + child_sig.first;
 
                             auto prev_cut_cost_it = node_sigs[frontier_size_size_t].find(sig);
@@ -155,8 +155,8 @@ namespace cut {
         }
 
 
-    template<typename IdType, typename EdgeWeightType>
-        SignaturesForTree<IdType, EdgeWeightType> Tree<IdType, EdgeWeightType>::cut(RationalType eps, SizeType part_cnt) {
+    template<typename Id, typename EdgeWeight>
+        SignaturesForTree<Id, EdgeWeight> Tree<Id, EdgeWeight>::cut(RationalType eps, SizeType part_cnt) {
 
             std::vector<std::vector<Tree::SignatureMap>> signatures;
             for (auto const& lvl : this->levels) {
@@ -226,11 +226,11 @@ namespace cut {
                 }
             }
 
-            return SignaturesForTree<IdType, EdgeWeightType>(part_cnt, eps, *this, signatures);
+            return SignaturesForTree<Id, EdgeWeight>(part_cnt, eps, *this, signatures);
         }
 
-    template<typename IdType, typename EdgeWeightType>
-       SignatureMapWithPrev<IdType, EdgeWeightType> Tree<IdType, EdgeWeightType>::cut_at_node_with_prev(
+    template<typename Id, typename EdgeWeight>
+       SignatureMapWithPrev<Id, EdgeWeight> Tree<Id, EdgeWeight>::cut_at_node_with_prev(
                 Tree::Node const& node, 
                 Tree::SizeType subtree_size,
                 Tree::SignatureMapWithPrev const& left_sibling_sigs, 
@@ -250,10 +250,10 @@ namespace cut {
                             Tree::SizeType frontier_size = left_sibling_sigs_with_size.first + child_sigs_with_size.first;
 
                             // The entries in SignatureMapWithPrev are pairs of the cut cost and the previous signatures. 
-                            EdgeWeightType left_sibling_sig_cut_cost = left_sibling_sig.second.first;
-                            EdgeWeightType child_sig_cut_cost = child_sig.second.first;
+                            EdgeWeight left_sibling_sig_cut_cost = left_sibling_sig.second.first;
+                            EdgeWeight child_sig_cut_cost = child_sig.second.first;
 
-                            EdgeWeightType cut_cost = left_sibling_sig_cut_cost + child_sig_cut_cost;
+                            EdgeWeight cut_cost = left_sibling_sig_cut_cost + child_sig_cut_cost;
                             Tree::Signature node_sig = left_sibling_sig.first + child_sig.first;
 
                             // Check if the current signature is feasible.
@@ -261,7 +261,7 @@ namespace cut {
                                 continue;
                             }
 
-                            PreviousSignatures<IdType> previous_signatures(
+                            PreviousSignatures<Id> previous_signatures(
                                     std::make_pair(left_sibling_sigs_with_size.first, left_sibling_sig.first),
                                     std::make_pair(child_sigs_with_size.first, child_sig.first),
                                     false);
@@ -303,9 +303,9 @@ namespace cut {
             return node_sigs;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        std::vector<std::vector<SignatureMapWithPrev<IdType, EdgeWeightType>>> 
-        Tree<IdType, EdgeWeightType>::cut_with_prev(RationalType eps, SizeType part_cnt, Tree::Signature const& signature) const {
+    template<typename Id, typename EdgeWeight>
+        std::vector<std::vector<SignatureMapWithPrev<Id, EdgeWeight>>> 
+        Tree<Id, EdgeWeight>::cut_with_prev(RationalType eps, SizeType part_cnt, Tree::Signature const& signature) const {
 
             auto const upper_comp_size_bounds = calculate_upper_component_size_bounds(eps, this->tree_sizes[0][0], part_cnt);
             std::vector<std::vector<Tree::SignatureMapWithPrev>> signatures_with_prev;
@@ -323,7 +323,7 @@ namespace cut {
                     Tree::Signature const empty_signature = Tree::Signature(signature.size());
                     std::pair<Tree::SizeType, Tree::Signature> empty_prev_signature(0, empty_signature);
                     empty_map[0][empty_signature] = std::make_pair(0, 
-                            PreviousSignatures<IdType>(empty_prev_signature, empty_prev_signature, false));
+                            PreviousSignatures<Id>(empty_prev_signature, empty_prev_signature, false));
 
                     Tree::SignatureMapWithPrev const* left_sibling_sigs = &empty_map;
                     Tree::SignatureMapWithPrev const* child_sigs = &empty_map;
@@ -363,9 +363,9 @@ namespace cut {
                             while(root_comp_size >= upper_comp_size_bounds[i]) { ++i; }
                             root_sig[i] += 1;
 
-                            EdgeWeightType cut_cost = child_sig.second.first;
+                            EdgeWeight cut_cost = child_sig.second.first;
 
-                            PreviousSignatures<IdType> previous_signatures(
+                            PreviousSignatures<Id> previous_signatures(
                                     std::make_pair(0, Signature(signature.size())),
                                     std::make_pair(child_sigs_with_size.first, child_sig.first),
                                     false);
@@ -414,12 +414,12 @@ namespace cut {
             return lower_comp_size_bounds;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        typename SignaturesForTree<IdType, EdgeWeightType>::CutEdges 
-        SignaturesForTree<IdType, EdgeWeightType>::cut_edges_for_signature(
+    template<typename Id, typename EdgeWeight>
+        typename SignaturesForTree<Id, EdgeWeight>::CutEdges 
+        SignaturesForTree<Id, EdgeWeight>::cut_edges_for_signature(
                 SignaturesForTree::Signature const& signature) const {
 
-            std::vector<std::vector<SignatureMapWithPrev<IdType, EdgeWeightType>>> signatures_with_prev 
+            std::vector<std::vector<SignatureMapWithPrev<Id, EdgeWeight>>> signatures_with_prev 
                 = this->tree.cut_with_prev(this->eps, this->part_cnt, signature);
             SignaturesForTree::CutEdges cut_edges;
 
@@ -439,13 +439,13 @@ namespace cut {
                 SignatureAtNode const sig_at_node = queue.front();
                 queue.pop_front();
 
-                Node<IdType, EdgeWeightType> const& node 
+                Node<Id, EdgeWeight> const& node 
                     = this->tree.levels[sig_at_node.node_idx.first][sig_at_node.node_idx.second];
                 auto const& node_idx = sig_at_node.node_idx;
 
-                SignatureMapWithPrev<IdType, EdgeWeightType> const& signatures_with_prev_at_node = 
+                SignatureMapWithPrev<Id, EdgeWeight> const& signatures_with_prev_at_node = 
                     signatures_with_prev[node_idx.first][node_idx.second];
-                PreviousSignatures<IdType> const& previous_signatures = signatures_with_prev_at_node
+                PreviousSignatures<Id> const& previous_signatures = signatures_with_prev_at_node
                     .at(sig_at_node.sig_with_size.first).at(sig_at_node.sig_with_size.second).second;
 
                 bool const node_has_left_sibling = this->tree.has_left_sibling[node_idx.first][node_idx.second];
@@ -468,7 +468,7 @@ namespace cut {
                 }
 
                 if (previous_signatures.was_parent_edge_cut) {
-                    Node<IdType, EdgeWeightType> const& parent = this->tree.levels[sig_at_node.node_idx.first - 1][node.parent_idx];
+                    Node<Id, EdgeWeight> const& parent = this->tree.levels[sig_at_node.node_idx.first - 1][node.parent_idx];
                     cut_edges.emplace(node.id, parent.id);
                 }
             }
@@ -476,11 +476,11 @@ namespace cut {
             return cut_edges;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        std::vector<std::set<IdType>> SignaturesForTree<IdType, EdgeWeightType>::components_for_cut_edges(
+    template<typename Id, typename EdgeWeight>
+        std::vector<std::set<Id>> SignaturesForTree<Id, EdgeWeight>::components_for_cut_edges(
             SignaturesForTree::CutEdges const& cut_edges) const {
 
-            std::vector<std::set<IdType>> components;
+            std::vector<std::set<Id>> components;
 
             struct NodeInfo {
                 std::pair<size_t, size_t> node_idx;
@@ -497,13 +497,13 @@ namespace cut {
 
             while (!queue.empty()) {
                 auto curr_info = queue.front();
-                Node<IdType, EdgeWeightType> const& curr_node = this->tree.levels[curr_info.node_idx.first][curr_info.node_idx.second];
+                Node<Id, EdgeWeight> const& curr_node = this->tree.levels[curr_info.node_idx.first][curr_info.node_idx.second];
                 queue.pop_front();
 
                 components[curr_info.component_idx].insert(curr_node.id);
                 for (size_t child_idx = curr_node.children_idx_range.first; 
                         child_idx < curr_node.children_idx_range.second; ++child_idx) {
-                    Node<IdType, EdgeWeightType> const& child = this->tree.levels[curr_info.node_idx.first + 1][child_idx];
+                    Node<Id, EdgeWeight> const& child = this->tree.levels[curr_info.node_idx.first + 1][child_idx];
                     std::pair<size_t, size_t> const child_node_idx(curr_info.node_idx.first + 1, child_idx);
                     if (cut_edges.find(std::make_pair(child.id, curr_node.id)) != cut_edges.end() || 
                             cut_edges.find(std::make_pair(curr_node.id, child.id)) != cut_edges.end()) {

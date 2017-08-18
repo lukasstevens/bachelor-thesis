@@ -1,7 +1,7 @@
 namespace cut {
 
-    template<typename IdType, typename EdgeWeightType>
-        std::pair<size_t, size_t> Tree<IdType, EdgeWeightType>::get_node_idx(IdType node_id) const {
+    template<typename Id, typename EdgeWeight>
+        std::pair<size_t, size_t> Tree<Id, EdgeWeight>::get_node_idx(Id node_id) const {
             for (size_t lvl_idx = 0; lvl_idx < this->levels.size(); ++lvl_idx) {
                 for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
                     if (this->levels[lvl_idx][node_idx].id == node_id) {
@@ -13,8 +13,8 @@ namespace cut {
                     std::numeric_limits<size_t>::max());
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        std::string Tree<IdType, EdgeWeightType>::as_graphviz() const {
+    template<typename Id, typename EdgeWeight>
+        std::string Tree<Id, EdgeWeight>::as_graphviz() const {
 
             std::stringstream stream;
             stream << "digraph tree {\n";
@@ -53,28 +53,28 @@ namespace cut {
             return stream.str();
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        std::istream& operator>>(std::istream& is, Tree<IdType, EdgeWeightType>& tree) {
-            using SizeType = IdType;
+    template<typename Id, typename EdgeWeight>
+        std::istream& operator>>(std::istream& is, Tree<Id, EdgeWeight>& tree) {
+            using SizeType = Id;
             SizeType node_cnt;
-            IdType root_id;
+            Id root_id;
             is >> node_cnt >> root_id;
 
-            std::map<IdType, std::map<IdType, EdgeWeightType>> tree_map;
+            std::map<Id, std::map<Id, EdgeWeight>> tree_map;
             for (SizeType edge_idx = 0; edge_idx < node_cnt - 1; ++edge_idx) {
-                IdType from; 
-                IdType to; 
-                EdgeWeightType weight;
+                Id from; 
+                Id to; 
+                EdgeWeight weight;
                 is >> from >> to >> weight;
                 tree_map[from][to] = weight;
             }
-            tree = Tree<IdType, EdgeWeightType>::build_tree(tree_map, root_id);
+            tree = Tree<Id, EdgeWeight>::build_tree(tree_map, root_id);
 
             return is;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        std::ostream& operator<<(std::ostream& os, Tree<IdType, EdgeWeightType> const& tree) {
+    template<typename Id, typename EdgeWeight>
+        std::ostream& operator<<(std::ostream& os, Tree<Id, EdgeWeight> const& tree) {
             os << tree.tree_sizes[0][0] << " " << tree.levels[0][0].id << std::endl;
             for (size_t lvl_idx = 1; lvl_idx < tree.levels.size(); ++lvl_idx) {
                 for (auto const& node : tree.levels[lvl_idx]) {
@@ -85,8 +85,8 @@ namespace cut {
             return os;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        std::ostream& operator<<(std::ostream& os, SignaturesForTree<IdType, EdgeWeightType> const& signatures) {
+    template<typename Id, typename EdgeWeight>
+        std::ostream& operator<<(std::ostream& os, SignaturesForTree<Id, EdgeWeight> const& signatures) {
             os << signatures.part_cnt << " ";  
             os << signatures.eps.get_num() << " " << signatures.eps.get_den() << std::endl;
             os << std::endl;
@@ -98,7 +98,7 @@ namespace cut {
                     os << signatures.tree.levels[lvl_idx][node_idx].id << " ";
                     os << node_sigs.size() << std::endl;
 
-                    IdType node_sigs_size = 0;
+                    Id node_sigs_size = 0;
                     for (auto const& node_sigs_with_size : node_sigs) {
                         os << node_sigs_size << " ";
                         os << node_sigs_with_size.size() << std::endl;
@@ -116,37 +116,37 @@ namespace cut {
             return os;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        SignaturesForTreeBuilder<IdType, EdgeWeightType>& 
-            SignaturesForTreeBuilder<IdType, EdgeWeightType>::with_part_cnt(IdType part_cnt) {
+    template<typename Id, typename EdgeWeight>
+        SignaturesForTreeBuilder<Id, EdgeWeight>& 
+            SignaturesForTreeBuilder<Id, EdgeWeight>::with_part_cnt(Id part_cnt) {
 
             this->part_cnt = part_cnt;
             return *this;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        SignaturesForTreeBuilder<IdType, EdgeWeightType>& 
-            SignaturesForTreeBuilder<IdType, EdgeWeightType>::with_eps(RationalType eps) {
+    template<typename Id, typename EdgeWeight>
+        SignaturesForTreeBuilder<Id, EdgeWeight>& 
+            SignaturesForTreeBuilder<Id, EdgeWeight>::with_eps(RationalType eps) {
 
         this->eps = eps;
         return *this;
     }
 
-    template<typename IdType, typename EdgeWeightType>
-    SignaturesForTreeBuilder<IdType, EdgeWeightType>& SignaturesForTreeBuilder<IdType, EdgeWeightType>::with_signatures(
+    template<typename Id, typename EdgeWeight>
+    SignaturesForTreeBuilder<Id, EdgeWeight>& SignaturesForTreeBuilder<Id, EdgeWeight>::with_signatures(
             std::vector<std::vector<SignatureMap>> const& signatures) {
         this->signatures = signatures;
         return *this;
     }
 
-    template<typename IdType, typename EdgeWeightType>
-        SignaturesForTree<IdType, EdgeWeightType> SignaturesForTreeBuilder<IdType, EdgeWeightType>::finish() {
-            return SignaturesForTree<IdType, EdgeWeightType>(this->part_cnt, this->eps, this->tree, this->signatures);
+    template<typename Id, typename EdgeWeight>
+        SignaturesForTree<Id, EdgeWeight> SignaturesForTreeBuilder<Id, EdgeWeight>::finish() {
+            return SignaturesForTree<Id, EdgeWeight>(this->part_cnt, this->eps, this->tree, this->signatures);
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder<IdType, EdgeWeightType>& builder) {
-            using SizeType = IdType;
+    template<typename Id, typename EdgeWeight>
+        std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder<Id, EdgeWeight>& builder) {
+            using SizeType = Id;
 
             SizeType part_cnt;
             int64_t eps_num;
@@ -157,13 +157,13 @@ namespace cut {
             auto signature_length = calculate_upper_component_size_bounds(
                     eps, builder.tree.tree_sizes[0][0], part_cnt).size();
 
-            std::vector<std::vector<SignatureMap<IdType, EdgeWeightType>>> signatures;
+            std::vector<std::vector<SignatureMap<Id, EdgeWeight>>> signatures;
             for (auto const& level : builder.tree.levels) {
                 signatures.emplace_back(level.size());
             }
 
             for (SizeType node_idx = 0; node_idx < builder.tree.tree_sizes[0][0]; ++node_idx) {
-                IdType node_id;
+                Id node_id;
                 SizeType size_cnt;
                 is >> node_id >> size_cnt;
                 auto node_idx_in_tree = builder.tree.get_node_idx(node_id);
@@ -173,8 +173,8 @@ namespace cut {
                     max_sig_size += builder.tree.tree_sizes[node_idx_in_tree.first][sibling_idx];
                 }
 
-                SignatureMap<IdType, EdgeWeightType>& node_sigs = signatures[node_idx_in_tree.first][node_idx_in_tree.second];
-                node_sigs = SignatureMap<IdType, EdgeWeightType>(static_cast<size_t>(max_sig_size));
+                SignatureMap<Id, EdgeWeight>& node_sigs = signatures[node_idx_in_tree.first][node_idx_in_tree.second];
+                node_sigs = SignatureMap<Id, EdgeWeight>(static_cast<size_t>(max_sig_size));
 
                 for (SizeType size_idx = 0; size_idx < size_cnt; ++size_idx) {
                     SizeType size;
@@ -183,7 +183,7 @@ namespace cut {
 
                     for (SizeType signature_idx = 0; signature_idx < signature_cnt; ++signature_idx) {
                         std::valarray<SizeType> signature(signature_length);
-                        EdgeWeightType cut_cost;
+                        EdgeWeight cut_cost;
                         for (auto& comp : signature) {
                             is >> comp;
                         }
