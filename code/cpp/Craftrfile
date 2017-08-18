@@ -7,19 +7,26 @@ from craftr.foreignbuild import make
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
+paths = { 
+    'metis' : local('deps/metis'),
+    'kahip' : local('deps/KaHIP'),
+    'metis_build' : 'build',
+    'kahip_build' : 'deploy'
+}
+
 includes = ['src/include', 'src/main', 
         'build/metis/include', 'deps/KaHIP/deploy/kaHIP_interface.h']
 
 metislib = Framework()
-metis = make('Makefile', 'install', cwd='../deps/metis', 
-        outputs=[os.path.join(project_dir, 'build/metis/lib/libmetis.a')])
+metis = make('Makefile', 'install', cwd=paths['metis'], 
+        outputs=[local('build/metis/lib/libmetis.a')])
 cxx.extend_framework(metislib, metis)
 
 kahiplib = Framework()
 kahip = gentarget(
         [['./compile.sh']],
-        cwd=os.path.join(project_dir, 'deps/KaHIP'),
-        outputs=[os.path.join(project_dir, 'deps/KaHIP/deploy/libkahip.a')]
+        cwd=paths['kahip'],
+        outputs=[os.path.join(paths['kahip'], paths['kahip_build'])]
         )
 cxx.extend_framework(kahiplib, kahip)
 
@@ -59,8 +66,7 @@ docs = gentarget([['doxygen', '.doxygen.config']], explicit=True, cwd=project_di
 
 # Symlink resource file for execution 
 try:
-    os.symlink(os.path.join(project_dir, 'src/test/resources'), 
-            os.path.join(project_dir, 'build/resources'))
+    os.symlink(local('src/test/resources'), local('build/resources'))
 except:
     pass
 
@@ -69,9 +75,9 @@ print("Configuring METIS")
 subprocess.call([
     'make', 'config', 
     'cc=\"' + session.options['craftr.lang.cxx.toolkit'] + '\"',
-    'prefix=\"' + os.path.join(project_dir, 'build/metis') + '\"',
+    'prefix=\"' + local('build/metis') + '\"',
     ], 
-    cwd=os.path.join(project_dir, 'deps/metis')
+    cwd=paths['metis']
     )
 print("Finished configuring METIS")
 
