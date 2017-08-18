@@ -16,9 +16,11 @@ metis = make('Makefile', 'install', cwd='../deps/metis',
 cxx.extend_framework(metislib, metis)
 
 kahiplib = Framework()
-kahip = gentarget([['./compile.sh']],
+kahip = gentarget(
+        [['./compile.sh']],
         cwd=os.path.join(project_dir, 'deps/KaHIP'),
-        outputs=[os.path.join(project_dir, 'deps/KaHIP/deploy/libkahip.a')])
+        outputs=[os.path.join(project_dir, 'deps/KaHIP/deploy/libkahip.a')]
+        )
 cxx.extend_framework(kahiplib, kahip)
 
 mylib = Framework(
@@ -30,15 +32,15 @@ mylib = Framework(
         libs = ['m', 'gmpxx', 'gmp']
         )
 mylib_lib = cxx.static_library(
-        inputs = cxx.compile_cpp(
-            sources = glob('src/main/*.cpp'), 
+        inputs = cxx.compile_cpp(sources = glob('src/main/*.cpp'), 
             frameworks = [mylib, metislib, kahiplib]),
         output = 'mylib'
         )
 cxx.extend_framework(mylib, mylib_lib)
 
 test_bin = cxx.executable(
-        inputs = cxx.compile_cpp(sources = glob('src/test/*.cpp'), frameworks = [googletest, mylib]),
+        inputs = cxx.compile_cpp(sources = glob('src/test/*.cpp'),
+            frameworks = [googletest, mylib]),
         output = 'test'
         )
 
@@ -64,10 +66,12 @@ except:
 
 # Configure metis
 print("Configuring METIS")
-subprocess.call(['make', 'config', 
+subprocess.call([
+    'make', 'config', 
     'cc=\"' + session.options['craftr.lang.cxx.toolkit'] + '\"',
     'prefix=\"' + os.path.join(project_dir, 'build/metis') + '\"',
     ], 
-    cwd=os.path.join(project_dir, 'deps/metis'))
+    cwd=os.path.join(project_dir, 'deps/metis')
+    )
 print("Finished configuring METIS")
 
