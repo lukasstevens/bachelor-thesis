@@ -18,24 +18,22 @@ using namespace cut;
 // A single line follows containing integers k, e_n, e_d where k is the number of parts into which
 // the tree shall be partitioned and e_n/e_d describes the approximation parameter epsilon.
 TEST(Run, DISABLED_FromStdinVerbose) {
-    using Id = int32_t;
-    using EdgeWeight = int32_t;
-    using Tree = Tree<int32_t, int32_t>;
+    using Tree = Tree<>;
 
     Tree tree;
     std::cin >> tree;
 
     std::cerr << tree.as_graphviz();
 
-    Tree::SizeType part_cnt;
+    int part_cnt;
     int64_t eps_num;
     int64_t eps_denom;
     std::cin >> part_cnt >> eps_num >> eps_denom;
     RationalType eps(eps_num, eps_denom);
 
-    std::cerr << "comp_size_bounds:";
-    for (auto& comp_size_bound : calculate_upper_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)) {
-        std::cerr << " " << comp_size_bound;
+    std::cerr << "comp_weight_bounds:";
+    for (auto& comp_weight_bound : calculate_upper_component_weight_bounds(eps, tree.subtree_weight[0][0], part_cnt)) {
+        std::cerr << " " << comp_weight_bound;
     }
     std::cerr << "\n" << std::endl;
 
@@ -43,18 +41,23 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     std::cerr << signatures << std::endl;
 
-    std::vector<std::set<Tree::SizeType>> partitioning;
+    std::vector<std::set<int>> partitioning;
     Tree::Signature signature;
-    EdgeWeight cut_cost;
+    int cut_cost;
     std::tie(partitioning, signature, cut_cost) = part::calculate_best_packing(signatures);
 
     ASSERT_LE(partitioning.size(), static_cast<size_t>(part_cnt));
     size_t node_cnt_in_partitioning = 0;
     for (auto const& part : partitioning) {
         node_cnt_in_partitioning += part.size();
-        ASSERT_LT(part.size(), signatures.upper_comp_size_bounds.back());
+        ASSERT_LT(part.size(), signatures.upper_comp_weight_bounds.back());
     }
-    ASSERT_EQ(tree.tree_sizes[0][0], node_cnt_in_partitioning);
+
+    size_t node_cnt = 0;
+    for (auto const& lvl : tree.levels) {
+        node_cnt += lvl.size();
+    }
+    ASSERT_EQ(node_cnt, node_cnt_in_partitioning);
 
     std::cerr << "partitioning:" << std::endl;
     for (auto const& part : partitioning) {
@@ -74,7 +77,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 
     std::cerr << "digraph tree {\n\tedge[dir=none]\n";
 
-    auto get_part_idx = [partitioning](Id node_id){
+    auto get_part_idx = [partitioning](int node_id){
         size_t idx = 0;
         for (auto const& part : partitioning) {
             if (part.find(node_id) != part.end()) {
@@ -132,14 +135,12 @@ TEST(Run, DISABLED_FromStdinVerbose) {
 }
 
 TEST(Run, DISABLED_FromStdinCutting) {
-    using Id = int32_t;
-    using EdgeWeight = int32_t;
-    using Tree = Tree<Id, EdgeWeight>;
+    using Tree = Tree<>;
 
     Tree tree;
     std::cin >> tree;
 
-    Tree::SizeType part_cnt;
+    int part_cnt;
     int64_t eps_num;
     int64_t eps_denom;
     std::cin >> part_cnt >> eps_num >> eps_denom;

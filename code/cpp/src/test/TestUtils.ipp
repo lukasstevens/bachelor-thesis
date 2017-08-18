@@ -30,14 +30,14 @@ namespace testutils {
             return tree;
         }
 
-    template<typename IdType, typename EdgeWeightType>
-        cut::SignaturesForTree<IdType, EdgeWeightType> get_signatures_for_tree(std::string tree_name, 
-                std::string params_name, cut::Tree<IdType, EdgeWeightType> const& tree) {
+    template<typename IdType, typename NodeWeight, typename EdgeWeightType>
+        cut::SignaturesForTree<IdType, NodeWeight, EdgeWeightType> get_signatures_for_tree(std::string tree_name, 
+                std::string params_name, cut::Tree<IdType, NodeWeight, EdgeWeightType> const& tree) {
 
             std::string signatures_resource = "resources/" + tree_name + "." + params_name + ".signatures";
             std::ifstream signature_stream(signatures_resource);
             EXPECT_TRUE(signature_stream.good()) << "Failed to open file " << signatures_resource << ".";
-            cut::SignaturesForTreeBuilder<IdType, EdgeWeightType> signature_builder(tree);
+            cut::SignaturesForTreeBuilder<IdType, NodeWeight, EdgeWeightType> signature_builder(tree);
             signature_stream >> signature_builder;
             signature_stream.close();
             return signature_builder.finish();

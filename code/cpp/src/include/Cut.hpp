@@ -21,6 +21,7 @@
  * This namespace contains all classes, functions and type definitions which are needed for the cutting phase.
  * Almost all structs and functions in this namespace use the template parameters Id and EdgeWeight.
  * Id is the type for node ids and EdgeWeight is the type with which edge weights of the Tree are stored.
+ * NodeWeight is the type for storing node weights.
  * @see Node
  * @see Tree
  */
@@ -30,11 +31,13 @@ namespace cut {
     /**
      * This class represents a node in the tree.
      * Id is the type of the node id and EdgeWeight is the type for storing the edge weights.
+     * NodeWeight is the type for storing node weights.
      */
-    template<typename Id, typename EdgeWeight>
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
         struct Node {
             public:
                 Id const id; /**< The id of a node */
+                NodeWeight const weight; /**< The weight of a node */
                 /** 
                  * The weight of the edge which connects a node to its parent.
                  * If there is no parent node the value of this member is arbitrary
@@ -55,12 +58,12 @@ namespace cut {
                  * @param children_idx_range The range of indices in which children of this are located
                  * in the level below this node.
                  */
-                Node(Id id, EdgeWeight parent_edge_weight, 
+                Node(Id id, EdgeWeight parent_edge_weight, NodeWeight weight, 
                         size_t parent_idx, std::pair<size_t, size_t> children_idx_range);
         };
 
-    template<typename SizeType>
-        using Signature = std::valarray<SizeType>; /**< The type of a signature. **/
+    template<typename NodeWeight>
+        using Signature = std::valarray<NodeWeight>; /**< The type of a signature. **/
 
     /**
      * A type which saves the signatures at a node. 
@@ -71,26 +74,26 @@ namespace cut {
      * @see ValarrayEqual
      * @see Signature
      */
-    template<typename SizeType, typename EdgeWeight>
-        using SignatureMap = std::vector<std::unordered_map<Signature<SizeType>, EdgeWeight, 
-              valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
+    template<typename NodeWeight, typename EdgeWeight>
+        using SignatureMap = std::vector<std::unordered_map<Signature<NodeWeight>, EdgeWeight, 
+              valarrutils::ValarrayHasher<NodeWeight>, valarrutils::ValarrayEqual<NodeWeight>>>;
 
     /**
      * This saves the signatures which were used to arrive the current signature.
      * @see SignatureMapWithPrev
      */
-    template<typename SizeType>
+    template<typename NodeWeight>
         struct PreviousSignatures {
-            using Signature = Signature<SizeType>;
-            std::pair<SizeType, Signature> left_sibling_sig;
-            std::pair<SizeType, Signature> right_child_sig;
+            using Signature = Signature<NodeWeight>;
+            std::pair<NodeWeight, Signature> left_sibling_sig;
+            std::pair<NodeWeight, Signature> right_child_sig;
             bool was_parent_edge_cut;
 
             PreviousSignatures() = default;
 
             PreviousSignatures(
-                    std::pair<SizeType, Signature> left_sibling_sig,
-                    std::pair<SizeType, Signature> right_child_sig,
+                    std::pair<NodeWeight, Signature> left_sibling_sig,
+                    std::pair<NodeWeight, Signature> right_child_sig,
                     bool was_parent_edge_cut) :
                 left_sibling_sig(left_sibling_sig), right_child_sig(right_child_sig), 
                 was_parent_edge_cut(was_parent_edge_cut) {}
@@ -101,14 +104,14 @@ namespace cut {
      * This is used in cut_edges_for_signature().
      * @see Tree::SignatureMap
      */
-    template<typename SizeType, typename EdgeWeight>
-        using SignatureMapWithPrev = std::map<SizeType, 
-              std::unordered_map<Signature<SizeType>, std::pair<EdgeWeight, PreviousSignatures<SizeType>>,
-              valarrutils::ValarrayHasher<SizeType>, valarrutils::ValarrayEqual<SizeType>>>;
+    template<typename NodeWeight, typename EdgeWeight>
+        using SignatureMapWithPrev = std::map<NodeWeight, 
+              std::unordered_map<Signature<NodeWeight>, std::pair<EdgeWeight, PreviousSignatures<NodeWeight>>,
+              valarrutils::ValarrayHasher<NodeWeight>, valarrutils::ValarrayEqual<NodeWeight>>>;
 
     using RationalType = mpq_class; /**< The type of a rational. **/
 
-    template<typename Idtype, typename EdgeWeight>
+    template<typename Idtype, typename NodeWeight, typename EdgeWeight>
         struct SignaturesForTree;
 
     /**
@@ -118,19 +121,18 @@ namespace cut {
      * For an explanation of the types 
      * @see Node
      */
-    template<typename Id, typename EdgeWeight>
+    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
         struct Tree {
             public:
-                using SizeType = Id; /**< SizeType is the type for counting nodes. It is the same as Id. */
-                using Node = Node<Id, EdgeWeight>; /**< Type of a Node according to template parameters */
-                using Signature = Signature<SizeType>; /**< Type of a signature. */
-                using SignatureMap = SignatureMap<SizeType, EdgeWeight>; /**< The type to save the signatures at a node */
+                using Node = Node<Id, NodeWeight, EdgeWeight>; /**< Type of a Node according to template parameters */
+                using Signature = Signature<NodeWeight>; /**< Type of a signature. */
+                using SignatureMap = SignatureMap<NodeWeight, EdgeWeight>; /**< The type to save the signatures at a node */
                 /** Similar to SignatureMap only with information about previous signatures. */
-                using SignatureMapWithPrev = SignatureMapWithPrev<SizeType, EdgeWeight>;
+                using SignatureMapWithPrev = SignatureMapWithPrev<NodeWeight, EdgeWeight>;
 
                 std::vector<std::vector<Node>> levels; /**< The levels of the tree. */
                 std::vector<std::vector<bool>> has_left_sibling; /**< Lookup table saving if a node has a left sibling */
-                std::vector<std::vector<SizeType>> tree_sizes; /**< Lookup table for the size of the subtree rooted at a node */
+                std::vector<std::vector<NodeWeight>> subtree_weight; /**< Lookup table for the size of the subtree rooted at a node */
 
                 /**
                  * Constructor.
@@ -146,7 +148,7 @@ namespace cut {
                  * @param root_id The id of the root in the tree.
                  * @returns The tree built from \p tree.
                  */
-                static Tree build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree, Id root_id);
+                static Tree<Id, NodeWeight, EdgeWeight> build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree, Id root_id);
 
                 /**
                  * Similiar to the overloaded function. Uses a random root. 
@@ -156,13 +158,13 @@ namespace cut {
                  *
                  * @see build_tree()
                  */
-                static Tree build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree);
+                static Tree<Id, NodeWeight, EdgeWeight> build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree);
 
                 /**
                  * Calculates the sizes of the subtrees in the tree.
-                 * It stores the sizes in the member Tree::tree_sizes.
+                 * It stores the sizes in the member Tree::subtree_weight.
                  */
-                void calculate_subtree_sizes();
+                void calculate_subtree_weights();
 
 
                 /**
@@ -173,7 +175,7 @@ namespace cut {
                  *
                  * @see SignaturesForTree
                  */
-                SignaturesForTree<Id, EdgeWeight> cut(RationalType eps, SizeType part_cnt);
+                SignaturesForTree<Id, NodeWeight, EdgeWeight> cut(RationalType eps, NodeWeight part_cnt);
 
                 /**
                  * Calculates the signatures of the tree with information about the previous signatures.
@@ -181,7 +183,7 @@ namespace cut {
                  * Analogous to Tree::cut().
                  */
                 std::vector<std::vector<SignatureMapWithPrev>> 
-                    cut_with_prev(RationalType eps, SizeType part_cnt, Signature const& signature) const;
+                    cut_with_prev(RationalType eps, NodeWeight part_cnt, Signature const& signature) const;
 
                 /**
                  * Calculates the node_idx for the node with the id \p node_id.
@@ -210,15 +212,15 @@ namespace cut {
                  * @param left_siblings_size The combined size of the trees rooted at the siblings of \p node.
                  * @param left_sibling_sigs The signatures at the left sibling.
                  * @param right_child_sigs The signatures at the right child.
-                 * @param comp_size_bounds The upper component size bounds(exclusive) for the signature.
+                 * @param comp_weight_bounds The upper component size bounds(exclusive) for the signature.
                  */
                 static SignatureMap cut_at_node(
                         Node const& node, 
-                        SizeType node_subtree_size,
-                        SizeType left_siblings_size,
+                        NodeWeight node_subtree_weight,
+                        NodeWeight left_siblings_weight,
                         SignatureMap const& left_sibling_sigs, 
                         SignatureMap const& right_child_sigs, 
-                        std::vector<SizeType> const& comp_size_bounds);
+                        std::vector<NodeWeight> const& comp_weight_bounds);
 
 
                 /**
@@ -229,15 +231,15 @@ namespace cut {
                  * @param subtree_size The size of the subtree rooted at the current node.
                  * @param left_sibling_sigs The signatures at the left sibling.
                  * @param right_child_sigs The signatures at the right child.
-                 * @param comp_size_bounds The upper component size bounds(exclusive) for the signature.
+                 * @param comp_weight_bounds The upper component size bounds(exclusive) for the signature.
                  * @param The maximum allowed signature.
                  */
                 static SignatureMapWithPrev cut_at_node_with_prev(
                         Node const& node, 
-                        SizeType subtree_size,
+                        NodeWeight node_subtree_weight,
                         SignatureMapWithPrev const& left_sibling_sigs, 
                         SignatureMapWithPrev const& right_child_sigs,
-                        std::vector<SizeType> const& comp_size_bounds,
+                        std::vector<NodeWeight> const& comp_weight_bounds,
                         Signature const& signature
                         ); 
         };
@@ -254,8 +256,8 @@ namespace cut {
      * @param tree The tree to build populate.
      * @returns The inputstream.
      */
-    template<typename Id, typename EdgeWeight>
-        std::istream& operator>>(std::istream& is, Tree<Id, EdgeWeight>& tree);
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
+        std::istream& operator>>(std::istream& is, Tree<Id, NodeWeight, EdgeWeight>& tree);
 
     /**
      * Prints a Tree to the outputstream.
@@ -264,8 +266,8 @@ namespace cut {
      * @param tree The tree to print.
      * @returns The outputstream.
      */
-    template<typename Id, typename EdgeWeight>
-        std::ostream& operator<<(std::ostream& os, Tree<Id, EdgeWeight> const& tree);
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
+        std::ostream& operator<<(std::ostream& os, Tree<Id, NodeWeight, EdgeWeight> const& tree);
 
     /**
      * Calculates the upper (exclusive) bounds on the component sizes for each index of a signature.
@@ -274,10 +276,11 @@ namespace cut {
      * @param part_cnt The number of parts in which the tree should be partitioned.
      * @returns The component size bounds as a vector.
      *
-     * @see calculate_lower_component_size_bounds()
+     * @see calculate_lower_component_weight_bounds()
      */
-    template<typename SizeType>
-        std::vector<SizeType> calculate_upper_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
+    template<typename NodeWeight>
+        std::vector<NodeWeight> calculate_upper_component_weight_bounds(
+                RationalType eps, NodeWeight tree_weight, NodeWeight part_cnt);
 
     /**
      * Calculates the lower (inclusive) bounds on the component sizes for each index of a signature.
@@ -286,29 +289,29 @@ namespace cut {
      * @param part_cnt The number of parts in which the tree should be partitioned.
      * @returns The component size bounds as a vector.
      *
-     * @see calculate_upper_component_size_bounds()
+     * @see calculate_upper_component_weight_bounds()
      */
-    template<typename SizeType>
-        std::vector<SizeType> calculate_lower_component_size_bounds(RationalType eps, SizeType node_cnt, SizeType part_cnt);
+    template<typename NodeWeight>
+        std::vector<NodeWeight> calculate_lower_component_weight_bounds(
+                RationalType eps, NodeWeight tree_weight, NodeWeight part_cnt);
 
     /**
      * This class represents the signatures for a tree caclulated by Tree::cut(). 
      * The tree instance MUST outlive the SignaturesForTree instance.
      */
-    template<typename Id, typename EdgeWeight>
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
         struct SignaturesForTree {
             public:
-                using SizeType = Id; /**< A type to count the nodes of the tree. */
-                using Tree = Tree<Id, EdgeWeight>; /**< The type of the tree with the given template parameters. */
-                using Signature = Signature<SizeType>; /**< The signature type with the given template parameters. */
-                using SignatureMap = SignatureMap<Id, EdgeWeight>; /**< The type to save the signatures at a node. */
+                using Tree = Tree<Id, NodeWeight, EdgeWeight>; /**< The type of the tree with the given template parameters. */
+                using Signature = Signature<NodeWeight>; /**< The signature type with the given template parameters. */
+                using SignatureMap = SignatureMap<NodeWeight, EdgeWeight>; /**< The type to save the signatures at a node. */
 
-                SizeType const part_cnt; /**< The number of parts in the partition. */
+                NodeWeight const part_cnt; /**< The number of parts in the partition. */
                 RationalType const eps; /**< The approximation parameter. */
                 Tree const& tree; /**< The tree for which the signatures were calculated. */
                 std::vector<std::vector<SignatureMap>> const signatures; /**< The calculated signatures. */
-                std::vector<SizeType> const upper_comp_size_bounds; /**< The upper bounds for the sizes in a signature. */
-                std::vector<SizeType> const lower_comp_size_bounds; /**< The lower bounds for the sizes in a signature. */
+                std::vector<NodeWeight> const upper_comp_weight_bounds; /**< The upper bounds for the sizes in a signature. */
+                std::vector<NodeWeight> const lower_comp_weight_bounds; /**< The lower bounds for the sizes in a signature. */
 
                 /**
                  * Constructor.
@@ -317,10 +320,10 @@ namespace cut {
                  * @param tree The tree for which the signatures were calculated.
                  * @param signatures The signatures for \p tree.
                  */
-                SignaturesForTree(SizeType part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<SignatureMap>> signatures) :
+                SignaturesForTree(NodeWeight part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<SignatureMap>> signatures) :
                     part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures), 
-                    upper_comp_size_bounds(calculate_upper_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)),
-                    lower_comp_size_bounds(calculate_lower_component_size_bounds(eps, tree.tree_sizes[0][0], part_cnt)) {}
+                    upper_comp_weight_bounds(calculate_upper_component_weight_bounds(eps, tree.subtree_weight[0][0], part_cnt)),
+                    lower_comp_weight_bounds(calculate_lower_component_weight_bounds(eps, tree.subtree_weight[0][0], part_cnt)) {}
 
                 /** 
                  * A type representing the edges cut by the cutting phase.
@@ -350,20 +353,19 @@ namespace cut {
      * @param signatures The signatures to print.
      * @returns The outputstream.
      */
-    template<typename Id, typename EdgeWeight>
-        std::ostream& operator<<(std::ostream& os, SignaturesForTree<Id, EdgeWeight> const& signatures);
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
+        std::ostream& operator<<(std::ostream& os, SignaturesForTree<Id, NodeWeight, EdgeWeight> const& signatures);
 
 
     /**
      * This class is used to build a SignaturesForTree object.
      * We need this class since the members of the SignaturesForTree class are constant.
      */
-    template<typename Id, typename EdgeWeight>
+    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
         struct SignaturesForTreeBuilder {
             public:
-                using Tree = Tree<Id, EdgeWeight>; /**< The tree type with the given template parameters. */
-                using SizeType = Id; /**< The type to count nodes of the tree */
-                using SignatureMap = SignatureMap<SizeType, EdgeWeight>; /**< The type to save the signatures at a node */
+                using Tree = Tree<Id, NodeWeight, EdgeWeight>; /**< The tree type with the given template parameters. */
+                using SignatureMap = SignatureMap<NodeWeight, EdgeWeight>; /**< The type to save the signatures at a node */
                 
                 /** 
                  * The tree for which the signatures were calculated. 
@@ -380,7 +382,7 @@ namespace cut {
                  * @param part_cnt The part count.
                  * @returns A reference to this.
                  */
-                SignaturesForTreeBuilder& with_part_cnt(SizeType part_cnt);
+                SignaturesForTreeBuilder& with_part_cnt(NodeWeight part_cnt);
 
                 /**
                  * Sets the approximation parameter.
@@ -400,10 +402,10 @@ namespace cut {
                  * Finishes building the signatures.
                  * @returns The finished SignaturesForTree object.
                  */
-                SignaturesForTree<Id, EdgeWeight> finish();
+                SignaturesForTree<Id, NodeWeight, EdgeWeight> finish();
 
             private:
-                SizeType part_cnt; /**< The number of parts in the partition. */
+                NodeWeight part_cnt; /**< The number of parts in the partition. */
                 RationalType eps; /**< The approximation parameter. */
                 std::vector<std::vector<SignatureMap>> signatures; /**< The calculated signatures. */
 
@@ -435,8 +437,8 @@ namespace cut {
      * @param builder The builder.
      * @returns The inputstream.
      */
-    template<typename Id, typename EdgeWeight>
-        std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder<Id, EdgeWeight>& builder);
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
+        std::istream& operator>>(std::istream& is, SignaturesForTreeBuilder<Id, NodeWeight, EdgeWeight>& builder);
 }
 
 // Include template implementation.

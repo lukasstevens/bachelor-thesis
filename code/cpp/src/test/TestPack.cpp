@@ -20,15 +20,15 @@ TEST_P(TestPack, PacksAsExpected) {
     std::tie(tree_name, params_name) = this->GetParam();
 
     Tree tree = testutils::get_tree<Id, EdgeWeight>(tree_name);
-    cut::SignaturesForTree<Id, EdgeWeight> signatures 
+    cut::SignaturesForTree<Id, int, EdgeWeight> signatures 
         = testutils::get_signatures_for_tree<Id, EdgeWeight>(tree_name, params_name, tree);
 
-    part::Partitioning<Tree::SizeType> partitioning;
+    part::Partitioning<int> partitioning;
     Tree::Signature best_signature;
     EdgeWeight opt_cut_cost;
     std::tie(partitioning, best_signature, opt_cut_cost) = part::calculate_best_packing(signatures);
 
-    part::Partitioning<Tree::SizeType> should_partitioning;
+    part::Partitioning<int> should_partitioning;
     Tree::Signature should_best_signature;
     EdgeWeight should_opt_cut_cost;
     std::tie(should_partitioning, should_best_signature, should_opt_cut_cost) = 
@@ -36,7 +36,7 @@ TEST_P(TestPack, PacksAsExpected) {
 
     EXPECT_EQ(should_partitioning, partitioning);
     EXPECT_EQ(should_opt_cut_cost, opt_cut_cost);
-    valarrutils::ValarrayEqual<Tree::SizeType> valarr_eq;
+    valarrutils::ValarrayEqual<int> valarr_eq;
     EXPECT_TRUE(valarr_eq(should_best_signature, best_signature));
 }
 

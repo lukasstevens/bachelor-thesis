@@ -21,9 +21,9 @@ namespace part {
      * @param signatures The signatures and tree to use for the calculations.
      * @returns The components, the best signature and the cut cost as a tuple.
      */
-    template<typename Id, typename EdgeWeight>
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
         std::tuple<Partitioning<Id>, cut::Signature<Id>, EdgeWeight> 
-            calculate_best_packing(cut::SignaturesForTree<Id, EdgeWeight> const& signatures);
+            calculate_best_packing(cut::SignaturesForTree<Id, NodeWeight, EdgeWeight> const& signatures);
 }
 
 // Include template implementation file.

@@ -5,14 +5,14 @@
 
 namespace part {
 
-template<typename Id, typename EdgeWeight>
+template<typename Id, typename NodeWeight, typename EdgeWeight>
     std::tuple<Partitioning<Id>, cut::Signature<Id>, EdgeWeight> 
-        calculate_best_packing(cut::SignaturesForTree<Id, EdgeWeight> const& signatures) {
+        calculate_best_packing(cut::SignaturesForTree<Id, NodeWeight, EdgeWeight> const& signatures) {
 
         using Signature = cut::Signature<Id>;
         using SizeType = Id;
 
-        auto const& root_sigs = signatures.signatures[0][0].at(signatures.tree.tree_sizes[0][0]);
+        auto const& root_sigs = signatures.signatures[0][0].at(signatures.tree.subtree_weight[0][0]);
         using SignatureWithCost = std::pair<EdgeWeight, Signature>;
         auto compare = [](SignatureWithCost left, SignatureWithCost right){
             return left.first > right.first;
@@ -34,15 +34,15 @@ template<typename Id, typename EdgeWeight>
             // Starting at 1 to skip components with size smaller than eps * ceil(n/k).
             for (size_t comp_idx = 1; comp_idx < curr_sig.size(); ++comp_idx) {
                 if (curr_sig[comp_idx] > 0) {
-                    curr_sig_as_map.emplace(signatures.lower_comp_size_bounds[comp_idx], curr_sig[comp_idx]);
+                    curr_sig_as_map.emplace(signatures.lower_comp_weight_bounds[comp_idx], curr_sig[comp_idx]);
                 }
             }
 
             // We substract one from the upper bound since the bounds are exclusive,
             // but the bin capacities are inclusive.
             pack::Packing<SizeType> curr_packing(
-                    signatures.lower_comp_size_bounds.back(),
-                    signatures.upper_comp_size_bounds.back() - 1);
+                    signatures.lower_comp_weight_bounds.back(),
+                    signatures.upper_comp_weight_bounds.back() - 1);
             curr_packing.pack_perfect(curr_sig_as_map);
 
             if (curr_packing.bin_cnt() > static_cast<size_t>(signatures.part_cnt)) {
@@ -55,14 +55,14 @@ template<typename Id, typename EdgeWeight>
                 std::map<SizeType, SizeType> small_components;
                 for (auto const& comp : comps_for_curr_sig) {
                     size_t bound_idx = 0;
-                    while (comp.size() >= static_cast<size_t>(signatures.upper_comp_size_bounds[bound_idx])) {
+                    while (comp.size() >= static_cast<size_t>(signatures.upper_comp_weight_bounds[bound_idx])) {
                         ++bound_idx;
                     }
 
                     if (bound_idx == 0) {
                         small_components[static_cast<SizeType>(comp.size())] += 1;
                     } else {
-                        expansion_map[signatures.lower_comp_size_bounds[bound_idx]]
+                        expansion_map[signatures.lower_comp_weight_bounds[bound_idx]]
                             .push_back(static_cast<SizeType>(comp.size()));
                     }
                 }
@@ -76,10 +76,10 @@ template<typename Id, typename EdgeWeight>
                     std::vector<std::set<Id>> partitioning(bins.size());
                     std::vector<bool> used_comp(comps_for_curr_sig.size());
                     for (size_t bin_idx = 0; bin_idx < bins.size(); ++bin_idx) {
-                        for (auto const comp_size : bins[bin_idx]) {
+                        for (auto const comp_weight : bins[bin_idx]) {
                             for (size_t comp_idx = 0; comp_idx < comps_for_curr_sig.size(); ++comp_idx) {
                                 auto const& curr_comp = comps_for_curr_sig[comp_idx];
-                                if (static_cast<size_t>(comp_size) == curr_comp.size() &&
+                                if (static_cast<size_t>(comp_weight) == curr_comp.size() &&
                                         !used_comp[comp_idx]) {
                                     used_comp[comp_idx] = true;
                                     partitioning[bin_idx].insert(curr_comp.begin(), curr_comp.end());
