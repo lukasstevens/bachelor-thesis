@@ -1,4 +1,5 @@
 # bachelorthesis
+from itertools import chain
 import os
 import shutil
 import subprocess
@@ -8,27 +9,32 @@ cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
 paths = { 
-    'metis' : local('deps/metis'),
-    'kahip' : local('deps/KaHIP'),
-    'metis_build' : 'build',
-    'kahip_build' : 'deploy'
-}
+        'metis' : 'deps/metis',
+        'kahip' : 'deps/KaHIP',
+        }
 
-includes = ['src/include', 'src/main', 
-        'build/metis/include', 'deps/KaHIP/deploy/kaHIP_interface.h']
+includes = ['src/include', 'src/main',
+        'build/metis/include', 'deps/KaHIP/deploy']
 
-metislib = Framework()
-metis = make('Makefile', 'install', cwd=paths['metis'], 
-        outputs=[local('build/metis/lib/libmetis.a')])
-cxx.extend_framework(metislib, metis)
+libmetis = Framework()
+metis = make(
+        'Makefile', 'install', 
+        cwd = local(paths['metis']),
+        outputs = glob('build/metis/**/*')
+        )
+cxx.extend_framework(libmetis, metis)
 
-kahiplib = Framework()
+libkahip = Framework()
 kahip = gentarget(
         [['./compile.sh']],
-        cwd=paths['kahip'],
-        outputs=[os.path.join(paths['kahip'], paths['kahip_build'])]
+        cwd = local(paths['kahip']),
+        inputs = list(chain.from_iterable(
+            [glob(os.path.join(paths['kahip'], d, '**/*')) 
+                for d in ['lib', 'interface', 'parallel/parallel_src/lib']]
+            )),
+        outputs = glob(os.path.join(paths['kahip'], 'deploy', '**/*'))
         )
-cxx.extend_framework(kahiplib, kahip)
+cxx.extend_framework(libkahip, kahip)
 
 mylib = Framework(
         include = [local(x) for x in includes],
@@ -40,7 +46,7 @@ mylib = Framework(
         )
 mylib_lib = cxx.static_library(
         inputs = cxx.compile_cpp(sources = glob('src/main/*.cpp'), 
-            frameworks = [mylib, metislib, kahiplib]),
+            frameworks = [mylib, libmetis, libkahip]),
         output = 'mylib'
         )
 cxx.extend_framework(mylib, mylib_lib)
@@ -77,7 +83,7 @@ subprocess.call([
     'cc=\"' + session.options['craftr.lang.cxx.toolkit'] + '\"',
     'prefix=\"' + local('build/metis') + '\"',
     ], 
-    cwd=paths['metis']
+    cwd = local(paths['metis'])
     )
 print("Finished configuring METIS")
 
