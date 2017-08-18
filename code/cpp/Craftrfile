@@ -7,7 +7,7 @@ from craftr.foreignbuild import make
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 
-includes = ['src/include', 'build/metis/include']
+includes = ['src/include', 'src/main', 'build/metis/include']
 
 metislib = Framework()
 metis = make('Makefile', 'install', cwd='../deps/metis', 
