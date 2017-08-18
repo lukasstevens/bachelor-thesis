@@ -9,26 +9,98 @@
 #include<vector>
 
 #include<metis.h>
+#include<kaHIP_interface.h>
 
 namespace graph {
-    struct MetisGraph {
-        public:
-            idx_t nvtxs;            
-            std::vector<idx_t> xadj;
-            std::vector<idx_t> adjncy;
-            std::vector<idx_t> vwgt;
-            std::vector<idx_t> adjwgt;
 
-            MetisGraph(
+    template<typename Idx>
+        struct CsrGraph {
+            public:
+                Idx nvtxs;            
+                std::vector<Idx> xadj;
+                std::vector<Idx> adjncy;
+                std::vector<Idx> vwgt;
+                std::vector<Idx> adjwgt;
+
+                CsrGraph(
+                        std::vector<Idx> xadj,
+                        std::vector<Idx> adjncy,
+                        std::vector<Idx> vwgt,
+                        std::vector<Idx> adjwgt) :
+                    nvtxs(static_cast<Idx>(vwgt.size())),
+                    xadj(xadj),
+                    adjncy(adjncy),
+                    vwgt(vwgt),
+                    adjwgt(adjwgt) {}
+        };
+
+    struct MetisCsrGraph : CsrGraph<idx_t> {
+        public:
+            MetisCsrGraph(CsrGraph<int> graph) : CsrGraph<int>(graph) {}
+
+            MetisCsrGraph(
                     std::vector<idx_t> xadj,
                     std::vector<idx_t> adjncy,
                     std::vector<idx_t> vwgt,
-                    std::vector<idx_t> adjwgt) :
-                nvtxs(static_cast<idx_t>(vwgt.size())),
-                xadj(xadj),
-                adjncy(adjncy),
-                vwgt(vwgt),
-                adjwgt(adjwgt) {}
+                    std::vector<idx_t> adjwgt
+                    ) : CsrGraph<idx_t>(xadj, adjncy, vwgt, adjwgt) {}
+
+            void part_graph_recursive(idx_t kparts, real_t imbalance) {
+                idx_t cut_cost;
+                // Number of node constraints is always one.
+                idx_t ncon = 1;
+                std::vector<idx_t> partition(static_cast<size_t>(this->nvtxs));
+                int res = METIS_PartGraphRecursive(
+                        &(this->nvtxs), &ncon, &(this->xadj.at(0)), &(this->adjncy.at(0)), 
+                        &(this->vwgt.at(0)), NULL, &(this->adjwgt.at(0)), 
+                        &kparts, NULL, &imbalance, NULL, 
+                        &cut_cost, &partition.at(0)
+                        );
+
+                if (res != METIS_OK) {
+                    throw std::runtime_error("Metis failed with error " + std::to_string(res));
+                }
+            }
+
+            void part_graph_kway(idx_t kparts, real_t imbalance) {
+                idx_t cut_cost;
+                // Number of node constraints is always one.
+                idx_t ncon = 1;
+                std::vector<idx_t> partition(static_cast<size_t>(this->nvtxs));
+                int res = METIS_PartGraphKway(
+                        &(this->nvtxs), &ncon, &(this->xadj.at(0)), &(this->adjncy.at(0)), 
+                        &(this->vwgt.at(0)), NULL, &(this->adjwgt.at(0)),
+                        &kparts, NULL, &imbalance, NULL, 
+                        &cut_cost, &partition.at(0)
+                        );
+
+                if (res != METIS_OK) {
+                    throw std::runtime_error("Metis failed with error " + std::to_string(res));
+                }
+            }
+    };
+
+    struct KahipCsrGraph : CsrGraph<int> {
+        public:
+            KahipCsrGraph(CsrGraph<int> graph) : CsrGraph<int>(graph) {}
+
+            KahipCsrGraph(
+                    std::vector<int> xadj,
+                    std::vector<int> adjncy,
+                    std::vector<int> vwgt,
+                    std::vector<int> adjwgt
+                    ) : CsrGraph<int>(xadj, adjncy, vwgt, adjwgt) {}
+
+            void kaffpa(int kparts, double imbalance, int seed) {
+                int cut_cost;
+                std::vector<int> partition(static_cast<size_t>(this->nvtxs));
+                ::kaffpa(
+                        &(this->nvtxs), &(this->vwgt.at(0)), &(this->xadj.at(0)),
+                        &(this->adjwgt.at(0)), &(this->adjncy.at(0)), &kparts,
+                        &imbalance, true, seed, STRONG,
+                        &cut_cost, &partition.at(0)
+                        );
+            }
     };
 
     template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
@@ -45,8 +117,8 @@ namespace graph {
                         std::vector<NodeWeight> vwgt
                      ) : adjncy(adjncy), vwgt(vwgt)
                 {
-                    for(Id i = 0; static_cast<std::size_t>(i) < adjncy.size(); ++i) {
-                        vrepr.at(static_cast<std::size_t>(i)).insert(i);
+                    for(Id i = 0; static_cast<size_t>(i) < adjncy.size(); ++i) {
+                        vrepr.at(static_cast<size_t>(i)).insert(i);
                     }
                 }
 
@@ -59,7 +131,7 @@ namespace graph {
                          ) {}
 
                 Graph(Id node_cnt) : 
-                    Graph(std::vector<NodeWeight>(static_cast<std::size_t>(node_cnt), 1)) {}
+                    Graph(std::vector<NodeWeight>(static_cast<size_t>(node_cnt), 1)) {}
 
                 Graph() = default;
 
@@ -128,17 +200,18 @@ namespace graph {
                 }
 
                 void resize(Id node_cnt) {
-                    auto n = static_cast<std::size_t>(node_cnt);
+                    auto n = static_cast<size_t>(node_cnt);
                     this->vrepr.resize(n);
                     for (Id i = 0; i < node_cnt; ++i) {
-                        if (vrepr.at(static_cast<std::size_t>(i)).empty()) {
-                            vrepr.at(static_cast<std::size_t>(i)).insert(i);
+                        if (vrepr.at(static_cast<size_t>(i)).empty()) {
+                            vrepr.at(static_cast<size_t>(i)).insert(i);
                         }
                     }
                     this->vwgt.resize(n, 1);
 
                     std::unordered_map<Id, std::unordered_map<Id, EdgeWeight>> new_adjncy;
                     for (Id i = 0; i < node_cnt; ++i) {
+                        new_adjncy.insert(std::make_pair(i, std::unordered_map<Id, EdgeWeight>()));
                         if (new_adjncy.find(i) != this->adjncy.end()) {
                             auto const& i_adjncy = new_adjncy.at(i);
                             for (auto const& edge : i_adjncy) {
@@ -152,27 +225,36 @@ namespace graph {
                     this->adjncy = new_adjncy;
                 }
 
-                MetisGraph to_metis_graph() const {
-                    Id const node_cnt = this->node_cnt();
-                    Id const edge_cnt = this->edge_cnt();
+                template<typename Idx> 
+                    CsrGraph<Idx> to_foreign_graph() const {
+                        Id const node_cnt = this->node_cnt();
+                        Id const edge_cnt = this->edge_cnt();
 
-                    std::vector<idx_t> metis_vwgt(this->vwgt.cbegin(), this->vwgt.cend());
-                    std::vector<idx_t> metis_xadj(static_cast<std::size_t>(node_cnt + 1));
-                    std::vector<idx_t> metis_adjncy;
-                    metis_adjncy.reserve(static_cast<std::size_t>(edge_cnt));
-                    std::vector<idx_t> metis_adjwgt;
-                    metis_adjwgt.reserve(static_cast<std::size_t>(edge_cnt));
+                        std::vector<Idx> metis_vwgt(this->vwgt.cbegin(), this->vwgt.cend());
+                        std::vector<Idx> metis_xadj(static_cast<size_t>(node_cnt + 1));
+                        std::vector<Idx> metis_adjncy;
+                        metis_adjncy.reserve(static_cast<size_t>(edge_cnt));
+                        std::vector<Idx> metis_adjwgt;
+                        metis_adjwgt.reserve(static_cast<size_t>(edge_cnt));
 
-                    for (Id curr_node = 0; curr_node < node_cnt; ++curr_node) {
-                        std::size_t const curr_node_st = static_cast<std::size_t>(curr_node);
-                        metis_xadj.at(curr_node_st + 1) = metis_xadj.at(curr_node_st);
-                        for (auto const& inc_edge : this->adjncy.at(curr_node)) {
-                            metis_adjncy.push_back(inc_edge.first); 
-                            metis_adjwgt.push_back(inc_edge.second);
-                            metis_xadj.at(curr_node_st + 1) += 1;
+                        for (Id curr_node = 0; curr_node < node_cnt; ++curr_node) {
+                            size_t const curr_node_st = static_cast<size_t>(curr_node);
+                            metis_xadj.at(curr_node_st + 1) = metis_xadj.at(curr_node_st);
+                            for (auto const& inc_edge : this->adjncy.at(curr_node)) {
+                                metis_adjncy.push_back(inc_edge.first); 
+                                metis_adjwgt.push_back(inc_edge.second);
+                                metis_xadj.at(curr_node_st + 1) += 1;
+                            }
                         }
+                        return CsrGraph<Idx>(metis_xadj, metis_adjncy, metis_vwgt, metis_adjwgt);
                     }
-                    return MetisGraph(metis_xadj, metis_adjncy, metis_vwgt, metis_adjwgt);
+
+                MetisCsrGraph to_metis_graph() const {
+                    return static_cast<MetisCsrGraph>(this->to_foreign_graph<idx_t>());
+                }
+
+                KahipCsrGraph to_kahip_graph() const {
+                    return static_cast<KahipCsrGraph>(this->to_foreign_graph<int>());
                 }
         };
 
@@ -201,7 +283,7 @@ std::istream& operator>>(std::istream& is, graph::Graph<Id, NodeWeight, EdgeWeig
     std::string fmt_string;
     if (line_buffer >> fmt_string) {
         fmt_string.insert(0, 3 - fmt_string.size(), '0');
-        for (std::size_t i = 0; i < fmt_string.size(); ++i) {
+        for (size_t i = 0; i < fmt_string.size(); ++i) {
             *fmt.at(i) = '1' == fmt_string.at(i);
         }
         if (has_node_sizes) {
@@ -216,7 +298,7 @@ std::istream& operator>>(std::istream& is, graph::Graph<Id, NodeWeight, EdgeWeig
 
     // Delete all nodes which were in the graph before.
     graph.resize(0);
-    graph.resize(static_cast<std::size_t>(node_cnt));
+    graph.resize(static_cast<size_t>(node_cnt));
 
     for (Id curr_node = 0; curr_node < node_cnt && std::getline(is, line); ++curr_node) {
         if (line.front() == '%') {
