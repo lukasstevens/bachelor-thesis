@@ -7,6 +7,9 @@ from craftr.foreignbuild import make
 
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
+java = load('craftr.lang.java')
+session.path.append(local('deps'))
+hdecomp = load('hdecomp')
 
 paths = { 
         'metis' : 'deps/metis',
@@ -16,15 +19,12 @@ paths = {
 includes = ['src/include', 'src/main',
         'build/metis/include', 'deps/KaHIP/deploy']
 
-libmetis = Framework()
 metis = make(
         'Makefile', 'install', 
         cwd = local(paths['metis']),
         outputs = glob('build/metis/**/*')
         )
-cxx.extend_framework(libmetis, metis)
 
-libkahip = Framework()
 kahip = gentarget(
         [['./compile.sh']],
         cwd = local(paths['kahip']),
@@ -34,7 +34,6 @@ kahip = gentarget(
             )),
         outputs = glob(os.path.join(paths['kahip'], 'deploy', '**/*'))
         )
-cxx.extend_framework(libkahip, kahip)
 
 mylib = Framework(
         include = [local(x) for x in includes],
@@ -44,9 +43,10 @@ mylib = Framework(
         optimize = 'debug' if options.debug else 'speed',
         libs = ['m', 'gmpxx', 'gmp']
         )
+
 mylib_lib = cxx.static_library(
         inputs = cxx.compile_cpp(sources = glob('src/main/*.cpp'), 
-            frameworks = [mylib, libmetis, libkahip]),
+            frameworks = [mylib, kahip, metis, hdecomp]),
         output = 'mylib'
         )
 cxx.extend_framework(mylib, mylib_lib)
