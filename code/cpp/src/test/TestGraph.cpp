@@ -6,6 +6,7 @@
 #include<gtest/gtest.h>
 
 #include "Graph.hpp"
+#include "GraphIo.hpp"
 
 TEST(Graph, EmptyInput) {
     graph::Graph<> graph;

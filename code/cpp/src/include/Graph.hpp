@@ -1,10 +1,11 @@
+/** @file Graph.hpp */
+#pragma once
+
 #include<algorithm>
-#include<iostream>
 #include<limits>
 #include<set>
 #include<stdexcept>
 #include<string>
-#include<sstream>
 #include<unordered_map>
 #include<vector>
 
@@ -45,12 +46,12 @@ namespace graph {
                     std::vector<idx_t> adjwgt
                     ) : CsrGraph<idx_t>(xadj, adjncy, vwgt, adjwgt) {}
 
-            void part_graph_recursive(idx_t kparts, real_t imbalance) {
+            void part_graph(decltype(METIS_PartGraphRecursive) part_method, idx_t kparts, real_t imbalance) {
                 idx_t cut_cost;
                 // Number of node constraints is always one.
                 idx_t ncon = 1;
                 std::vector<idx_t> partition(static_cast<size_t>(this->nvtxs));
-                int res = METIS_PartGraphRecursive(
+                int res = part_method(
                         &(this->nvtxs), &ncon, &(this->xadj.at(0)), &(this->adjncy.at(0)), 
                         &(this->vwgt.at(0)), NULL, &(this->adjwgt.at(0)), 
                         &kparts, NULL, &imbalance, NULL, 
@@ -62,21 +63,12 @@ namespace graph {
                 }
             }
 
-            void part_graph_kway(idx_t kparts, real_t imbalance) {
-                idx_t cut_cost;
-                // Number of node constraints is always one.
-                idx_t ncon = 1;
-                std::vector<idx_t> partition(static_cast<size_t>(this->nvtxs));
-                int res = METIS_PartGraphKway(
-                        &(this->nvtxs), &ncon, &(this->xadj.at(0)), &(this->adjncy.at(0)), 
-                        &(this->vwgt.at(0)), NULL, &(this->adjwgt.at(0)),
-                        &kparts, NULL, &imbalance, NULL, 
-                        &cut_cost, &partition.at(0)
-                        );
+            void part_graph_recursive(idx_t kparts, real_t imbalance) {
+                part_graph(METIS_PartGraphRecursive, kparts, imbalance);
+            }
 
-                if (res != METIS_OK) {
-                    throw std::runtime_error("Metis failed with error " + std::to_string(res));
-                }
+            void part_graph_kway(idx_t kparts, real_t imbalance) {
+                part_graph(METIS_PartGraphKway, kparts, imbalance);
             }
     };
 
@@ -108,12 +100,12 @@ namespace graph {
             private:
                 using NodeSet = std::set<Id>;
 
-                std::unordered_map<Id, std::unordered_map<Id, EdgeWeight>> adjncy;
+                std::vector<std::unordered_map<Id, EdgeWeight>> adjncy;
                 std::vector<NodeSet> vrepr;
                 std::vector<NodeWeight> vwgt;
 
                 Graph(
-                        std::unordered_map<Id, std::unordered_map<Id, EdgeWeight>> adjncy,
+                        std::vector<std::unordered_map<Id, EdgeWeight>> adjncy,
                         std::vector<NodeWeight> vwgt
                      ) : adjncy(adjncy), vwgt(vwgt)
                 {
@@ -126,21 +118,17 @@ namespace graph {
 
                 Graph(std::vector<NodeWeight> vwgt) : 
                     Graph(
-                            std::unordered_map<Id, std::unordered_map<Id, EdgeWeight>>(),
+                            std::vector<std::unordered_map<Id, EdgeWeight>>(),
                             vwgt
                          ) {}
 
                 Graph(Id node_cnt) : 
                     Graph(std::vector<NodeWeight>(static_cast<size_t>(node_cnt), 1)) {}
 
-                Graph() = default;
+                Graph() : Graph(0) {}
 
                 Id node_cnt() const {
-                    if (vwgt.size() <= std::numeric_limits<Id>::max()) {
-                        return static_cast<Id>(vwgt.size());
-                    } else {
-                        throw std::overflow_error("The node count is too large for the type Id");
-                    }
+                    return static_cast<Id>(vwgt.size());
                 }
 
                 Id edge_cnt() const {
@@ -181,22 +169,16 @@ namespace graph {
 
                 std::vector<Id> adj_nodes(Id node) const {
                     std::vector<Id> adj_nodes;
-                    if (this->adjncy.find(node) != this->adjncy.end()) {
-                        adj_nodes.reserve(this->adjncy.at(node).size());
-                        for (auto const& edge : this->adjncy.at(node)) {
-                            adj_nodes.push_back(edge.first);
-                        }
+                    adj_nodes.reserve(this->adjncy.at(node).size());
+                    for (auto const& edge : this->adjncy.at(node)) {
+                        adj_nodes.push_back(edge.first);
                     }
                     return adj_nodes;
                 }
 
                 std::vector<std::pair<Id, EdgeWeight>> inc_edges(Id node) const {
-                    if (this->adjncy.find(node) != this->adjncy.end()) {
-                        return std::vector<std::pair<Id, EdgeWeight>>(
-                                adjncy.at(node).cbegin(), adjncy.at(node).cend());
-                    } else {
-                        return std::vector<std::pair<Id, EdgeWeight>>();
-                    }
+                    return std::vector<std::pair<Id, EdgeWeight>>(
+                            this->adjncy.at(node).cbegin(), this->adjncy.at(node).cend());
                 }
 
                 void resize(Id node_cnt) {
@@ -209,16 +191,13 @@ namespace graph {
                     }
                     this->vwgt.resize(n, 1);
 
-                    std::unordered_map<Id, std::unordered_map<Id, EdgeWeight>> new_adjncy;
+                    std::vector<std::unordered_map<Id, EdgeWeight>> new_adjncy(n);
                     for (Id i = 0; i < node_cnt; ++i) {
-                        new_adjncy.insert(std::make_pair(i, std::unordered_map<Id, EdgeWeight>()));
-                        if (new_adjncy.find(i) != this->adjncy.end()) {
-                            auto const& i_adjncy = new_adjncy.at(i);
-                            for (auto const& edge : i_adjncy) {
-                                if (edge.first < n) {
-                                    new_adjncy[i][edge.first] = edge.second;
-                                    new_adjncy[edge.first][i] = edge.second;
-                                }
+                        auto const& i_adjncy = new_adjncy.at(i);
+                        for (auto const& edge : i_adjncy) {
+                            if (edge.first < n) {
+                                new_adjncy.at(i)[edge.first] = edge.second;
+                                new_adjncy.at(edge.first)[i] = edge.second;
                             }
                         }
                     }
@@ -260,92 +239,3 @@ namespace graph {
 
 }
 
-template<typename Id, typename NodeWeight, typename EdgeWeight>
-std::istream& operator>>(std::istream& is, graph::Graph<Id, NodeWeight, EdgeWeight>& graph) {
-    Id node_cnt;
-    Id edge_cnt;
-
-    bool has_node_sizes = false;
-    bool has_node_weights = false;
-    bool has_edge_weights = false;
-    std::vector<bool*> fmt({&has_node_sizes, &has_node_weights, &has_edge_weights});
-
-    std::string line;
-    while (std::getline(is, line) && line.front() == '%') {
-        // Skip lines with comments
-    }
-
-    std::istringstream line_buffer(line);
-    if (!(line_buffer >> node_cnt >> edge_cnt)) {
-        throw std::invalid_argument("Node count or edge count missing");
-    } 
-
-    std::string fmt_string;
-    if (line_buffer >> fmt_string) {
-        fmt_string.insert(0, 3 - fmt_string.size(), '0');
-        for (size_t i = 0; i < fmt_string.size(); ++i) {
-            *fmt.at(i) = '1' == fmt_string.at(i);
-        }
-        if (has_node_sizes) {
-            throw std::invalid_argument("Node sizes not supported.");
-        }
-    }
-
-    int ncon;
-    if ((line_buffer >> ncon) && ncon != 1) {
-        throw std::invalid_argument("Multiple node weights not allowed.");
-    }
-
-    // Delete all nodes which were in the graph before.
-    graph.resize(0);
-    graph.resize(static_cast<size_t>(node_cnt));
-
-    for (Id curr_node = 0; curr_node < node_cnt && std::getline(is, line); ++curr_node) {
-        if (line.front() == '%') {
-            --curr_node;
-            continue;
-        }
-
-        line_buffer.str(line);
-        line_buffer.clear();
-
-        NodeWeight curr_node_weight = 1;
-        if(has_node_weights && !(line_buffer >> curr_node_weight)) {
-            std::ostringstream error_msg("Node weight missing at node ",
-                    std::ios_base::app);
-            error_msg << curr_node << '.'; 
-            throw std::invalid_argument(error_msg.str());
-        }
-        graph.node_weight(curr_node, curr_node_weight);
-
-        Id to_node;
-        EdgeWeight edge_weight = 1;
-        while (line_buffer >> to_node) {
-            if (has_edge_weights && !(line_buffer >> edge_weight)) {
-                std::ostringstream error_msg("Edge weight missing at edge from ",
-                        std::ios_base::app);
-                error_msg << curr_node << " to " << to_node << '.';
-                throw std::invalid_argument(error_msg.str());
-            }
-            graph.edge_weight(curr_node, to_node, edge_weight);
-            graph.edge_weight(to_node, curr_node, edge_weight);
-        }
-    }
-
-    return is;
-}
-
-template<typename Id, typename NodeWeight, typename EdgeWeight>
-std::ostream& operator<<(std::ostream& os, graph::Graph<Id, NodeWeight, EdgeWeight> const& graph) {
-    os << graph.node_cnt() << " " << graph.edge_cnt() << " 011" << '\n';
-
-    for(Id curr_node = 0; curr_node < graph.node_cnt(); ++curr_node) {
-        os << graph.node_weight(curr_node);
-        for (Id to_node : graph.adj_nodes(curr_node)) {
-            os << " " << to_node << " " << graph.edge_weight(curr_node, to_node);
-        }
-        os << '\n';
-    }
-
-    return os;
-}
