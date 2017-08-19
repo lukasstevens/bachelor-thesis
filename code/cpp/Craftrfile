@@ -5,11 +5,11 @@ import shutil
 import subprocess
 from craftr.foreignbuild import make
 
+session.path.append(local('deps'))
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
 java = load('craftr.lang.java')
-session.path.append(local('deps'))
-hdecomp = load('hdecomp')
+hdecomp = load('hdecomp').hdecomp
 
 paths = { 
         'metis' : 'deps/metis',
@@ -17,7 +17,7 @@ paths = {
         }
 
 includes = ['src/include', 'src/main',
-        'build/metis/include', 'deps/KaHIP/deploy']
+        'deps/metis/include', 'deps/KaHIP/interface']
 
 metis = make(
         'Makefile', 'install', 
@@ -30,7 +30,7 @@ kahip = gentarget(
         cwd = local(paths['kahip']),
         inputs = list(chain.from_iterable(
             [glob(os.path.join(paths['kahip'], d, '**/*')) 
-                for d in ['lib', 'interface', 'parallel/parallel_src/lib']]
+                for d in ['lib', 'interface']]
             )),
         outputs = glob(os.path.join(paths['kahip'], 'deploy', '**/*'))
         )
