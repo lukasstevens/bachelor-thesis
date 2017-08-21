@@ -8,7 +8,6 @@ from craftr.foreignbuild import make
 session.path.append(local('deps'))
 cxx = load('craftr.lang.cxx')
 googletest = load('craftr.lib.googletest').googletest
-java = load('craftr.lang.java')
 libhdecomp = load('hdecomp').hdecomp
 
 paths = { 

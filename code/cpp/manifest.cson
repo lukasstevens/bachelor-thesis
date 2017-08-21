@@ -5,7 +5,6 @@ url: ""
 dependencies: 
     "craftr.lang.cxx": "*"
     "craftr.lib.googletest" : "*"
-    "craftr.lang.java" : "*"
     "hdecomp" : "*"
 options: {
     debug: "bool"
