@@ -97,8 +97,11 @@ namespace graph {
 
     template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
         struct Graph {
-            private:
+            public :
                 using NodeSet = std::set<Id>;
+                using Matching = std::vector<std::pair<Id, Id>>;
+
+            private:
 
                 std::vector<std::unordered_map<Id, EdgeWeight>> adjncy;
                 std::vector<NodeSet> vrepr;
@@ -123,9 +126,11 @@ namespace graph {
                          ) {}
 
                 Graph(Id node_cnt) : 
-                    Graph(std::vector<NodeWeight>(static_cast<size_t>(node_cnt), 1)) {}
+                    Graph() {
+                        this->resize(node_cnt);
+                    }
 
-                Graph() : Graph(0) {}
+                Graph() = default;
 
                 Id node_cnt() const {
                     return static_cast<Id>(vwgt.size());
@@ -158,6 +163,16 @@ namespace graph {
                     this->vwgt.at(node) = weight;
                 }
 
+
+                NodeSet node_repr(Id node) {
+                    return this->vrepr.at(node);
+                }
+
+                bool exists_edge(Id from_node, Id to_node) const {
+                    return this->adjncy.at(from_node).find(to_node) 
+                        != this->adjncy.at(from_node).cend();
+                }
+
                 EdgeWeight edge_weight(Id from_node, Id to_node) const {
                     return this->adjncy.at(from_node).at(to_node);
                 }
@@ -165,6 +180,11 @@ namespace graph {
                 void edge_weight(Id from_node, Id to_node, EdgeWeight weight) {
                     this->adjncy.at(from_node)[to_node] = weight;
                     this->adjncy.at(to_node)[from_node] = weight;
+                }
+
+                void add_edge_weight(Id from_node, Id to_node, EdgeWeight weight) {
+                    this->adjncy.at(from_node)[to_node] += weight;
+                    this->adjncy.at(to_node)[from_node] += weight;
                 }
 
                 std::vector<Id> adj_nodes(Id node) const {
@@ -235,7 +255,53 @@ namespace graph {
                 KahipCsrGraph to_kahip_graph() const {
                     return static_cast<KahipCsrGraph>(this->to_foreign_graph<int>());
                 }
-        };
 
+                Graph<Id, NodeWeight, EdgeWeight> contract_edges(Matching const& matching) {
+                    Graph<Id, NodeWeight, EdgeWeight> result_graph(this->node_cnt() - matching.size());
+                    std::vector<bool> is_in_result_graph(this->node_cnt());
+                    std::vector<Id> node_in_result_graph(this->node_cnt());
+
+                    Id curr_node = 0;
+                    for (auto const& edge : matching) {
+                        result_graph.node_weight(curr_node, 
+                                this->node_weight(edge.first) + this->node_weight(edge.second));
+
+                        NodeSet new_vrepr;
+                        std::set_union(this->vrepr.at(edge.first).cbegin(), this->vrepr.at(edge.first).cend(),
+                                this->vrepr.at(edge.second).cbegin(), this->vrepr.at(edge.second).cend(),
+                                std::inserter(new_vrepr, new_vrepr.end()));
+                        result_graph.vrepr.at(curr_node) = new_vrepr;
+                        
+                        is_in_result_graph.at(edge.first) = true;
+                        is_in_result_graph.at(edge.second) = true;
+                        node_in_result_graph.at(edge.first) = curr_node;
+                        node_in_result_graph.at(edge.second) = curr_node;
+                        curr_node += 1;
+                    }
+
+                    for (Id node = 0; static_cast<size_t>(node) < is_in_result_graph.size(); ++node) {
+                        if (!is_in_result_graph[node]) {
+                            result_graph.node_weight(curr_node, this->node_weight(node));
+                            result_graph.vrepr.at(curr_node) = this->node_repr(node);
+                            is_in_result_graph[node] = true;
+                            node_in_result_graph.at(node) = curr_node;
+                            curr_node += 1;
+                        }
+                    }
+                    
+                    for (Id node = 0; static_cast<size_t>(node) < this->node_cnt(); ++node) {
+                        for (auto const& inc_edge : this->inc_edges(node)) {
+                            Id const from_in_res = node_in_result_graph.at(node);
+                            Id const to_in_res = node_in_result_graph.at(inc_edge.first);
+                            if (inc_edge.first >= node && from_in_res != to_in_res) {
+                                result_graph.add_edge_weight(
+                                        from_in_res, to_in_res, inc_edge.second);
+                            }
+                        }
+                    }
+
+                    return result_graph;
+                }
+        };
 }
 

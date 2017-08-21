@@ -79,3 +79,16 @@ TEST(Graph, TwoNodes) {
     ASSERT_EQ(graph.node_weight(1), 1);
 }
 
+TEST(Graph, ContractEdges) {
+    graph::Graph<> graph;
+    std::stringstream graph_stream("3 3 011\n1 1 1 2 2\n2 0 1 2 3\n2 0 2 1 3\n"); 
+    graph_stream >> graph;
+    graph::Graph<>::Matching matching({std::make_pair(0, 1)});
+    graph::Graph<> contracted_graph = graph.contract_edges(matching);
+    ASSERT_EQ(contracted_graph.node_cnt(), 2);
+    ASSERT_EQ(contracted_graph.edge_weight(0, 1), 5);
+    ASSERT_EQ(contracted_graph.inc_edges(0).size(), 1);
+    ASSERT_EQ(contracted_graph.node_repr(0), graph::Graph<>::NodeSet({0, 1}));
+    ASSERT_EQ(contracted_graph.node_repr(1), graph::Graph<>::NodeSet({2}));
+}
+
