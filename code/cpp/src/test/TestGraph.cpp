@@ -7,6 +7,7 @@
 
 #include "Graph.hpp"
 #include "GraphIo.hpp"
+#include "GraphUtils.hpp"
 
 TEST(Graph, EmptyInput) {
     graph::Graph<> graph;
@@ -90,5 +91,17 @@ TEST(Graph, ContractEdges) {
     ASSERT_EQ(contracted_graph.inc_edges(0).size(), 1);
     ASSERT_EQ(contracted_graph.node_repr(0), graph::Graph<>::NodeSet({0, 1}));
     ASSERT_EQ(contracted_graph.node_repr(1), graph::Graph<>::NodeSet({2}));
+}
+
+TEST(Graph, HeavyEdgeMatching) {
+    graph::Graph<> graph;
+    std::stringstream graph_stream("5 6 001\n1 1\n0 1 2 1 3 1\n1 1 3 2 4 1\n1 1 2 2 4 2\n2 1 3 2\n"); 
+    graph_stream >> graph;
+    auto matching = graph::heavy_edge_matching(graph);
+    ASSERT_EQ(matching.size(), 2);
+    ASSERT_TRUE(std::find(matching.begin(), matching.end(), std::make_pair(0, 1)) != matching.end()
+            || std::find(matching.begin(), matching.end(), std::make_pair(1, 0)) != matching.end());
+    ASSERT_TRUE(std::find(matching.begin(), matching.end(), std::make_pair(3, 4)) != matching.end()
+            || std::find(matching.begin(), matching.end(), std::make_pair(4, 3)) != matching.end());
 }
 

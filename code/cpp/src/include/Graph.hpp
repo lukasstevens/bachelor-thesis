@@ -139,20 +139,10 @@ namespace graph {
                 Id edge_cnt() const {
                     Id edge_cnt = 0;
                     for (auto const& adj_nodes : adjncy) {
-                        edge_cnt += adj_nodes.second.size();
+                        edge_cnt += adj_nodes.size();
                     }
                     // Edges are counted at both endpoints.
                     return edge_cnt / 2;
-                }
-
-                void add_node(NodeWeight node_weight) {
-                    auto node_id = this->node_cnt();
-                    vwgt.push_back(node_weight);
-                    vrepr.emplace_back({node_id});
-                }
-
-                void add_node() {
-                    add_node(1);
                 }
 
                 NodeWeight node_weight(Id node) const {
@@ -162,7 +152,6 @@ namespace graph {
                 void node_weight(Id node, NodeWeight weight) {
                     this->vwgt.at(node) = weight;
                 }
-
 
                 NodeSet node_repr(Id node) {
                     return this->vrepr.at(node);
