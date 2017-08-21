@@ -53,8 +53,8 @@ namespace graph {
                 std::vector<idx_t> partition(static_cast<size_t>(this->nvtxs));
                 int res = part_method(
                         &(this->nvtxs), &ncon, &(this->xadj.at(0)), &(this->adjncy.at(0)), 
-                        &(this->vwgt.at(0)), NULL, &(this->adjwgt.at(0)), 
-                        &kparts, NULL, &imbalance, NULL, 
+                        &(this->vwgt.at(0)), nullptr, &(this->adjwgt.at(0)), 
+                        &kparts, nullptr, &imbalance, nullptr, 
                         &cut_cost, &partition.at(0)
                         );
 
