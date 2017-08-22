@@ -3,6 +3,7 @@
 
 #include<algorithm>
 #include<limits>
+#include<list>
 #include<set>
 #include<stdexcept>
 #include<string>
@@ -12,7 +13,13 @@
 #include<metis.h>
 #include<kaHIP_interface.h>
 
+#include "Cut.hpp"
+#include "Partition.hpp"
+
 namespace graph {
+
+    template<typename Id, typename EdgeWeight>
+        using PartitionResult = std::pair<Id, std::vector<EdgeWeight>>;
 
     template<typename Idx>
         struct CsrGraph {
@@ -46,7 +53,7 @@ namespace graph {
                     std::vector<idx_t> adjwgt
                     ) : CsrGraph<idx_t>(xadj, adjncy, vwgt, adjwgt) {}
 
-            void part_graph(decltype(METIS_PartGraphRecursive) part_method, idx_t kparts, real_t imbalance) {
+            PartitionResult<idx_t, idx_t> part_graph(decltype(METIS_PartGraphRecursive) part_method, idx_t kparts, real_t imbalance) {
                 idx_t cut_cost;
                 // Number of node constraints is always one.
                 idx_t ncon = 1;
@@ -61,14 +68,15 @@ namespace graph {
                 if (res != METIS_OK) {
                     throw std::runtime_error("Metis failed with error " + std::to_string(res));
                 }
+                return std::make_pair(cut_cost, partition);
             }
 
-            void part_graph_recursive(idx_t kparts, real_t imbalance) {
-                part_graph(METIS_PartGraphRecursive, kparts, imbalance);
+            PartitionResult<idx_t, idx_t> part_graph_recursive(idx_t kparts, real_t imbalance) {
+                return part_graph(METIS_PartGraphRecursive, kparts, imbalance);
             }
 
-            void part_graph_kway(idx_t kparts, real_t imbalance) {
-                part_graph(METIS_PartGraphKway, kparts, imbalance);
+            PartitionResult<idx_t, idx_t> part_graph_kway(idx_t kparts, real_t imbalance) {
+                return part_graph(METIS_PartGraphKway, kparts, imbalance);
             }
     };
 
@@ -83,7 +91,7 @@ namespace graph {
                     std::vector<int> adjwgt
                     ) : CsrGraph<int>(xadj, adjncy, vwgt, adjwgt) {}
 
-            void kaffpa(int kparts, double imbalance, int seed) {
+            PartitionResult<int, int> kaffpa(int kparts, double imbalance, int seed) {
                 int cut_cost;
                 std::vector<int> partition(static_cast<size_t>(this->nvtxs));
                 ::kaffpa(
@@ -92,6 +100,7 @@ namespace graph {
                         &imbalance, true, seed, STRONG,
                         &cut_cost, &partition.at(0)
                         );
+                return std::make_pair(cut_cost, partition);
             }
     };
 
@@ -241,8 +250,70 @@ namespace graph {
                     return static_cast<MetisCsrGraph>(this->to_foreign_graph<idx_t>());
                 }
 
+                PartitionResult<idx_t, idx_t> partition_metis_recursive(idx_t kparts, real_t imbalance) const {
+                    return this->to_metis_graph().part_graph_recursive(kparts, imbalance);
+                } 
+
+                PartitionResult<idx_t, idx_t> partition_metis_kway(idx_t kparts, real_t imbalance) const {
+                    return this->to_metis_graph().part_graph_kway(kparts, imbalance);
+                } 
+
                 KahipCsrGraph to_kahip_graph() const {
                     return static_cast<KahipCsrGraph>(this->to_foreign_graph<int>());
+                }
+
+                PartitionResult<int, int> partition_kaffpa(int kparts, double imbalance) const {
+                    return this->to_metis_graph().part_graph_kway(kparts, imbalance);
+                } 
+
+                cut::Tree<Id, NodeWeight, EdgeWeight> to_tree(Id root=0) {
+                    std::list<std::pair<Id, Id>> queue;
+                    queue.emplace_back({0, 0});
+                    std::vector<bool> visited(this->node_cnt());
+                    while(!queue.empty()) {
+                        Id curr_node;
+                        Id previous_node;
+                        std::tie(curr_node, previous_node) = queue.front();
+                        queue.pop_front();
+                        if (visited.at(curr_node)) {
+                            throw std::logic_error("Graph is not a tree.");
+                        }
+                        visited.at(curr_node) = true;
+                        for (auto const& neighbor_node : this->adj_nodes(curr_node)) {
+                            if (neighbor_node != previous_node) {
+                                queue.emplace_back({neighbor_node, curr_node});
+                            }
+                        }
+                    }
+
+                    std::map<Id, std::map<Id, EdgeWeight>> tree_map;
+                    std::map<Id, NodeWeight> node_weight;
+                    for (Id node = 0; node < this->node_cnt(); ++node) {
+                        auto inc_edges = this->inc_edges(node);
+                        tree_map[node].insert(this->inc_edges.cbegin(), this->inc_edges.cend());
+                        node_weight[node] = this->node_weight(node);
+                    }
+                    return cut::Tree<Id, NodeWeight, EdgeWeight>::build_tree(tree_map, node_weight, root);
+                }
+                
+
+                PartitionResult<Id, EdgeWeight> partition(Id kparts, cut::RationalType imbalance, Id root=0) {
+                    cut::Tree<Id, NodeWeight, EdgeWeight> tree = this->to_tree(root);
+                    auto signatures = tree.cut(imbalance, kparts);
+
+                    std::cerr << signatures << std::endl;
+
+                    std::vector<std::set<Id>> partitioning;
+                    typename cut::Tree<Id, NodeWeight, EdgeWeight>::Signature signature;
+                    EdgeWeight cut_cost;
+                    std::tie(partitioning, signature, cut_cost) = part::calculate_best_packing(signatures);
+                    std::vector<Id> partitioning_formatted(this->node_cnt());
+                    for (Id part_idx = 0; part_idx < partitioning.size(); ++part_idx) {
+                        for (auto const& node : partitioning[part_idx]) {
+                            partitioning_formatted.at(node) = part_idx;
+                        }
+                    }
+                    return std::make_pair(cut_cost, partitioning_formatted);
                 }
 
                 Graph<Id, NodeWeight, EdgeWeight> contract_edges(Matching const& matching) {
@@ -260,7 +331,7 @@ namespace graph {
                                 this->vrepr.at(edge.second).cbegin(), this->vrepr.at(edge.second).cend(),
                                 std::inserter(new_vrepr, new_vrepr.end()));
                         result_graph.vrepr.at(curr_node) = new_vrepr;
-                        
+
                         is_in_result_graph.at(edge.first) = true;
                         is_in_result_graph.at(edge.second) = true;
                         node_in_result_graph.at(edge.first) = curr_node;
@@ -277,7 +348,7 @@ namespace graph {
                             curr_node += 1;
                         }
                     }
-                    
+
                     for (Id node = 0; static_cast<size_t>(node) < this->node_cnt(); ++node) {
                         for (auto const& inc_edge : this->inc_edges(node)) {
                             Id const from_in_res = node_in_result_graph.at(node);

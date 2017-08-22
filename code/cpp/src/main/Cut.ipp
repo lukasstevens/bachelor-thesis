@@ -10,27 +10,30 @@ namespace cut {
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         Tree<Id, NodeWeight, EdgeWeight> Tree<Id, NodeWeight, EdgeWeight>::build_tree(
-                std::map<Id, std::map<Id, EdgeWeight>> const& tree_map, Id root_id
+                std::map<Id, std::map<Id, EdgeWeight>> const& tree_map,
+                std::map<Id, NodeWeight> const& node_weight,
+                Id root_id
                 ) {
 
             Tree<Id, int, EdgeWeight> tree;
             // Use a struct to represent an incomplete node since the child_idx_range is not known.
             struct NodeStub {
                 Id const id; 
-                int const weight = 1;
                 EdgeWeight const parent_edge_weight;
+                NodeWeight const weight;
                 size_t const parent_idx;
                 bool const has_left_sibling;
                 size_t const level;
 
-                NodeStub(Id id, EdgeWeight p_e_w, size_t p_i, bool h_l_s, size_t lvl) :
-                    id(id), parent_edge_weight(p_e_w), 
-                    parent_idx(p_i), has_left_sibling(h_l_s), level(lvl) {}
+                NodeStub(Id id, EdgeWeight p_e_w, NodeWeight weight, size_t p_i, bool h_l_s, size_t lvl) :
+                    id(id), parent_edge_weight(p_e_w), weight(weight),
+                    parent_idx(p_i), has_left_sibling(h_l_s), level(lvl)
+                {}
             };
 
             // Do a BFS to build the tree.
             std::list<NodeStub> queue;
-            queue.push_back(NodeStub(root_id, 0, 0, false, 0));
+            queue.push_back(NodeStub(root_id, 0, node_weight.at(root_id), 0, false, 0));
             size_t next_child_idx = 0;
             while(!queue.empty()) {
                 NodeStub curr_node = queue.front();
@@ -50,7 +53,8 @@ namespace cut {
                         // Check if neighbor is the parent.
                         if (curr_node.level == 0 || neighbor.first != tree.levels[curr_node.level - 1][curr_node.parent_idx].id) {
                             bool curr_has_left_sibling = !(old_next_child_idx == next_child_idx);
-                            queue.emplace_back(neighbor.first, neighbor.second, tree.levels[curr_node.level].size(), curr_has_left_sibling, curr_node.level + 1); 
+                            queue.emplace_back(neighbor.first, neighbor.second, node_weight.at(neighbor.first),
+                                    tree.levels[curr_node.level].size(), curr_has_left_sibling, curr_node.level + 1); 
                             ++next_child_idx;
                         }
                     }
@@ -69,28 +73,21 @@ namespace cut {
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         void Tree<Id, NodeWeight, EdgeWeight>::calculate_subtree_weights() {
-            Tree& tree = *this;
-            for (auto const& lvl : tree.levels) {
-                tree.subtree_weight.emplace_back(lvl.size());
+            for (auto const& lvl : this->levels) {
+                this->subtree_weight.emplace_back(lvl.size());
             }
 
-            for (size_t lvl_idx = tree.levels.size() - 1; lvl_idx < tree.levels.size(); --lvl_idx) {
+            for (size_t lvl_idx = this->levels.size() - 1; lvl_idx < this->levels.size(); --lvl_idx) {
                 size_t node_idx = 0;
-                for (auto const& node : tree.levels[lvl_idx]) {
-                    tree.subtree_weight[lvl_idx][node_idx] = node.weight;
+                for (auto const& node : this->levels[lvl_idx]) {
+                    this->subtree_weight[lvl_idx][node_idx] = node.weight;
                     for (size_t child_idx = node.children_idx_range.first; 
                             child_idx < node.children_idx_range.second; ++child_idx) {
-                        tree.subtree_weight[lvl_idx][node_idx] += tree.subtree_weight[lvl_idx + 1][child_idx];
+                        this->subtree_weight[lvl_idx][node_idx] += this->subtree_weight[lvl_idx + 1][child_idx];
                     }
                     ++node_idx;
                 }
             }
-        }
-
-    template<typename Id, typename NodeWeight, typename EdgeWeight>
-        Tree<Id, NodeWeight, EdgeWeight> Tree<Id, NodeWeight, EdgeWeight>::build_tree(
-                std::map<Id, std::map<Id, EdgeWeight>> const& tree_map) {
-            return build_tree(tree_map, tree_map.begin()->first);
         }
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>

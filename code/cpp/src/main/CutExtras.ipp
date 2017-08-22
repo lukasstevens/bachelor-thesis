@@ -69,7 +69,13 @@ namespace cut {
                 tree_map[from][to] = weight;
                 tree_map[to][from] = weight;
             }
-            tree = Tree<Id, EdgeWeight>::build_tree(tree_map, root_id);
+
+            std::map<Id, int> node_weight;
+            for (auto const& node : tree_map) {
+                node_weight[node.first] = 1;
+            }
+
+            tree = Tree<Id, EdgeWeight>::build_tree(tree_map, node_weight, root_id);
 
             return is;
         }
@@ -169,7 +175,7 @@ namespace cut {
             auto signature_length = calculate_upper_component_weight_bounds(
                     eps, builder.tree.subtree_weight[0][0], part_cnt).size();
 
-            std::vector<std::vector<SignatureMap<Id, EdgeWeight>>> signatures;
+            std::vector<std::vector<SignatureMap<NodeWeight, EdgeWeight>>> signatures;
 
             size_t node_cnt = 0;
             for (auto const& lvl : builder.tree.levels) {
@@ -203,7 +209,7 @@ namespace cut {
                             is >> comp;
                         }
                         is >> cut_cost;
-                        node_sigs[static_cast<size_t>(weight)][signature] = cut_cost;
+                        node_sigs.at(weight)[signature] = cut_cost;
                     }
                 }
             }

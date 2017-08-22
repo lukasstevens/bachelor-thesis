@@ -42,4 +42,20 @@ namespace graph {
             }
             return matching;
         }
+
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
+        Graph<Id, NodeWeight, EdgeWeight> contract_to_n_nodes(
+                Graph<Id, NodeWeight, EdgeWeight> const& graph,
+                decltype(heavy_edge_matching<Id, NodeWeight, EdgeWeight>) find_matching,
+                Id node_cnt) {
+            Graph<Id, NodeWeight, EdgeWeight> graph_cp(graph);
+            while(graph_cp.node_cnt() > node_cnt) {
+                auto matching = find_matching(graph_cp);
+                if (graph.node_cnt() - matching.size() < node_cnt) {
+                    matching = Matching(matching.cbegin(), matching.cbegin() + (graph.node_cnt() - node_cnt));
+                }
+                graph_cp.contract_edges(matching);
+            }
+            return graph_cp;
+        }
 }

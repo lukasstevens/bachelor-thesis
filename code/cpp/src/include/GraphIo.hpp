@@ -112,8 +112,14 @@ std::ostream& operator<<(std::ostream& os, graph::PrintGraphviz<Id, NodeWeight, 
     os << "graph G {\n";
     for (Id node = 0; node < print.graph.node_cnt(); ++node) {
         Id node_label = (print.is_zero_indexed) ? node : node + 1;
-        os << "\t" << node << "[label=\"" << node_label;
-        os << "(w:" << print.graph.node_weight(node) << ")\"];\n";
+        os << "\t" << node << "[label=\"";
+        os << "id: " << node_label << ", ";
+        os << "w: " << print.graph.node_weight(node) << ", ";
+        os << "r:";
+        for (auto const& id : print.graph.node_repr(node)) {
+            os << " " << id;
+        }
+        os << "\"];\n";
         for (auto const& inc_edge : print.graph.inc_edges(node)) {
             if (inc_edge.first >=  node) {
                 os << "\t" << node << " -- " << inc_edge.first;

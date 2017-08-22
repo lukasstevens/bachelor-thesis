@@ -144,21 +144,17 @@ namespace cut {
                  * This is a map of maps which constitutes
                  * a projection from two nodes(an edge) onto an edge weight. The tree represented by \p tree is explored in
                  * a BFS order starting at \p root_id.
+                 * It is assumed that for each edge (u,v) the edge (v,u) is also in the map with the same weight.
+                 *
                  * @param tree The tree to use.
+                 * @param node_weight The node weights of the tree.
                  * @param root_id The id of the root in the tree.
                  * @returns The tree built from \p tree.
                  */
-                static Tree<Id, NodeWeight, EdgeWeight> build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree, Id root_id);
-
-                /**
-                 * Similiar to the overloaded function. Uses a random root. 
-                 * For this to work the tree must be undirected.
-                 * @param tree The tree to use.
-                 * @returns the tree built from \p tree.
-                 *
-                 * @see build_tree()
-                 */
-                static Tree<Id, NodeWeight, EdgeWeight> build_tree(std::map<Id, std::map<Id, EdgeWeight>> const& tree);
+                static Tree<Id, NodeWeight, EdgeWeight> build_tree(
+                        std::map<Id, std::map<Id, EdgeWeight>> const& tree, 
+                        std::map<Id, NodeWeight> const& node_weight, 
+                        Id root_id);
 
                 /**
                  * Calculates the sizes of the subtrees in the tree.

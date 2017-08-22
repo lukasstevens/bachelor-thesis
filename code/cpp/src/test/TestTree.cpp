@@ -10,8 +10,9 @@ using Tree = cut::Tree<>;
 
 TEST(BuildTree, TwoNodes) {
     std::map<int, std::map<int, int>> tree_map;
+    std::map<int, int> node_weight({{1, 1}, {2, 1}});
     tree_map[1][2] = 3;
-    Tree tree = Tree::build_tree(tree_map, 1);
+    Tree tree = Tree::build_tree(tree_map, node_weight, 1);
     Tree::Node root = tree.levels[0][0];
     Tree::Node child = tree.levels[1][0];
     ASSERT_EQ(tree.levels.size(), 2);
@@ -38,9 +39,10 @@ TEST(BuildTree, TwoNodes) {
 
 TEST(BuildTree, ThreeNodeChain) {
     std::map<int, std::map<int, int>> tree_map;
+    std::map<int, int> node_weight({{1, 1}, {2, 1}, {3, 1}});
     tree_map[1][2] = 4;
     tree_map[2][3] = 5;
-    Tree tree = Tree::build_tree(tree_map, 1);
+    Tree tree = Tree::build_tree(tree_map, node_weight, 1);
     ASSERT_EQ(tree.levels.size(), 3);
     for (auto level : tree.levels) {
         ASSERT_EQ(level.size(), 1);
@@ -71,9 +73,10 @@ TEST(BuildTree, ThreeNodeChain) {
 
 TEST(BuildTree, ThreeNodes) {
     std::map<int, std::map<int, int>> tree_map;
+    std::map<int, int> node_weight({{1, 1}, {2, 1}, {3, 1}});
     tree_map[1][2] = 4;
     tree_map[1][3] = 5;
-    Tree tree = Tree::build_tree(tree_map, 1);
+    Tree tree = Tree::build_tree(tree_map, node_weight, 1);
     ASSERT_EQ(tree.levels.size(), 2);
     ASSERT_EQ(tree.levels[0].size(), 1);
     ASSERT_EQ(tree.levels[1].size(), 2);
