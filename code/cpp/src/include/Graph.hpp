@@ -301,8 +301,6 @@ namespace graph {
                     cut::Tree<Id, NodeWeight, EdgeWeight> tree = this->to_tree(root);
                     auto signatures = tree.cut(imbalance, kparts);
 
-                    std::cerr << signatures << std::endl;
-
                     std::vector<std::set<Id>> partitioning;
                     typename cut::Tree<Id, NodeWeight, EdgeWeight>::Signature signature;
                     EdgeWeight cut_cost;
