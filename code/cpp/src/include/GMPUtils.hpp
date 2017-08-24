@@ -34,5 +34,4 @@ namespace gmputils {
         IntType ceil_to_int(mpq_class r) {
             return floor_to_int<IntType>(r) + (r.get_num() % r.get_den() == mpz_class(0) ? 0 : 1);
         }
-
 }

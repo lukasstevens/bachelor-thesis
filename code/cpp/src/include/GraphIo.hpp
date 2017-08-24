@@ -101,14 +101,17 @@ namespace graph {
         struct PrintGraphviz {
             graph::Graph<Id, NodeWeight, EdgeWeight> const& graph;
             bool const is_zero_indexed;
+            std::vector<Id> const partition;
 
             PrintGraphviz(graph::Graph<Id, NodeWeight, EdgeWeight> const& graph, 
-                    bool is_zero_indexed=true) : graph(graph), is_zero_indexed(is_zero_indexed) {}
+                    std::vector<Id> partition={}, bool is_zero_indexed=true)
+                : graph(graph), is_zero_indexed(is_zero_indexed), partition(partition) {}
         };
 }
 
 template<typename Id, typename NodeWeight, typename EdgeWeight>
-std::ostream& operator<<(std::ostream& os, graph::PrintGraphviz<Id, NodeWeight, EdgeWeight> const& print) {
+std::ostream& operator<<(std::ostream& os,
+        graph::PrintGraphviz<Id, NodeWeight, EdgeWeight> const& print) {
     os << "graph G {\n";
     for (Id node = 0; node < print.graph.node_cnt(); ++node) {
         Id node_label = (print.is_zero_indexed) ? node : node + 1;
@@ -119,7 +122,12 @@ std::ostream& operator<<(std::ostream& os, graph::PrintGraphviz<Id, NodeWeight, 
         for (auto const& id : print.graph.node_repr(node)) {
             os << " " << id;
         }
-        os << "\"];\n";
+        os << "\"";
+        if (print.partition.size() != 0) {
+            os << "style=filled, color=\"/spectral9/";
+            os << (print.partition.at(node) + 1) << "\"";
+        }
+        os << "];\n";
         for (auto const& inc_edge : print.graph.inc_edges(node)) {
             if (inc_edge.first >=  node) {
                 os << "\t" << node << " -- " << inc_edge.first;

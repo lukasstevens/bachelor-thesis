@@ -163,7 +163,7 @@ namespace cut {
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         SignaturesForTree<Id, NodeWeight, EdgeWeight> Tree<Id, NodeWeight, EdgeWeight>::cut(
-                RationalType eps, NodeWeight part_cnt) {
+                Rational eps, NodeWeight part_cnt) {
 
             std::vector<std::vector<Tree::SignatureMap>> signatures;
             for (auto const& lvl : this->levels) {
@@ -313,7 +313,7 @@ namespace cut {
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         std::vector<std::vector<SignatureMapWithPrev<NodeWeight, EdgeWeight>>> 
         Tree<Id, NodeWeight, EdgeWeight>::cut_with_prev(
-                RationalType eps, NodeWeight part_cnt, Tree::Signature const& signature
+                Rational eps, NodeWeight part_cnt, Tree::Signature const& signature
                 ) const {
 
             auto const upper_comp_weight_bounds = calculate_upper_component_weight_bounds(eps, this->subtree_weight[0][0], part_cnt);
@@ -392,8 +392,8 @@ namespace cut {
         }
 
     template<typename NodeWeight>
-        std::vector<NodeWeight> calculate_upper_component_weight_bounds(RationalType eps, NodeWeight tree_weight, NodeWeight part_cnt) {
-            using Rational = RationalType;
+        std::vector<NodeWeight> calculate_upper_component_weight_bounds(Rational eps, NodeWeight tree_weight, NodeWeight part_cnt) {
+            using Rational = Rational;
 
             // Calculate the sizes of the components in a signature according to the paper FF13.
             // We use rationals here to prevent numerical instabilities.
@@ -410,7 +410,7 @@ namespace cut {
         }
 
     template<typename NodeWeight>
-        std::vector<NodeWeight> calculate_lower_component_weight_bounds(RationalType eps, NodeWeight tree_weight, NodeWeight part_cnt) {
+        std::vector<NodeWeight> calculate_lower_component_weight_bounds(Rational eps, NodeWeight tree_weight, NodeWeight part_cnt) {
 
             std::vector<NodeWeight> const upper_comp_weight_bounds = 
                 calculate_upper_component_weight_bounds(eps, tree_weight, part_cnt);

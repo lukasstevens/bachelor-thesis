@@ -140,7 +140,7 @@ namespace cut {
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         SignaturesForTreeBuilder<Id, NodeWeight, EdgeWeight>& 
-            SignaturesForTreeBuilder<Id, NodeWeight, EdgeWeight>::with_eps(RationalType eps) {
+            SignaturesForTreeBuilder<Id, NodeWeight, EdgeWeight>::with_eps(Rational eps) {
 
         this->eps = eps;
         return *this;
@@ -170,7 +170,7 @@ namespace cut {
             int64_t eps_num;
             int64_t eps_denom;
             is >> part_cnt >> eps_num >> eps_denom;
-            RationalType eps(eps_num, eps_denom);
+            Rational eps(eps_num, eps_denom);
             builder.with_part_cnt(part_cnt).with_eps(eps);
             auto signature_length = calculate_upper_component_weight_bounds(
                     eps, builder.tree.subtree_weight[0][0], part_cnt).size();

@@ -1,13 +1,17 @@
+#include<algorithm>
 #include<iostream>
 #include<sstream>
 #include<stdexcept>
 #include<string>
 
 #include<gtest/gtest.h>
+#include<metis.h>
 
 #include "Graph.hpp"
 #include "GraphIo.hpp"
 #include "GraphUtils.hpp"
+#include "GraphGen.hpp"
+#include "GMPUtils.hpp"
 
 TEST(Graph, EmptyInput) {
     graph::Graph<> graph;
@@ -103,5 +107,74 @@ TEST(Graph, HeavyEdgeMatching) {
             || std::find(matching.begin(), matching.end(), std::make_pair(1, 0)) != matching.end());
     ASSERT_TRUE(std::find(matching.begin(), matching.end(), std::make_pair(3, 4)) != matching.end()
             || std::find(matching.begin(), matching.end(), std::make_pair(4, 3)) != matching.end());
+}
+
+// Metis sometimes violates the constraints because of rounding errors. Therefore this function checks
+// if metis violates the size constraint of the partitions.
+bool violates_max_part_size(std::vector<int> partition, int kparts, graph::Rational imbalance) {
+    int max_part_size = gmputils::floor_to_int<int>((graph::Rational(1) + imbalance) *
+        gmputils::ceil_to_int<int>(graph::Rational(partition.size(), kparts)));
+
+    std::vector<int> part_size(static_cast<size_t>(kparts));
+    for (auto const in_part : partition) {
+        part_size.at(static_cast<size_t>(in_part)) += 1;
+    }
+    
+    return std::any_of(part_size.cbegin(), part_size.cend(),
+            [max_part_size](int const part_size){ return part_size > max_part_size; });
+}
+
+TEST(Graph, Metis) {
+    graphgen::IGraphGen<>* graph_gen_rand = new graphgen::TreeRandAttach<>(30);
+    graphgen::IGraphGen<>* graph_gen_pref = new graphgen::TreePrefAttach<>(30);
+    graph::Graph<> graph;
+    graph::Rational imbalance(1,3);
+
+    for (long seed = 0; seed < 30; ++seed) {
+        graph = (*graph_gen_rand)(seed);
+        auto res = graph.partition(3, imbalance);
+        auto metis_rec_res = graph.partition_metis_recursive(3, imbalance);
+        auto metis_kway_res = graph.partition_metis_kway(3, imbalance);
+        if (!violates_max_part_size(metis_rec_res.second, 3, imbalance)) {
+            EXPECT_LE(res.first, metis_rec_res.first);
+        }
+        if (!violates_max_part_size(metis_kway_res.second, 3, imbalance)) {
+            EXPECT_LE(res.first, metis_kway_res.first);
+        }
+
+        graph = (*graph_gen_pref)(seed);
+        res = graph.partition(3, imbalance);
+        metis_rec_res = graph.partition_metis_recursive(3, imbalance);
+        metis_kway_res = graph.partition_metis_kway(3, imbalance);
+        if (!violates_max_part_size(metis_rec_res.second, 3, imbalance)) {
+            EXPECT_LE(res.first, metis_rec_res.first);
+        }
+        if (!violates_max_part_size(metis_kway_res.second, 3, imbalance)) {
+            EXPECT_LE(res.first, metis_kway_res.first);
+        }
+    }
+
+    delete graph_gen_rand;
+    delete graph_gen_pref;
+}
+
+TEST(Graph, KaHIP) {
+    graphgen::IGraphGen<>* graph_gen_rand = new graphgen::TreeRandAttach<>(30);
+    graphgen::IGraphGen<>* graph_gen_pref = new graphgen::TreePrefAttach<>(30);
+    graph::Graph<> graph;
+    graph::Rational imbalance(1,3);
+    for (long seed = 0; seed < 30; ++seed) {
+        graph = (*graph_gen_rand)(seed);
+        auto res = graph.partition(3, imbalance);
+        auto kahip_res = graph.partition_kaffpa(3, imbalance);
+        EXPECT_LE(res.first, kahip_res.first);
+        graph = (*graph_gen_pref)(seed);
+        res = graph.partition(3, imbalance);
+        kahip_res = graph.partition_kaffpa(3, imbalance);
+        EXPECT_LE(res.first, kahip_res.first);
+    }
+
+    delete graph_gen_rand;
+    delete graph_gen_pref;
 }
 

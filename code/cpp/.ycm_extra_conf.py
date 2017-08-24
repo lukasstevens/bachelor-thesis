@@ -30,7 +30,8 @@ myFlags = [
     '-I', './build/metis/include',
     '-I', './deps/KaHIP/deploy',
     '-I', './src/main',
-    '-I', './third-party/openssl-1.0.1i/include'
+    '-I', './third-party/openssl-1.0.1i/include',
+    '-I', './deps/args'
 ]
 
 database = None

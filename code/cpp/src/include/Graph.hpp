@@ -21,6 +21,8 @@ namespace graph {
     template<typename Id, typename EdgeWeight>
         using PartitionResult = std::pair<Id, std::vector<EdgeWeight>>;
 
+    using Rational = cut::Rational;
+
     template<typename Idx>
         struct CsrGraph {
             public:
@@ -43,16 +45,7 @@ namespace graph {
         };
 
     struct MetisCsrGraph : CsrGraph<idx_t> {
-        public:
-            MetisCsrGraph(CsrGraph<int> graph) : CsrGraph<int>(graph) {}
-
-            MetisCsrGraph(
-                    std::vector<idx_t> xadj,
-                    std::vector<idx_t> adjncy,
-                    std::vector<idx_t> vwgt,
-                    std::vector<idx_t> adjwgt
-                    ) : CsrGraph<idx_t>(xadj, adjncy, vwgt, adjwgt) {}
-
+        private:
             PartitionResult<idx_t, idx_t> part_graph(decltype(METIS_PartGraphRecursive) part_method, idx_t kparts, real_t imbalance) {
                 idx_t cut_cost;
                 // Number of node constraints is always one.
@@ -70,6 +63,16 @@ namespace graph {
                 }
                 return std::make_pair(cut_cost, partition);
             }
+        public:
+            MetisCsrGraph(CsrGraph<int> graph) : CsrGraph<int>(graph) {}
+
+            MetisCsrGraph(
+                    std::vector<idx_t> xadj,
+                    std::vector<idx_t> adjncy,
+                    std::vector<idx_t> vwgt,
+                    std::vector<idx_t> adjwgt
+                    ) : CsrGraph<idx_t>(xadj, adjncy, vwgt, adjwgt) {}
+
 
             PartitionResult<idx_t, idx_t> part_graph_recursive(idx_t kparts, real_t imbalance) {
                 return part_graph(METIS_PartGraphRecursive, kparts, imbalance);
@@ -162,7 +165,7 @@ namespace graph {
                     this->vwgt.at(node) = weight;
                 }
 
-                NodeSet node_repr(Id node) {
+                NodeSet node_repr(Id node) const {
                     return this->vrepr.at(node);
                 }
 
@@ -250,25 +253,27 @@ namespace graph {
                     return static_cast<MetisCsrGraph>(this->to_foreign_graph<idx_t>());
                 }
 
-                PartitionResult<idx_t, idx_t> partition_metis_recursive(idx_t kparts, real_t imbalance) const {
-                    return this->to_metis_graph().part_graph_recursive(kparts, imbalance);
+                PartitionResult<idx_t, idx_t> partition_metis_recursive(idx_t kparts, Rational imbalance) const {
+                    return this->to_metis_graph().part_graph_recursive(
+                            kparts, static_cast<real_t>(1 + imbalance.get_d()));
                 } 
 
-                PartitionResult<idx_t, idx_t> partition_metis_kway(idx_t kparts, real_t imbalance) const {
-                    return this->to_metis_graph().part_graph_kway(kparts, imbalance);
+                PartitionResult<idx_t, idx_t> partition_metis_kway(idx_t kparts, Rational imbalance) const {
+                    return this->to_metis_graph().part_graph_kway(
+                            kparts, static_cast<real_t>(1 + imbalance.get_d()));
                 } 
 
                 KahipCsrGraph to_kahip_graph() const {
                     return static_cast<KahipCsrGraph>(this->to_foreign_graph<int>());
                 }
 
-                PartitionResult<int, int> partition_kaffpa(int kparts, double imbalance) const {
-                    return this->to_metis_graph().part_graph_kway(kparts, imbalance);
+                PartitionResult<int, int> partition_kaffpa(int kparts, Rational imbalance, long seed=0) const {
+                    return this->to_kahip_graph().kaffpa(kparts, imbalance.get_d(), seed);
                 } 
 
                 cut::Tree<Id, NodeWeight, EdgeWeight> to_tree(Id root=0) {
                     std::list<std::pair<Id, Id>> queue;
-                    queue.emplace_back({0, 0});
+                    queue.emplace_back(std::make_pair(0, 0));
                     std::vector<bool> visited(this->node_cnt());
                     while(!queue.empty()) {
                         Id curr_node;
@@ -281,7 +286,7 @@ namespace graph {
                         visited.at(curr_node) = true;
                         for (auto const& neighbor_node : this->adj_nodes(curr_node)) {
                             if (neighbor_node != previous_node) {
-                                queue.emplace_back({neighbor_node, curr_node});
+                                queue.emplace_back(std::make_pair(neighbor_node, curr_node));
                             }
                         }
                     }
@@ -289,15 +294,15 @@ namespace graph {
                     std::map<Id, std::map<Id, EdgeWeight>> tree_map;
                     std::map<Id, NodeWeight> node_weight;
                     for (Id node = 0; node < this->node_cnt(); ++node) {
-                        auto inc_edges = this->inc_edges(node);
-                        tree_map[node].insert(this->inc_edges.cbegin(), this->inc_edges.cend());
+                        auto const inc_edges = this->inc_edges(node);
+                        tree_map[node].insert(inc_edges.cbegin(), inc_edges.cend());
                         node_weight[node] = this->node_weight(node);
                     }
                     return cut::Tree<Id, NodeWeight, EdgeWeight>::build_tree(tree_map, node_weight, root);
                 }
                 
 
-                PartitionResult<Id, EdgeWeight> partition(Id kparts, cut::RationalType imbalance, Id root=0) {
+                PartitionResult<Id, EdgeWeight> partition(Id kparts, Rational imbalance, Id root=0) {
                     cut::Tree<Id, NodeWeight, EdgeWeight> tree = this->to_tree(root);
                     auto signatures = tree.cut(imbalance, kparts);
 

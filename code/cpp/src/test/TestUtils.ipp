@@ -15,7 +15,7 @@ namespace testutils {
             EXPECT_TRUE(param_stream.good()) << "Failed to open file " << params_resource_name << ".";
             param_stream >> part_cnt >> eps_num >> eps_denom;
             param_stream.close();
-            cut::RationalType eps(eps_num, eps_denom);
+            cut::Rational eps(eps_num, eps_denom);
             return AlgorithmParams<SizeType>(eps, part_cnt);
         }
 

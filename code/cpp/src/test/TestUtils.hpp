@@ -7,10 +7,10 @@ namespace testutils {
 
     template<typename SizeType>
         struct AlgorithmParams {
-            cut::RationalType eps;
+            cut::Rational eps;
             SizeType part_cnt;
 
-            AlgorithmParams(cut::RationalType eps, SizeType part_cnt) : eps(eps), part_cnt(part_cnt) {}
+            AlgorithmParams(cut::Rational eps, SizeType part_cnt) : eps(eps), part_cnt(part_cnt) {}
         };
 
     template<typename SizeType>

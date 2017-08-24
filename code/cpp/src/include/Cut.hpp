@@ -109,7 +109,7 @@ namespace cut {
               std::unordered_map<Signature<NodeWeight>, std::pair<EdgeWeight, PreviousSignatures<NodeWeight>>,
               valarrutils::ValarrayHasher<NodeWeight>, valarrutils::ValarrayEqual<NodeWeight>>>;
 
-    using RationalType = mpq_class; /**< The type of a rational. **/
+    using Rational = mpq_class; /**< The type of a rational. **/
 
     template<typename Idtype, typename NodeWeight, typename EdgeWeight>
         struct SignaturesForTree;
@@ -171,7 +171,7 @@ namespace cut {
                  *
                  * @see SignaturesForTree
                  */
-                SignaturesForTree<Id, NodeWeight, EdgeWeight> cut(RationalType eps, NodeWeight part_cnt);
+                SignaturesForTree<Id, NodeWeight, EdgeWeight> cut(Rational eps, NodeWeight part_cnt);
 
                 /**
                  * Calculates the signatures of the tree with information about the previous signatures.
@@ -179,7 +179,7 @@ namespace cut {
                  * Analogous to Tree::cut().
                  */
                 std::vector<std::vector<SignatureMapWithPrev>> 
-                    cut_with_prev(RationalType eps, NodeWeight part_cnt, Signature const& signature) const;
+                    cut_with_prev(Rational eps, NodeWeight part_cnt, Signature const& signature) const;
 
                 /**
                  * Calculates the node_idx for the node with the id \p node_id.
@@ -276,7 +276,7 @@ namespace cut {
      */
     template<typename NodeWeight>
         std::vector<NodeWeight> calculate_upper_component_weight_bounds(
-                RationalType eps, NodeWeight tree_weight, NodeWeight part_cnt);
+                Rational eps, NodeWeight tree_weight, NodeWeight part_cnt);
 
     /**
      * Calculates the lower (inclusive) bounds on the component sizes for each index of a signature.
@@ -289,7 +289,7 @@ namespace cut {
      */
     template<typename NodeWeight>
         std::vector<NodeWeight> calculate_lower_component_weight_bounds(
-                RationalType eps, NodeWeight tree_weight, NodeWeight part_cnt);
+                Rational eps, NodeWeight tree_weight, NodeWeight part_cnt);
 
     /**
      * This class represents the signatures for a tree caclulated by Tree::cut(). 
@@ -303,7 +303,7 @@ namespace cut {
                 using SignatureMap = SignatureMap<NodeWeight, EdgeWeight>; /**< The type to save the signatures at a node. */
 
                 NodeWeight const part_cnt; /**< The number of parts in the partition. */
-                RationalType const eps; /**< The approximation parameter. */
+                Rational const eps; /**< The approximation parameter. */
                 Tree const& tree; /**< The tree for which the signatures were calculated. */
                 std::vector<std::vector<SignatureMap>> const signatures; /**< The calculated signatures. */
                 std::vector<NodeWeight> const upper_comp_weight_bounds; /**< The upper bounds for the sizes in a signature. */
@@ -316,7 +316,7 @@ namespace cut {
                  * @param tree The tree for which the signatures were calculated.
                  * @param signatures The signatures for \p tree.
                  */
-                SignaturesForTree(NodeWeight part_cnt, RationalType eps, Tree const& tree, std::vector<std::vector<SignatureMap>> signatures) :
+                SignaturesForTree(NodeWeight part_cnt, Rational eps, Tree const& tree, std::vector<std::vector<SignatureMap>> signatures) :
                     part_cnt(part_cnt), eps(eps), tree(tree), signatures(signatures), 
                     upper_comp_weight_bounds(calculate_upper_component_weight_bounds(eps, tree.subtree_weight[0][0], part_cnt)),
                     lower_comp_weight_bounds(calculate_lower_component_weight_bounds(eps, tree.subtree_weight[0][0], part_cnt)) {}
@@ -385,7 +385,7 @@ namespace cut {
                  * @param eps The approximation parameter
                  * @returns A reference to this.
                  */
-                SignaturesForTreeBuilder& with_eps(RationalType eps);
+                SignaturesForTreeBuilder& with_eps(Rational eps);
 
                 /**
                  * Sets the signatures.
@@ -402,7 +402,7 @@ namespace cut {
 
             private:
                 NodeWeight part_cnt; /**< The number of parts in the partition. */
-                RationalType eps; /**< The approximation parameter. */
+                Rational eps; /**< The approximation parameter. */
                 std::vector<std::vector<SignatureMap>> signatures; /**< The calculated signatures. */
 
         };

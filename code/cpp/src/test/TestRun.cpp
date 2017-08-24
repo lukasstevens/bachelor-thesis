@@ -29,7 +29,7 @@ TEST(Run, DISABLED_FromStdinVerbose) {
     int64_t eps_num;
     int64_t eps_denom;
     std::cin >> part_cnt >> eps_num >> eps_denom;
-    RationalType eps(eps_num, eps_denom);
+    Rational eps(eps_num, eps_denom);
 
     std::cerr << "comp_weight_bounds:";
     for (auto& comp_weight_bound : calculate_upper_component_weight_bounds(eps, tree.subtree_weight[0][0], part_cnt)) {
@@ -144,7 +144,7 @@ TEST(Run, DISABLED_FromStdinCutting) {
     int64_t eps_num;
     int64_t eps_denom;
     std::cin >> part_cnt >> eps_num >> eps_denom;
-    RationalType eps(eps_num, eps_denom);
+    Rational eps(eps_num, eps_denom);
 
     auto signatures = tree.cut(eps, part_cnt);
 
