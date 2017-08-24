@@ -69,7 +69,7 @@ cli_bin = cxx.executable(
             sources = glob('src/cli/*.cpp'),
             frameworks = [mylib]
             ),
-        output = 'partiton'
+        output = 'cli'
         )
 cli = runtarget(cli_bin)
 
