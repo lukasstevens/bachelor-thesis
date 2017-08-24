@@ -22,20 +22,20 @@ libmetis = Framework()
 metis = gentarget(
         [['make','install']],
         cwd = local(paths['metis']),
-        outputs = [local('build/metis/lib/libmetis.a')]
+        outputs = [local('build/metis/lib/libmetis.a')],
+        inputs = glob(os.path.join(paths['metis'], 'libmetis'))
         )
 cxx.extend_framework(libmetis, metis)
 
 kahip = gentarget(
         [['./compile.sh']],
         cwd = local(paths['kahip']),
-        inputs = glob([os.path.join(paths['kahip'], d, '**/*') 
-            for d in ['lib', 'interface']]),
+        inputs = glob(os.path.join(paths['kahip'], 'lib', '**/*')),
         outputs = [local(os.path.join(paths['kahip'], 'deploy/libkahip.a'))]
         )
 libkahip = Framework()
 
-mylib = Framework(
+mylib = Framework('mylib',
         include = [local(x) for x in includes],
         std = 'c++11',
         warn = 'all',
@@ -43,16 +43,8 @@ mylib = Framework(
         optimize = 'debug' if options.debug else 'speed',
         libs = ['m', 'gmpxx', 'gmp', 'mpi', 'gomp'],
         external_libs=[local('build/metis/lib/libmetis.a'), 
-            local(os.path.join(paths['kahip'], 'deploy/libkahip.a'))]
+            local(os.path.join(paths['kahip'], 'deploy/libkahip.a'))],
         )
-mylib_lib = cxx.static_library(
-        inputs = cxx.compile_cpp(
-            sources = [],
-            frameworks = [mylib, libmetis, libkahip, libhdecomp]
-            ),
-        output = 'mylib'
-        )
-cxx.extend_framework(mylib, mylib_lib)
 
 test_bin = cxx.executable(
         inputs = cxx.compile_cpp(
