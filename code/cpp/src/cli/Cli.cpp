@@ -1,3 +1,5 @@
+#include<chrono>
+#include<functional>
 #include<iostream>
 #include<limits>
 #include<string>
@@ -25,15 +27,34 @@ enum PartMethods {
 struct Result {
     std::string method_name;
     graph::PartitionResult<int, int> part_result;
+    std::chrono::milliseconds time_elapsed;
+
+    Result() = default;
 
     Result(
             std::string method_name,
-            graph::PartitionResult<int, int> part_result
+            graph::PartitionResult<int, int> part_result,
+            std::chrono::milliseconds time_elapsed
           ) : 
-        method_name(method_name), part_result(part_result) {}
+        method_name(method_name), part_result(part_result),
+        time_elapsed(time_elapsed) {}
 };
 
-void execute_partitioning(
+
+Result run_part_method(
+        std::string method_name,
+        std::function<graph::PartitionResult<int,int>()> method
+        ) {
+    using namespace std::chrono;
+    auto start = steady_clock::now();
+    auto method_res = method();
+    auto end = steady_clock::now();
+    milliseconds time_elapsed =
+        duration_cast<milliseconds>(end - start);
+    return Result(method_name, method_res, time_elapsed);
+}
+
+void run_gen_group(
         graphgen::IGraphGen<>* generator,
         int kparts,
         graph::Rational imbalance, 
@@ -42,27 +63,44 @@ void execute_partitioning(
         size_t seed=0,
         size_t tries=1
         ) {
-   
+
+
     for (size_t trie_idx = 0; trie_idx < tries; ++trie_idx) {
         graph::Graph<> graph = (*generator)(seed + trie_idx);
         std::vector<Result> results;
         for (auto method : part_methods) {
             switch (method) {
                 case TREE_PARTITION:
-                    results.emplace_back(
-                            "Tree_Partition", graph.partition(kparts, imbalance));
+                    results.push_back(run_part_method(
+                                "Tree_Partition",
+                                [graph, kparts, imbalance](){
+                                return graph.partition(kparts, imbalance);
+                                })
+                            );
                     break;
                 case METIS_KWAY:
-                    results.emplace_back(
-                            "METIS_Kway", graph.partition_metis_kway(kparts, imbalance));
+                    results.push_back(run_part_method(
+                                "METIS_Kway",
+                                [graph, kparts, imbalance](){
+                                return graph.partition_metis_kway(kparts, imbalance);
+                                })
+                            );
                     break;
                 case METIS_REC:
-                    results.emplace_back(
-                            "METIS_Recursive", graph.partition_metis_recursive(kparts, imbalance));
+                    results.push_back(run_part_method(
+                                "METIS_Recursive",
+                                [graph, kparts, imbalance](){
+                                return graph.partition_metis_recursive(kparts, imbalance);
+                                })
+                            );
                     break;
                 case KAFFPA:
-                    results.emplace_back(
-                            "KaFFPa", graph.partition_kaffpa(kparts, imbalance));
+                    results.push_back(run_part_method(
+                                "KaFFPa",
+                                [graph, kparts, imbalance](){
+                                return graph.partition_kaffpa(kparts, imbalance);
+                                })
+                            );
                     break;
             }
         }
@@ -90,6 +128,10 @@ void execute_partitioning(
                     std::cout << std::endl;
                     break;
                 case TIME:
+                    for (auto const& result : results) {
+                        std::cout << result.time_elapsed.count() << "\t";
+                    }
+                    std::cout << std::endl;
                     break;
                 case CUT_COST:
                     for (auto const& result : results) {
@@ -151,11 +193,13 @@ int main(int argc, char** argv) {
 
     enum GraphGen {
         TREE_RAND_ATTACH,
-        TREE_PREF_ATTACH
+        TREE_PREF_ATTACH,
+        TREE_FAT
     };
     std::unordered_map<std::string, GraphGen> graph_gen_map({
             {"tree_rand_attach", GraphGen::TREE_RAND_ATTACH},
-            {"tree_pref_attach", GraphGen::TREE_PREF_ATTACH}
+            {"tree_pref_attach", GraphGen::TREE_PREF_ATTACH},
+            {"tree_fat", GraphGen::TREE_FAT}
             });
     std::string graph_gen_options("OPTIONS:");
     for (auto const& option : graph_gen_map) {
@@ -166,11 +210,27 @@ int main(int argc, char** argv) {
             {'g', "generator"}, graph_gen_map);
 
     args::ValueFlag<int> node_count(
-            gen_group, "node count", "The number of nodes when using a graph generator",
+            gen_group, "node count", "The number of nodes when using a graph generator.",
             {'n', "nodes"});
+    
+    args::Group degree_group(
+            gen_group,
+            "Child count range for tree_fat, max_degree for everything else.",
+            args::Group::Validators::Xor);
     args::ValueFlag<int> max_degree(
-            gen_group, "max degree", "The maximum degree of a node when using a graph generator",
+            degree_group, "max degree", "The maximum degree of a node when using a graph generator.",
             {'d', "max_degree"});
+    args::Group child_count_group(
+            degree_group,
+            "Lower and upper exclusive child count must be specified.",
+            args::Group::Validators::All
+            );
+    args::ValueFlag<int> min_child_cnt(
+            child_count_group, "min child count", "The minimum number of childs in a fat tree.",
+            {"min_child"});
+    args::ValueFlag<int> max_child_cnt(
+            child_count_group, "max child count", "The maximum number of childs in a fat tree.",
+            {"max_child"});
 
     args::ValueFlag<int> kparts(
             parser, "kparts", "The number of parts to partition into.",
@@ -192,12 +252,12 @@ int main(int argc, char** argv) {
     {
         parser.ParseCLI(argc, argv);
         if (!kparts || !imbalance) {
-            throw args::ValidationError("kparts and imbalance is required.");
+            throw args::ValidationError("kparts and imbalance is required");
         }
 
         if (gen_group) {
             if(!graph_gen) {
-                throw args::ValidationError("Graph generator required.");
+                throw args::ValidationError("Graph generator required");
             }
 
             int max_degree_int = std::numeric_limits<int>::max();
@@ -231,9 +291,19 @@ int main(int argc, char** argv) {
                                 max_degree_int
                                 );
                     break;
+                case TREE_FAT:
+                    generator = 
+                        new graphgen::TreeFat<>(
+                                args::get(node_count),
+                                std::make_pair(
+                                    args::get(min_child_cnt),
+                                    args::get(max_child_cnt)
+                                    )
+                                );
+                    break;
             }
 
-            execute_partitioning(
+            run_gen_group(
                     generator,
                     args::get(kparts),
                     args::get(imbalance),

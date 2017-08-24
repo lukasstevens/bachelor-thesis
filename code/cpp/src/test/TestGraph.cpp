@@ -130,7 +130,7 @@ TEST(Graph, Metis) {
     graph::Graph<> graph;
     graph::Rational imbalance(1,3);
 
-    for (long seed = 0; seed < 30; ++seed) {
+    for (size_t seed = 0; seed < 30; ++seed) {
         graph = (*graph_gen_rand)(seed);
         auto res = graph.partition(3, imbalance);
         auto metis_rec_res = graph.partition_metis_recursive(3, imbalance);
@@ -163,7 +163,7 @@ TEST(Graph, KaHIP) {
     graphgen::IGraphGen<>* graph_gen_pref = new graphgen::TreePrefAttach<>(30);
     graph::Graph<> graph;
     graph::Rational imbalance(1,3);
-    for (long seed = 0; seed < 30; ++seed) {
+    for (size_t seed = 0; seed < 30; ++seed) {
         graph = (*graph_gen_rand)(seed);
         auto res = graph.partition(3, imbalance);
         auto kahip_res = graph.partition_kaffpa(3, imbalance);
@@ -178,3 +178,10 @@ TEST(Graph, KaHIP) {
     delete graph_gen_pref;
 }
 
+TEST(GenGraph, TreeFat) {
+    graphgen::IGraphGen<>* graph_gen =
+        new graphgen::TreeFat<>(100, std::make_pair(2, 6));
+    graph::Graph<> graph = (*graph_gen)(0);
+    std::cerr << graph::PrintGraphviz<>(graph);
+    delete graph_gen;
+}

@@ -271,7 +271,7 @@ namespace graph {
                     return this->to_kahip_graph().kaffpa(kparts, imbalance.get_d(), seed);
                 } 
 
-                cut::Tree<Id, NodeWeight, EdgeWeight> to_tree(Id root=0) {
+                cut::Tree<Id, NodeWeight, EdgeWeight> to_tree(Id root=0) const {
                     std::list<std::pair<Id, Id>> queue;
                     queue.emplace_back(std::make_pair(0, 0));
                     std::vector<bool> visited(this->node_cnt());
@@ -302,7 +302,7 @@ namespace graph {
                 }
                 
 
-                PartitionResult<Id, EdgeWeight> partition(Id kparts, Rational imbalance, Id root=0) {
+                PartitionResult<Id, EdgeWeight> partition(Id kparts, Rational imbalance, Id root=0) const {
                     cut::Tree<Id, NodeWeight, EdgeWeight> tree = this->to_tree(root);
                     auto signatures = tree.cut(imbalance, kparts);
 

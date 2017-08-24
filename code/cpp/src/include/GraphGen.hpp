@@ -121,4 +121,54 @@ namespace graphgen {
                 }
 
             };
+
+    template<typename Id=int, typename NodeWeight=int,
+        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+            struct TreeFat : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+                public:
+                    Id node_cnt;
+                    std::pair<Id, Id> child_cnt_range;
+                    std::pair<NodeWeight, NodeWeight> node_weight_range;
+                    std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
+
+                    TreeFat(
+                            Id node_cnt,
+                            std::pair<Id, Id> child_cnt_range={1, std::numeric_limits<Id>::max()},
+                            std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
+                            std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
+                           ) :
+                        node_cnt(node_cnt), child_cnt_range(child_cnt_range),
+                        node_weight_range(node_weight_range), edge_weight_range(edge_weight_range) {}
+
+                    graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                        RandGen rand_gen(seed);
+
+                        graph::Graph<Id, NodeWeight, EdgeWeight> graph;
+                        graph.resize(this->node_cnt);
+                        graph.node_weight(0,
+                                gen_rand_in_range<NodeWeight>(rand_gen, this->node_weight_range));
+                        std::vector<Id> last_level({0});
+                        std::vector<Id> this_level;
+                        Id node = 1;
+                        while (true) {
+                            Id level_degree = gen_rand_in_range<Id>(rand_gen, this->child_cnt_range);
+                            for (auto const& parent : last_level) {
+                                for (Id child_idx = 0; child_idx < level_degree; ++child_idx) {
+                                    graph.node_weight(node,
+                                            gen_rand_in_range<NodeWeight>(rand_gen, this->node_weight_range));
+                                    graph.edge_weight(node, parent,
+                                            gen_rand_in_range<EdgeWeight>(rand_gen, this->edge_weight_range));
+                                    this_level.push_back(node);
+                                    ++node;
+                                    if (node >= this->node_cnt) {
+                                        return graph;
+                                    }
+                                }
+                            }
+                            std::swap(this_level, last_level);
+                            this_level = std::vector<Id>();
+                        }
+                        return graph;
+                    }
+            };
 }
