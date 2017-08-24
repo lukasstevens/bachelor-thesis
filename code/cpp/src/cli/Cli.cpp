@@ -180,6 +180,14 @@ int main(int argc, char** argv) {
             "each part has at most (1+imbalance)*ceil(node_count/kparts) nodes.",
             {'i', "imbalance"});
 
+    args::ValueFlag<size_t> tries(
+            gen_group, "tries", "Number of different graphs to generate.",
+            {'t', "tries"});
+
+    args::ValueFlag<size_t> seed(
+            gen_group, "seed", "The initial seed to use for generating graphs.",
+            {'s', "seed"});
+
     try
     {
         parser.ParseCLI(argc, argv);
@@ -191,9 +199,20 @@ int main(int argc, char** argv) {
             if(!graph_gen) {
                 throw args::ValidationError("Graph generator required.");
             }
+
             int max_degree_int = std::numeric_limits<int>::max();
             if (max_degree) {
                 max_degree_int = args::get(max_degree);
+            }
+
+            size_t tries_int = 1;
+            if (tries) {
+                tries_int = args::get(tries);
+            }
+
+            size_t seed_int = 1;
+            if (seed) {
+                seed_int = args::get(seed);
             }
 
             graphgen::IGraphGen<>* generator = nullptr;
@@ -219,7 +238,9 @@ int main(int argc, char** argv) {
                     args::get(kparts),
                     args::get(imbalance),
                     args::get(part_methods),
-                    args::get(output)
+                    args::get(output),
+                    seed_int,
+                    tries_int
                     );
 
             delete generator;
