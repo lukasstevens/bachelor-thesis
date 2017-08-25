@@ -3,7 +3,6 @@ from itertools import chain
 import os
 import shutil
 import subprocess
-from craftr.foreignbuild import make
 
 session.path.append(local('deps'))
 cxx = load('craftr.lang.cxx')
