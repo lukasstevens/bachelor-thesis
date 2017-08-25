@@ -9,6 +9,6 @@
 [submodule "code/cpp/deps/hierarchical-decomposition"]
 	path = code/cpp/deps/hierarchical-decomposition
 	url = https://github.com/lukasstevens/hierarchical-decomposition
-[submodule "code/cpp/args"]
+[submodule "code/cpp/deps/args"]
 	path = code/cpp/deps/args
 	url = https://github.com/Taywee/args.git
