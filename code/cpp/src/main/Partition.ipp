@@ -1,4 +1,5 @@
 #include<queue>
+#include<stdexcept>
 
 #include "GMPUtils.hpp"
 #include "Pack.hpp"
@@ -10,9 +11,7 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
         calculate_best_packing(cut::SignaturesForTree<Id, NodeWeight, EdgeWeight> const& signatures) {
 
         using Signature = cut::Signature<Id>;
-        using SizeType = Id;
 
-        auto const& root_sigs = signatures.signatures[0][0].at(signatures.tree.subtree_weight[0][0]);
         using SignatureWithCost = std::pair<EdgeWeight, Signature>;
         auto compare = [](SignatureWithCost left, SignatureWithCost right){
             return left.first > right.first;
@@ -20,6 +19,7 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
 
         std::priority_queue<SignatureWithCost, std::vector<SignatureWithCost>, decltype(compare)> prio_q(compare);
 
+        auto const& root_sigs = signatures.signatures[0][0].back();
         for (auto const& sig : root_sigs) {
             prio_q.emplace(sig.second, sig.first);
         }
@@ -30,7 +30,7 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
             std::tie(curr_cut_cost, curr_sig) = prio_q.top();
             prio_q.pop();
 
-            std::map<SizeType, SizeType> curr_sig_as_map;
+            std::map<NodeWeight, NodeWeight> curr_sig_as_map;
             // Starting at 1 to skip components with size smaller than eps * ceil(n/k).
             for (size_t comp_idx = 1; comp_idx < curr_sig.size(); ++comp_idx) {
                 if (curr_sig[comp_idx] > 0) {
@@ -40,9 +40,10 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
 
             // We substract one from the upper bound since the bounds are exclusive,
             // but the bin capacities are inclusive.
-            pack::Packing<SizeType> curr_packing(
+            pack::Packing<NodeWeight> curr_packing(
                     signatures.lower_comp_weight_bounds.back(),
-                    signatures.upper_comp_weight_bounds.back() - 1);
+                    signatures.upper_comp_weight_bounds.back() - 1
+                    );
             curr_packing.pack_perfect(curr_sig_as_map);
 
             if (curr_packing.bin_cnt() > static_cast<size_t>(signatures.part_cnt)) {
@@ -51,19 +52,24 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
                 auto cut_edges_for_curr_sig = signatures.cut_edges_for_signature(curr_sig);
                 auto comps_for_curr_sig = signatures.components_for_cut_edges(cut_edges_for_curr_sig);
 
-                std::map<SizeType, std::vector<SizeType>> expansion_map;
-                std::map<SizeType, SizeType> small_components;
+                std::map<NodeWeight, std::vector<NodeWeight>> expansion_map;
+                std::map<NodeWeight, NodeWeight> small_components;
                 for (auto const& comp : comps_for_curr_sig) {
                     size_t bound_idx = 0;
-                    while (comp.size() >= static_cast<size_t>(signatures.upper_comp_weight_bounds[bound_idx])) {
+                    NodeWeight comp_weight = 0;
+                    for (auto const& node : comp) {
+                        comp_weight += node.second;
+                    }
+
+                    while (comp_weight >= signatures.upper_comp_weight_bounds[bound_idx]) {
                         ++bound_idx;
                     }
 
                     if (bound_idx == 0) {
-                        small_components[static_cast<SizeType>(comp.size())] += 1;
+                        small_components[comp_weight] += 1;
                     } else {
                         expansion_map[signatures.lower_comp_weight_bounds[bound_idx]]
-                            .push_back(static_cast<SizeType>(comp.size()));
+                            .push_back(comp_weight);
                     }
                 }
                 curr_packing.expand_packing(expansion_map);
@@ -72,7 +78,7 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
                 if (curr_packing.bin_cnt() > static_cast<size_t>(signatures.part_cnt)) {
                     continue;
                 } else {
-                    std::vector<std::vector<SizeType>> bins = curr_packing.get_bins();
+                    std::vector<std::vector<NodeWeight>> bins = curr_packing.get_bins();
                     std::vector<std::set<Id>> partitioning(bins.size());
                     std::vector<bool> used_comp(comps_for_curr_sig.size());
                     for (size_t bin_idx = 0; bin_idx < bins.size(); ++bin_idx) {
@@ -82,7 +88,9 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
                                 if (static_cast<size_t>(comp_weight) == curr_comp.size() &&
                                         !used_comp[comp_idx]) {
                                     used_comp[comp_idx] = true;
-                                    partitioning[bin_idx].insert(curr_comp.begin(), curr_comp.end());
+                                    for (auto const& node : curr_comp) {
+                                        partitioning[bin_idx].insert(node.first);
+                                    }
                                     break;
                                 }
                             }
@@ -93,6 +101,6 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
             }
         }
 
-        return std::make_tuple(std::vector<std::set<Id>>(), Signature(), std::numeric_limits<SizeType>::max());
+        throw std::runtime_error("No signature can be packed.");
     }
 }
