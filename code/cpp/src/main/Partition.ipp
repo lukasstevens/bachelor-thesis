@@ -54,13 +54,18 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
 
                 std::map<NodeWeight, std::vector<NodeWeight>> expansion_map;
                 std::map<NodeWeight, NodeWeight> small_components;
+                std::vector<NodeWeight> comp_weights;
                 for (auto const& comp : comps_for_curr_sig) {
-                    size_t bound_idx = 0;
                     NodeWeight comp_weight = 0;
                     for (auto const& node : comp) {
                         comp_weight += node.second;
                     }
+                    comp_weights.push_back(comp_weight);
+                }
 
+                for (size_t comp_idx = 0; comp_idx < comps_for_curr_sig.size(); ++comp_idx) {
+                    NodeWeight const comp_weight = comp_weights[comp_idx];
+                    size_t bound_idx = 0;
                     while (comp_weight >= signatures.upper_comp_weight_bounds[bound_idx]) {
                         ++bound_idx;
                     }
@@ -85,7 +90,7 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
                         for (auto const comp_weight : bins[bin_idx]) {
                             for (size_t comp_idx = 0; comp_idx < comps_for_curr_sig.size(); ++comp_idx) {
                                 auto const& curr_comp = comps_for_curr_sig[comp_idx];
-                                if (static_cast<size_t>(comp_weight) == curr_comp.size() &&
+                                if (comp_weight == comp_weights[comp_idx] &&
                                         !used_comp[comp_idx]) {
                                     used_comp[comp_idx] = true;
                                     for (auto const& node : curr_comp) {
