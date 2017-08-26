@@ -79,7 +79,8 @@ namespace testutils {
                     partitioning[part_idx].insert(node_id);
                 }
             }
-
+            
+            partitioning_stream.close();
             return std::make_tuple(
                     partitioning, 
                     cut::Signature<IdType>(&best_signature.front(), best_signature.size()),
