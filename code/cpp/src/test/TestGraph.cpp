@@ -188,6 +188,30 @@ TEST(Graph, ImpossibleNodeWeights) {
     );
 }
 
+TEST(Graph, WithNodeWeights) {
+    graph::Graph<> graph;
+    std::istringstream graph_stream("3 2 010\n2 1\n2 0 2\n2 1\n");
+    graph_stream >> graph;
+    auto part = graph.partition(2, graph::Rational(1, 3));
+    ASSERT_EQ(part.first, 1);
+    std::vector<int> part_sizes(2);
+    for (auto const& part_idx : part.second) {
+        part_sizes.at(static_cast<size_t>(part_idx)) += 1;
+    }
+    for (auto const& part_size : part_sizes) {
+        ASSERT_LE(part_size, 2);
+        ASSERT_GE(part_size, 1);
+    }
+}
+
+TEST(Graph, WithNodeWeightsTwo) {
+    graph::Graph<> graph;
+    std::istringstream graph_stream("3 2 010\n3 1\n1 0 2\n2 1\n");
+    graph_stream >> graph;
+    auto part = graph.partition(2, graph::Rational(1, 4));
+    std::cerr << graphio::PrintGraphviz<>(graph, part.second);
+}
+
 TEST(GenGraph, TreeFat) {
     graphgen::IGraphGen<>* graph_gen =
         new graphgen::TreeFat<>(100, std::make_pair(2, 6));
