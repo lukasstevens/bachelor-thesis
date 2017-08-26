@@ -84,7 +84,7 @@ TEST(ComponentSizeBounds, One) {
             });
 
     std::vector<SizeType> should_lower_comp_weight_bounds({
-            1, 9 , 13, 20 
+            0, 9 , 13, 20 
             });
 
     test_comp_weight_bounds(cut::Rational(1, 2), 100, 6, 4, 
@@ -100,7 +100,7 @@ TEST(ComponentSizeBounds, Two) {
             });
 
     std::vector<SizeType> should_lower_comp_weight_bounds({
-            1, 5, 7, 9, 12, 16 
+            0, 5, 7, 9, 12, 16 
             });
 
     test_comp_weight_bounds(cut::Rational(1, 3), 100, 7, 6, 
@@ -115,7 +115,7 @@ TEST(ComponentSizeBounds, Three) {
             });
 
     std::vector<SizeType> should_lower_comp_weight_bounds({
-            1, 6, 8, 11, 16
+            0, 6, 8, 11, 16
             });
 
     test_comp_weight_bounds(cut::Rational(2, 5), 80, 6, 5, 
@@ -130,7 +130,7 @@ TEST(ComponentSizeBounds, Four) {
             });
 
     std::vector<SizeType> should_lower_comp_weight_bounds({
-            1, 6, 8, 12, 17
+            0, 6, 8, 12, 17
             });
 
     test_comp_weight_bounds(cut::Rational(3, 7), 121, 10, 5, 
@@ -145,7 +145,7 @@ TEST(ComponentSizeBounds, Five) {
             });
 
     std::vector<SizeType> should_lower_comp_weight_bounds({
-            1, 3, 4, 5, 6, 8, 11
+            0, 3, 4, 5, 6, 8, 11
             });
 
     test_comp_weight_bounds(cut::Rational(3, 10), 81, 9, 7, 
