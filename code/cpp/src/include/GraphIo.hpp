@@ -96,7 +96,7 @@ std::ostream& operator<<(std::ostream& os, graph::Graph<Id, NodeWeight, EdgeWeig
     return os;
 }
 
-namespace graph {
+namespace graphio {
     template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
         struct PrintGraphviz {
             graph::Graph<Id, NodeWeight, EdgeWeight> const& graph;
@@ -111,7 +111,7 @@ namespace graph {
 
 template<typename Id, typename NodeWeight, typename EdgeWeight>
 std::ostream& operator<<(std::ostream& os,
-        graph::PrintGraphviz<Id, NodeWeight, EdgeWeight> const& print) {
+        graphio::PrintGraphviz<Id, NodeWeight, EdgeWeight> const& print) {
     os << "graph G {\n";
     for (Id node = 0; node < print.graph.node_cnt(); ++node) {
         Id node_label = (print.is_zero_indexed) ? node : node + 1;
@@ -139,7 +139,7 @@ std::ostream& operator<<(std::ostream& os,
     return os;
 }
 
-namespace graph {
+namespace graphio {
     template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
         struct ReadTreeFormat {
             graph::Graph<Id, NodeWeight, EdgeWeight>& graph;
@@ -152,7 +152,7 @@ namespace graph {
 }
 
 template<typename Id, typename NodeWeight, typename EdgeWeight>
-std::istream& operator>>(std::istream& is, graph::ReadTreeFormat<Id, NodeWeight, EdgeWeight>& read) {
+std::istream& operator>>(std::istream& is, graphio::ReadTreeFormat<Id, NodeWeight, EdgeWeight>& read) {
     Id node_cnt;
     // root_id will be ignored in the graph format.
     Id root_id;

@@ -108,12 +108,12 @@ void run_gen_group(
         for (auto output_method : output) {
             switch (output_method) {
                 case GRAPH:
-                    std::cout << graph::PrintGraphviz<>(graph);
+                    std::cout << graphio::PrintGraphviz<>(graph);
                     std::cout << std::endl;
                     break;
                 case GRAPH_PARTITION:
                     for (auto const& result : results) {
-                        std::cout << graph::PrintGraphviz<>(graph, result.part_result.second);
+                        std::cout << graphio::PrintGraphviz<>(graph, result.part_result.second);
                         std::cout << std::endl;
                     }
                     std::cout << std::endl;
