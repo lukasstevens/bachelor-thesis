@@ -18,8 +18,8 @@
 
 namespace graph {
 
-    template<typename Id, typename EdgeWeight>
-        using PartitionResult = std::pair<Id, std::vector<EdgeWeight>>;
+    template<typename Id=int, typename EdgeWeight=int>
+        using PartitionResult = std::pair<EdgeWeight, std::vector<Id>>;
 
     using Rational = cut::Rational;
 
@@ -112,6 +112,7 @@ namespace graph {
             public :
                 using NodeSet = std::set<Id>;
                 using Matching = std::vector<std::pair<Id, Id>>;
+                using PartitionResult = PartitionResult<Id, EdgeWeight>;
 
             private:
 
@@ -249,26 +250,44 @@ namespace graph {
                         return CsrGraph<Idx>(metis_xadj, metis_adjncy, metis_vwgt, metis_adjwgt);
                     }
 
+                PartitionResult convert_part_to_node_repr(PartitionResult const& part_result) const {
+                    size_t node_repr_count = 0;
+                    for (Id node = 0; node < this->node_cnt(); ++node) {
+                        node_repr_count += this->node_repr(node).size(); 
+                    }
+
+                    std::vector<Id> part_repr(node_repr_count);
+                    for (Id node = 0; node < this->node_cnt(); ++node) {
+                        for (auto const& node_rep : this->node_repr(node)) {
+                            part_repr.at(node_rep) = part_result.second.at(node);
+                        }
+                    }
+                    return std::make_pair(part_result.first, part_repr);
+                }
+
                 MetisCsrGraph to_metis_graph() const {
                     return static_cast<MetisCsrGraph>(this->to_foreign_graph<idx_t>());
                 }
 
-                PartitionResult<idx_t, idx_t> partition_metis_recursive(idx_t kparts, Rational imbalance) const {
-                    return this->to_metis_graph().part_graph_recursive(
+                PartitionResult partition_metis_recursive(idx_t kparts, Rational imbalance) const {
+                    auto const part_res = this->to_metis_graph().part_graph_recursive(
                             kparts, static_cast<real_t>(1 + imbalance.get_d()));
+                    return this->convert_part_to_node_repr(part_res);
                 } 
 
-                PartitionResult<idx_t, idx_t> partition_metis_kway(idx_t kparts, Rational imbalance) const {
-                    return this->to_metis_graph().part_graph_kway(
+                PartitionResult partition_metis_kway(idx_t kparts, Rational imbalance) const {
+                    auto const part_res = this->to_metis_graph().part_graph_kway(
                             kparts, static_cast<real_t>(1 + imbalance.get_d()));
+                    return this->convert_part_to_node_repr(part_res);
                 } 
 
                 KahipCsrGraph to_kahip_graph() const {
                     return static_cast<KahipCsrGraph>(this->to_foreign_graph<int>());
                 }
 
-                PartitionResult<int, int> partition_kaffpa(int kparts, Rational imbalance, long seed=0) const {
-                    return this->to_kahip_graph().kaffpa(kparts, imbalance.get_d(), seed);
+                PartitionResult partition_kaffpa(int kparts, Rational imbalance, long seed=0) const {
+                    auto const part_res = this->to_kahip_graph().kaffpa(kparts, imbalance.get_d(), seed);
+                    return this->convert_part_to_node_repr(part_res);
                 } 
 
                 cut::Tree<Id, NodeWeight, EdgeWeight> to_tree(Id root=0) const {
@@ -302,7 +321,7 @@ namespace graph {
                 }
                 
 
-                PartitionResult<Id, EdgeWeight> partition(Id kparts, Rational imbalance, Id root=0) const {
+                PartitionResult partition(Id kparts, Rational imbalance, Id root=0) const {
                     cut::Tree<Id, NodeWeight, EdgeWeight> tree = this->to_tree(root);
                     auto signatures = tree.cut(imbalance, kparts);
 
@@ -316,7 +335,8 @@ namespace graph {
                             partitioning_formatted.at(node) = part_idx;
                         }
                     }
-                    return std::make_pair(cut_cost, partitioning_formatted);
+                    return this->convert_part_to_node_repr(
+                            std::make_pair(cut_cost, partitioning_formatted));
                 }
 
                 Graph<Id, NodeWeight, EdgeWeight> contract_edges(Matching const& matching) {
