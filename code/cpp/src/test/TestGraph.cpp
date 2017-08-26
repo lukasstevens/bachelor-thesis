@@ -178,10 +178,19 @@ TEST(Graph, KaHIP) {
     delete graph_gen_pref;
 }
 
+TEST(Graph, ImpossibleNodeWeights) {
+    graph::Graph<> graph;
+    std::istringstream graph_stream("3 2 010\n2 1\n2 0 2\n2 1\n");
+    graph_stream >> graph;
+    ASSERT_THROW(
+        auto part = graph.partition(2, graph::Rational(1,4)),
+        part::PartitionException
+    );
+}
+
 TEST(GenGraph, TreeFat) {
     graphgen::IGraphGen<>* graph_gen =
         new graphgen::TreeFat<>(100, std::make_pair(2, 6));
     graph::Graph<> graph = (*graph_gen)(0);
-    std::cerr << graph::PrintGraphviz<>(graph);
     delete graph_gen;
 }

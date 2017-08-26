@@ -101,6 +101,6 @@ template<typename Id, typename NodeWeight, typename EdgeWeight>
             }
         }
 
-        throw std::runtime_error("No signature can be packed.");
+        throw PartitionException();
     }
 }

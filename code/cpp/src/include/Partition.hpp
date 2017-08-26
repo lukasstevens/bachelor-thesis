@@ -1,6 +1,8 @@
 /** @file Partition.hpp */
 #pragma once
 
+#include<stdexcept>
+
 #include "Cut.hpp"
 
 /**
@@ -15,6 +17,16 @@ namespace part {
      */
     template<typename Id>
         using Partitioning = std::vector<std::set<Id>>;  
+
+    /**
+     * This exception gets thrown if it is not possible to partition the tree at all
+     * with the given parameters
+     */
+    struct PartitionException : public std::exception {
+        char const* what() const noexcept override{
+            return "No signature can be packed.";
+        }
+    };
 
     /**
      * Calculates the best feasible packing for the signatures given by \p signatures.
