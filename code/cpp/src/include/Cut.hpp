@@ -336,9 +336,11 @@ namespace cut {
                 /**
                  * Calculates the connected components which result in cutting the edges described by \p cut_edges.
                  * @param cut_edges The edges to cut.
-                 * @returns A vector of sets. Each set identifies one connected component in the Tree by the node ids in that set.
+                 * @returns A vector of sets. Each set identifies one connected component in the Tree by mapping the
+                 *  node ids to the weight of the node.
                  */
-                std::vector<std::set<Id>> components_for_cut_edges(CutEdges const& cut_edges) const;
+                std::vector<std::map<Id, NodeWeight>>
+                    components_for_cut_edges(CutEdges const& cut_edges) const;
 
         };
 

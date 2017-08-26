@@ -218,7 +218,7 @@ namespace cut {
             Tree::SignatureMap& child_sigs = signatures.at(1).back();
 
             for (NodeWeight root_comp_weight_cnt = comp_weight_bounds.back() - 1; 
-                    root_comp_weight_cnt > 0; --root_comp_weight_cnt) {
+                    root_comp_weight_cnt >= this->levels[0][0].weight; --root_comp_weight_cnt) {
                 for (auto const& sig : child_sigs[static_cast<size_t>(tree_weight - root_comp_weight_cnt)]) {
                     Tree::Signature root_sig(sig.first);
                     size_t i = 0;
@@ -400,7 +400,7 @@ namespace cut {
             std::vector<NodeWeight> comp_weights;
             Rational n_div_k = Rational(gmputils::ceil_to_int<NodeWeight>(Rational(tree_weight, part_cnt)));
             Rational curr_upper_bound = eps * n_div_k;
-            Rational upper_bound = (Rational(1) + eps) * n_div_k;
+            Rational upper_bound(gmputils::floor_to_int<NodeWeight>((Rational(1) + eps) * n_div_k));
             while (curr_upper_bound < upper_bound) {
                 comp_weights.push_back(gmputils::ceil_to_int<NodeWeight>(curr_upper_bound));
                 curr_upper_bound *= (Rational(1) + eps);
@@ -414,7 +414,7 @@ namespace cut {
 
             std::vector<NodeWeight> const upper_comp_weight_bounds = 
                 calculate_upper_component_weight_bounds(eps, tree_weight, part_cnt);
-            std::vector<NodeWeight> lower_comp_weight_bounds({1});
+            std::vector<NodeWeight> lower_comp_weight_bounds({0});
             lower_comp_weight_bounds.insert(
                     lower_comp_weight_bounds.end(), 
                     upper_comp_weight_bounds.begin(), 
@@ -487,10 +487,11 @@ namespace cut {
         }
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
-        std::vector<std::set<Id>> SignaturesForTree<Id, NodeWeight, EdgeWeight>::components_for_cut_edges(
+        std::vector<std::map<Id, NodeWeight>>
+        SignaturesForTree<Id, NodeWeight, EdgeWeight>::components_for_cut_edges(
             SignaturesForTree::CutEdges const& cut_edges) const {
 
-            std::vector<std::set<Id>> components;
+            std::vector<std::map<Id, NodeWeight>> components;
 
             struct NodeInfo {
                 std::pair<size_t, size_t> node_idx;
@@ -506,12 +507,12 @@ namespace cut {
             queue.emplace_back(std::make_pair(0, 0), 0);
 
             while (!queue.empty()) {
-                auto curr_info = queue.front();
+                NodeInfo curr_info = queue.front();
                 Node<Id, NodeWeight, EdgeWeight> const& curr_node = 
                     this->tree.levels[curr_info.node_idx.first][curr_info.node_idx.second];
                 queue.pop_front();
 
-                components[curr_info.component_idx].insert(curr_node.id);
+                components[curr_info.component_idx][curr_node.id] = curr_node.weight;
                 for (size_t child_idx = curr_node.children_idx_range.first; 
                         child_idx < curr_node.children_idx_range.second; ++child_idx) {
                     Node<Id, NodeWeight, EdgeWeight> const& child = this->tree.levels[curr_info.node_idx.first + 1][child_idx];
