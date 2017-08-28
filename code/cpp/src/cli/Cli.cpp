@@ -60,10 +60,14 @@ void run_gen_group(
         graph::Rational imbalance, 
         std::vector<PartMethods> part_methods,
         std::vector<Output> output,
-        size_t seed=0,
-        size_t tries=1
+        size_t seed,
+        size_t tries
         ) {
 
+    if (part_methods.size() > 0 && kparts == 0) {
+        throw args::ValidationError(
+                "kparts is required if a partition method is applied.");
+    }
 
     for (size_t trie_idx = 0; trie_idx < tries; ++trie_idx) {
         graph::Graph<> graph = (*generator)(seed + trie_idx);
@@ -219,7 +223,7 @@ int main(int argc, char** argv) {
             args::Group::Validators::Xor);
     args::ValueFlag<int> max_degree(
             degree_group, "max degree", "The maximum degree of a node when using a graph generator.",
-            {'d', "max_degree"});
+            {'d', "max_degree"}, std::numeric_limits<int>::max());
     args::Group child_count_group(
             degree_group,
             "Lower and upper exclusive child count must be specified.",
@@ -234,45 +238,29 @@ int main(int argc, char** argv) {
 
     args::ValueFlag<int> kparts(
             parser, "kparts", "The number of parts to partition into.",
-            {'k', "kparts"});
+            {'k', "kparts"}, 0);
     args::ValueFlag<graph::Rational> imbalance(
             parser, "imbalance", "The allowed imbalance of a partition: "
             "each part has at most (1+imbalance)*ceil(node_count/kparts) nodes.",
-            {'i', "imbalance"});
+            {'i', "imbalance"},
+            graph::Rational(1,2)
+            );
 
     args::ValueFlag<size_t> tries(
             gen_group, "tries", "Number of different graphs to generate.",
-            {'t', "tries"});
+            {'t', "tries"}, 1);
 
     args::ValueFlag<size_t> seed(
             gen_group, "seed", "The initial seed to use for generating graphs.",
-            {'s', "seed"});
+            {'s', "seed"}, 0);
 
     try
     {
         parser.ParseCLI(argc, argv);
-        if (!kparts || !imbalance) {
-            throw args::ValidationError("kparts and imbalance is required");
-        }
 
         if (gen_group) {
             if(!graph_gen) {
                 throw args::ValidationError("Graph generator required");
-            }
-
-            int max_degree_int = std::numeric_limits<int>::max();
-            if (max_degree) {
-                max_degree_int = args::get(max_degree);
-            }
-
-            size_t tries_int = 1;
-            if (tries) {
-                tries_int = args::get(tries);
-            }
-
-            size_t seed_int = 1;
-            if (seed) {
-                seed_int = args::get(seed);
             }
 
             graphgen::IGraphGen<>* generator = nullptr;
@@ -281,14 +269,14 @@ int main(int argc, char** argv) {
                     generator =
                         new graphgen::TreeRandAttach<>(
                                 args::get(node_count),
-                                max_degree_int
+                                args::get(max_degree)
                                 );
                     break;
                 case TREE_PREF_ATTACH:
                     generator =
                         new graphgen::TreePrefAttach<>(
                                 args::get(node_count),
-                                max_degree_int
+                                args::get(max_degree)
                                 );
                     break;
                 case TREE_FAT:
@@ -309,8 +297,8 @@ int main(int argc, char** argv) {
                     args::get(imbalance),
                     args::get(part_methods),
                     args::get(output),
-                    seed_int,
-                    tries_int
+                    args::get(seed),
+                    args::get(tries)
                     );
 
             delete generator;
