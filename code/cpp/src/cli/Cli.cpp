@@ -198,12 +198,16 @@ int main(int argc, char** argv) {
     enum GraphGen {
         TREE_RAND_ATTACH,
         TREE_PREF_ATTACH,
-        TREE_FAT
+        TREE_FAT,
+        GRAPH_PREF_ATTACH,
+        GRAPH_EDGE_PROB
     };
     std::unordered_map<std::string, GraphGen> graph_gen_map({
             {"tree_rand_attach", GraphGen::TREE_RAND_ATTACH},
             {"tree_pref_attach", GraphGen::TREE_PREF_ATTACH},
-            {"tree_fat", GraphGen::TREE_FAT}
+            {"tree_fat", GraphGen::TREE_FAT},
+            {"graph_pref_attach", GraphGen::GRAPH_PREF_ATTACH},
+            {"graph_edge_prob", GraphGen::GRAPH_EDGE_PROB}
             });
     std::string graph_gen_options("OPTIONS:");
     for (auto const& option : graph_gen_map) {
@@ -216,6 +220,16 @@ int main(int argc, char** argv) {
     args::ValueFlag<int> node_count(
             gen_group, "node count", "The number of nodes when using a graph generator.",
             {'n', "nodes"});
+
+    args::ValueFlag<int> edge_count(
+            gen_group, "edge count",
+            "The number of edges when using the graph_pref_attach generator.",
+            {'e', "edges"});
+
+    args::ValueFlag<double> edge_prob(
+            gen_group, "edge probability",
+            "The probability that an edge exists when using the graph_egde_prob generator.",
+            {"edge_prob"});
     
     args::Group degree_group(
             gen_group,
@@ -235,6 +249,7 @@ int main(int argc, char** argv) {
     args::ValueFlag<int> max_child_cnt(
             child_count_group, "max child count", "The maximum number of childs in a fat tree.",
             {"max_child"});
+
 
     args::ValueFlag<int> kparts(
             parser, "kparts", "The number of parts to partition into.",
@@ -287,6 +302,22 @@ int main(int argc, char** argv) {
                                     args::get(min_child_cnt),
                                     args::get(max_child_cnt)
                                     )
+                                );
+                    break;
+                case GRAPH_EDGE_PROB:
+                    generator =
+                        new graphgen::GraphEdgeProb<>(
+                                args::get(node_count),
+                                args::get(edge_prob),
+                                args::get(max_degree)
+                                );
+                    break;
+                case GRAPH_PREF_ATTACH:
+                    generator =
+                        new graphgen::GraphPrefAttach<>(
+                                args::get(node_count),
+                                args::get(edge_count),
+                                args::get(max_degree)
                                 );
                     break;
             }

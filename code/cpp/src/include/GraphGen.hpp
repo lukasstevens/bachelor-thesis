@@ -24,9 +24,9 @@ namespace graphgen {
             struct TreeRandAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
+                    Id max_degree;
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
-                    Id max_degree;
 
                 TreeRandAttach(
                         Id node_cnt,
@@ -34,8 +34,8 @@ namespace graphgen {
                         std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
                         std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
                         ) :
-                    node_cnt(node_cnt), node_weight_range(node_weight_range),
-                    edge_weight_range(edge_weight_range), max_degree(max_degree) {}
+                    node_cnt(node_cnt), max_degree(max_degree),
+                    node_weight_range(node_weight_range), edge_weight_range(edge_weight_range) {}
 
                 graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
                     RandGen rand_gen(seed);
@@ -67,9 +67,9 @@ namespace graphgen {
             struct TreePrefAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
+                    Id max_degree;
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
-                    Id max_degree;
 
                 TreePrefAttach(
                         Id node_cnt,
@@ -77,8 +77,8 @@ namespace graphgen {
                         std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
                         std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
                         ) :
-                    node_cnt(node_cnt), node_weight_range(node_weight_range),
-                    edge_weight_range(edge_weight_range), max_degree(max_degree) {}
+                    node_cnt(node_cnt), max_degree(max_degree),
+                    node_weight_range(node_weight_range), edge_weight_range(edge_weight_range) {}
                 
                 graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
                     RandGen rand_gen(seed);
@@ -159,8 +159,7 @@ namespace graphgen {
                                     graph.edge_weight(node, parent,
                                             gen_rand_in_range<EdgeWeight>(rand_gen, this->edge_weight_range));
                                     this_level.push_back(node);
-                                    ++node;
-                                    if (node >= this->node_cnt) {
+                                    if (++node >= this->node_cnt) {
                                         return graph;
                                     }
                                 }
@@ -170,5 +169,135 @@ namespace graphgen {
                         }
                         return graph;
                     }
+            };
+
+    template<typename Id=int, typename NodeWeight=int,
+        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+            struct GraphPrefAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+                public:
+                    Id node_cnt;
+                    Id edge_cnt;
+                    Id max_degree;
+                    std::pair<NodeWeight, NodeWeight> node_weight_range;
+                    std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
+
+                GraphPrefAttach(
+                        Id node_cnt,
+                        Id edge_cnt,
+                        Id max_degree = std::numeric_limits<Id>::max(),
+                        std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
+                        std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
+                        ) :
+                    node_cnt(node_cnt),
+                    edge_cnt(edge_cnt),
+                    max_degree(max_degree),
+                    node_weight_range(node_weight_range),
+                    edge_weight_range(edge_weight_range) {}
+
+                graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                    RandGen rand_gen(seed);
+
+                    graph::Graph<Id, NodeWeight, EdgeWeight> graph(this->node_cnt);
+                    for (Id node = 0; node < graph.node_cnt(); ++node) {
+                        graph.node_weight(node, 
+                            gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
+                    }
+
+                    // We choose 1 as degree since the weights for the
+                    // discrete probability distribution must not sum up to 0.
+                    std::vector<Id> degree(graph.node_cnt(), 1);
+
+                    for (Id edge_idx = 0; edge_idx < this->edge_cnt;) {
+                        std::discrete_distribution<Id> from_dist(degree.cbegin(),
+                                degree.cend());
+                        Id from_node = from_dist(rand_gen);  
+
+                        Id from_node_degree = degree.at(from_node);
+                        // Set the weight of from_node to 0 to avoid loops.
+                        degree.at(from_node) = 0;
+                        std::discrete_distribution<Id> to_dist(degree.cbegin(),
+                                degree.cend());
+                        Id to_node = to_dist(rand_gen);
+                        degree.at(from_node) = from_node_degree;
+
+                        bool const node_degs_l_max = degree.at(from_node) < this->max_degree &&
+                            degree.at(to_node) < this->max_degree;
+                        bool const node_degs_leq_max = degree.at(from_node) <= this->max_degree &&
+                            degree.at(to_node) <= this->max_degree;
+                        bool const exists_edge = graph.exists_edge(from_node, to_node);
+                        if (node_degs_l_max ||
+                                (node_degs_leq_max && exists_edge)) {
+                            EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
+                                    rand_gen, this->edge_weight_range);
+                            graph.add_edge_weight(from_node, to_node, edge_weight);
+                            if (!exists_edge) {
+                                degree.at(from_node) += 1;
+                                degree.at(to_node) += 1;
+                            }
+                            ++edge_idx;
+                        }
+                    }
+
+                    for (Id node = 0; node < graph.node_cnt(); ++node) {
+                        // Make the graph connected by adding edges with weight 0.
+                        // This has no influence on the cut costs in the graph.
+                        graph.add_edge_weight(node, (node + 1) % graph.node_cnt(), 0);
+                    }
+
+                    return graph;
+                }
+            };
+    
+    template<typename Id=int, typename NodeWeight=int,
+        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+            struct GraphEdgeProb : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+                public:
+                    Id node_cnt;
+                    double edge_prob;
+                    Id max_degree;
+                    std::pair<NodeWeight, NodeWeight> node_weight_range;
+                    std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
+
+                GraphEdgeProb(
+                        Id node_cnt,
+                        double edge_prob,
+                        Id max_degree = std::numeric_limits<Id>::max(),
+                        std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
+                        std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
+                        ) :
+                    node_cnt(node_cnt),
+                    edge_prob(edge_prob),
+                    max_degree(max_degree),
+                    node_weight_range(node_weight_range),
+                    edge_weight_range(edge_weight_range) {}
+
+                graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                    RandGen rand_gen(seed);
+
+                    graph::Graph<Id, NodeWeight, EdgeWeight> graph(this->node_cnt);
+                    for (Id node = 0; node < graph.node_cnt(); ++node) {
+                        graph.node_weight(node, 
+                            gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
+                    }
+                    
+                    for (Id from_node = 0; from_node < graph.node_cnt(); ++from_node) {
+                        for (Id to_node = from_node + 1; to_node < graph.node_cnt(); ++to_node) {
+                            std::bernoulli_distribution edge_prob_dist(this->edge_prob);
+                            if (edge_prob_dist(rand_gen)) {
+                                EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
+                                        rand_gen, this->edge_weight_range);
+                                graph.edge_weight(from_node, to_node, edge_weight);
+                            }
+                        }
+                    }
+
+                    for (Id node = 0; node < graph.node_cnt(); ++node) {
+                        // Make the graph connected by adding edges with weight 0.
+                        // This has no influence on the cut costs in the graph.
+                        graph.add_edge_weight(node, (node + 1) % graph.node_cnt(), 0);
+                    }
+
+                    return graph;
+                }
             };
 }
