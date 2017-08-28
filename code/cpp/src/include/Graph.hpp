@@ -171,13 +171,14 @@ namespace graph {
                 }
 
                 bool exists_edge(Id from_node, Id to_node) const {
-                    return this->adjncy.at(from_node).find(to_node) 
-                        != this->adjncy.at(from_node).cend();
+                    return this->adjncy.at(from_node).find(to_node) !=
+                        this->adjncy.at(from_node).cend();
                 }
 
                 EdgeWeight edge_weight(Id from_node, Id to_node) const {
                     return this->adjncy.at(from_node).at(to_node);
                 }
+
 
                 void edge_weight(Id from_node, Id to_node, EdgeWeight weight) {
                     this->adjncy.at(from_node)[to_node] = weight;
@@ -187,6 +188,11 @@ namespace graph {
                 void add_edge_weight(Id from_node, Id to_node, EdgeWeight weight) {
                     this->adjncy.at(from_node)[to_node] += weight;
                     this->adjncy.at(to_node)[from_node] += weight;
+                }
+
+                void remove_edge(Id from_node, Id to_node) {
+                    this->adjncy.at(from_node).erase(to_node);
+                    this->adjncy.at(to_node).erase(from_node);
                 }
 
                 std::vector<Id> adj_nodes(Id node) const {
@@ -290,7 +296,7 @@ namespace graph {
                     return this->convert_part_to_node_repr(part_res);
                 } 
 
-                cut::Tree<Id, NodeWeight, EdgeWeight> to_tree(Id root=0) const {
+                bool is_tree() const {
                     std::list<std::pair<Id, Id>> queue;
                     queue.emplace_back(std::make_pair(0, 0));
                     std::vector<bool> visited(this->node_cnt());
@@ -300,7 +306,7 @@ namespace graph {
                         std::tie(curr_node, previous_node) = queue.front();
                         queue.pop_front();
                         if (visited.at(curr_node)) {
-                            throw std::logic_error("Graph is not a tree.");
+                            return false;
                         }
                         visited.at(curr_node) = true;
                         for (auto const& neighbor_node : this->adj_nodes(curr_node)) {
@@ -308,6 +314,13 @@ namespace graph {
                                 queue.emplace_back(std::make_pair(neighbor_node, curr_node));
                             }
                         }
+                    }
+                    return true;
+                }
+
+                cut::Tree<Id, NodeWeight, EdgeWeight> to_tree(Id root=0) const {
+                    if (!this->is_tree()) {
+                        throw std::logic_error("The graph is not a tree.");
                     }
 
                     std::map<Id, std::map<Id, EdgeWeight>> tree_map;
@@ -319,7 +332,7 @@ namespace graph {
                     }
                     return cut::Tree<Id, NodeWeight, EdgeWeight>::build_tree(tree_map, node_weight, root);
                 }
-                
+
 
                 PartitionResult partition(Id kparts, Rational imbalance, Id root=0) const {
                     cut::Tree<Id, NodeWeight, EdgeWeight> tree = this->to_tree(root);

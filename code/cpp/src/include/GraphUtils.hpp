@@ -1,5 +1,7 @@
 #include<algorithm>
 #include<queue>
+#include<random>
+#include<tuple>
 #include<vector>
 
 #include "Graph.hpp"
@@ -8,7 +10,7 @@ namespace graph {
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         typename Graph<Id, NodeWeight, EdgeWeight>::Matching heavy_edge_matching(
-                Graph<Id, NodeWeight, EdgeWeight> graph) {
+                Graph<Id, NodeWeight, EdgeWeight> const& graph) {
 
             using NodeWithDegree = std::pair<size_t, Id>;
             std::priority_queue<NodeWithDegree, 
@@ -57,5 +59,79 @@ namespace graph {
                 graph_cp.contract_edges(matching);
             }
             return graph_cp;
+        }
+
+    template<typename Id, typename NodeWeight, typename EdgeWeight>
+        Graph<Id, NodeWeight, EdgeWeight> mst(
+                Graph<Id, NodeWeight, EdgeWeight> const& graph) {
+            Graph<Id, NodeWeight, EdgeWeight> mst_graph(graph.node_cnt());
+
+            using Edge = std::tuple<EdgeWeight, Id, Id>;
+            std::priority_queue<Edge,
+                std::vector<Edge>, std::greater<Edge>> prio_q;
+            prio_q.emplace(0, 0, 0);
+
+            std::vector<bool> visited(graph.node_cnt());
+            Id visited_cnt = 0;
+            while(visited_cnt < graph.node_cnt()) {
+                EdgeWeight edge_weight;
+                Id from;
+                Id to;
+                std::tie(edge_weight, from, to) = prio_q.top();
+                prio_q.pop();
+                if (!visited.at(to)) {
+                    visited_cnt += 1;
+                    mst_graph.edge_weight(from, to, edge_weight);
+                    visited.at(to) = true;
+                }
+                for (auto const& neighbor :
+                        graph.inc_edges(to)) {
+                    if (!visited.at(neighbor)) {
+                        prio_q.emplace(neighbor.second, to, neighbor.first);
+                    }
+                }
+            }
+            mst_graph.remove_edge(0, 0);
+            return mst_graph;
+        }
+
+    template<typename Id, typename NodeWeight, typename EdgeWeight,
+        typename RandGen=std::mt19937_64>
+        Graph<Id, NodeWeight, EdgeWeight> rst(
+                Graph<Id, NodeWeight, EdgeWeight> const& graph,
+                size_t seed=0) {
+
+            RandGen rand_gen(seed);
+
+            Graph<Id, NodeWeight, EdgeWeight> rst_graph(graph.node_cnt());
+
+            using EdgeWithPrio = std::tuple<EdgeWeight, EdgeWeight, Id, Id>;
+            std::priority_queue<EdgeWithPrio, std::vector<EdgeWithPrio>,
+                std::greater<EdgeWithPrio>> prio_q;
+            prio_q.emplace(0, 0, 0, 0);
+
+            std::vector<bool> visited(graph.node_cnt());
+            Id visited_cnt = 0;
+            while(visited_cnt < graph.node_cnt()) {
+                EdgeWeight priority;
+                EdgeWeight edge_weight;
+                Id from;
+                Id to;
+                std::tie(priority, edge_weight, from, to) = prio_q.top();
+                prio_q.pop();
+                if (!visited.at(to)) {
+                    visited_cnt += 1;
+                    rst_graph.edge_weight(from, to, edge_weight);
+                    visited.at(to) = true;
+                }
+                for (auto const& neighbor :
+                        graph.inc_edges(to)) {
+                    if (!visited.at(neighbor)) {
+                        prio_q.emplace(rand_gen(), neighbor.second, to, neighbor.first);
+                    }
+                }
+            }
+            rst_graph.remove_edge(0, 0);
+            return rst_graph;
         }
 }
