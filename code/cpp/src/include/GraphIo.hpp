@@ -173,3 +173,36 @@ std::istream& operator>>(std::istream& is, graphio::ReadTreeFormat<Id, NodeWeigh
     }
     return is;
 }
+
+namespace graphio {
+    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+        struct PrintDecompFmt {
+            graph::Graph<Id, NodeWeight, EdgeWeight> const& graph;
+            bool const is_zero_indexed;
+
+            PrintDecompFmt(graph::Graph<Id, NodeWeight, EdgeWeight> const& graph, 
+                    bool is_zero_indexed=true)
+                : graph(graph), is_zero_indexed(is_zero_indexed) {}
+        };
+}
+
+template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+std::ostream& operator<<(std::ostream& os, graphio::PrintDecompFmt<Id, NodeWeight, EdgeWeight> const& print) {
+
+    os << "p " << print.graph.node_cnt() <<  " " << print.graph.edge_cnt() << "\n";
+    for (Id node = 0; node < print.graph.node_cnt(); ++node) {
+        for (auto const& edge : print.graph.inc_edges(node)) {
+            Id from_label = node;
+            Id to_label = edge.first;
+            if (!print.is_zero_indexed) {
+                from_label += 1;
+                to_label += 1;
+            }
+            if (edge.first >= node) {
+                os << "e " << from_label << " " << to_label;
+                os << " " << edge.second << "\n";
+            }
+        }
+    }
+    return os;
+}

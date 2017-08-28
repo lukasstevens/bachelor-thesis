@@ -10,11 +10,12 @@
 #include "GraphIo.hpp"
 
 enum Output {
-    GRAPH_PARTITION,
+    GRAPHVIZ_GRAPH_PARTITION,
     PARTITION,
     TIME,
     CUT_COST,
-    GRAPH
+    GRAPHVIZ_GRAPH,
+    DECOMP_GRAPH
 };
 
 enum PartMethods {
@@ -111,15 +112,19 @@ void run_gen_group(
 
         for (auto output_method : output) {
             switch (output_method) {
-                case GRAPH:
+                case GRAPHVIZ_GRAPH:
                     std::cout << graphio::PrintGraphviz<>(graph);
                     std::cout << std::endl;
                     break;
-                case GRAPH_PARTITION:
+                case GRAPHVIZ_GRAPH_PARTITION:
                     for (auto const& result : results) {
                         std::cout << graphio::PrintGraphviz<>(graph, result.part_result.second);
                         std::cout << std::endl;
                     }
+                    std::cout << std::endl;
+                    break;
+                case DECOMP_GRAPH:
+                    std::cout << graphio::PrintDecompFmt<>(graph, false);
                     std::cout << std::endl;
                     break;
                 case PARTITION:
@@ -176,11 +181,12 @@ int main(int argc, char** argv) {
             );
 
     std::unordered_map<std::string, Output> output_map({
-            {"graph_part", Output::GRAPH_PARTITION},
+            {"graphviz_graph_part", Output::GRAPHVIZ_GRAPH_PARTITION},
             {"part", Output::PARTITION},
             {"time", Output::TIME},
             {"cut_cost", Output::CUT_COST},
-            {"graph", Output::GRAPH}
+            {"graphviz_graph", Output::GRAPHVIZ_GRAPH},
+            {"decomp_graph", Output::DECOMP_GRAPH}
             });
     std::string output_options("OPTIONS:");
     for (auto const& option : output_map) {
@@ -230,7 +236,7 @@ int main(int argc, char** argv) {
             gen_group, "edge probability",
             "The probability that an edge exists when using the graph_egde_prob generator.",
             {"edge_prob"});
-    
+
     args::Group degree_group(
             gen_group,
             "Child count range for tree_fat, max_degree for everything else.",
