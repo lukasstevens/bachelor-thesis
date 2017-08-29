@@ -2,11 +2,38 @@
 % Add the above to each chapter to make compiling the PDF easier in some editors.
 
 \chapter{Ergebnisse}\label{chapter:ergebnisse}
-\section{Laufzeit}
-    Laufzeit in Abhängigkeit der Eingabeparameter $k$, $\varepsilon$, $n$, Maximalgrad, Art des Baumes.
-    Benutze Heavy Edge Matching aus METIS Paper um Graphgröße zu reduzieren?
-\section{Lösungsqualitat}
-\subsection{Bäume}
+Im Folgenden wird die \Cpp\hyp Implementierung experimentell evaluiert.
+Die zwei zentralen Kenngrößen des Algorithmus sind die Laufzeit und die Schnittkosten der ausgegebenen Partitionierung.
+Dabei werden die Schnittkosten, mit denen verglichen, die durch die Heuristiken METIS~\cite{KK98} und KaHIP~\cite{SS13} erreicht werden.
+Da der Algorithmus dieser Arbeit ausschließlich auf Bäumen arbeitet, wird zunächst das Verhalten dieser Kenngrößen in Abhängigkeit der Eingabeparameter auf Bäumen untersucht.
+Anschließend werden die Schnittkosten auf generellen Graphen untersucht.
+Dazu wird zu einem Graph ein entsprechender Baum generiert und der Algorithmus wird auf den Baum angewandt.
+Danach wird die Partitionierung des Baumes in eine Partitionierung des Graphen umgewandelt.
+
+\section{Bäume}
+Es werden vier verschiedene Heuristiken verwendet, um zufällige Bäume zu generieren.
+Die erste Heuristik wird im Weiteren als Random Attachment bezeichnet. 
+Ein Baum mit $n$ Knoten wird generiert, indem mit einem Knoten gestartet wird und iterativ Blätter an zufällige Knoten des Baums angehängt werden, bis die gewünschte Knotenanzahl $n$ erreicht ist.
+Eine weitere Heuristik, die eine abgewandelte Version des Random Attachments ist, wird als Preferrential Attachment bezeichnet.
+Dabei wird eine neues Blatt nicht zufällig mit einer uniformen Verteilung an einen Knoten des Baums angehängt, sondern die Wahrscheinlichkeit ist proportional zum Grad des Knotens.
+Bei den beiden oben genannten Heuristiken kann zusätzlich noch ein Maximalgrad für die Knoten des Baums festgelegt werden.
+Die dritte Heuristik sind sogenannte Fat Trees.
+Für diese Heuristik wird wiederum mit einem Knoten in Level $0$ gestartet.
+Für das Level $l \geq 1$ des Baums wird aus einer gegebenen Menge zufällig eine Zahl $k$ ausgewählt.
+Dann werden an alle Knoten des Levels $l - 1$ genau $k$ Kinder angehängt.
+Dies wird wiederholt, bis der Baum die gewünschte Anzahl an Knoten hat. 
+Dementsprechend kann es sein, dass das letzte Level nicht vollständig mit Knoten gefüllt ist.
+Fat Trees sind eine Verallgemeinerung von fast vollständigen $k$\hyp ären Bäumen.
+Wir erhalten einen fast vollständigen $k$\hyp ären Baum, indem wir die Menge der möglichen Kinderanzahlen des Fat Trees auf $\{k\}$ setzen.
+\todo[inline]{Eventuell Visualisierungen}
+\subsection{Laufzeit}
+\begin{figure}
+    \centering
+    \includestandalone{figures/tree_rand_attach_node_cnt}
+    \caption{Laufzeit in Abhängigkeit der Knotenanzahl für Random Attachement}
+\end{figure}
+
+\subsection{Lösungsqualitat}
 \subsection{Graphen}
 Unter Verwendung von Hierarchical Composition
 
