@@ -26,11 +26,92 @@ Dementsprechend kann es sein, dass das letzte Level nicht vollständig mit Knote
 Fat Trees sind eine Verallgemeinerung von fast vollständigen $k$\hyp ären Bäumen.
 Wir erhalten einen fast vollständigen $k$\hyp ären Baum, indem wir die Menge der möglichen Kinderanzahlen des Fat Trees auf $\{k\}$ setzen.
 \todo[inline]{Eventuell Visualisierungen}
+
 \subsection{Laufzeit}
+
 \begin{figure}
     \centering
-    \includestandalone{figures/tree_rand_attach_node_cnt}
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/node_count/rand_attach}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/node_count/pref_attach}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/node_count/fat}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/node_count/bnary}
+        }
+    }
     \caption{Laufzeit in Abhängigkeit der Knotenanzahl für Random Attachement}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/kparts/rand_attach}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/kparts/pref_attach}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/kparts/fat}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/kparts/bnary}
+        }
+    }
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/imbalance/rand_attach}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/imbalance/pref_attach}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/imbalance/fat}
+        }
+    }
+    \subfigure{
+        \centering
+        \resizebox{0.45\linewidth}{!}{
+            \includestandalone{figures/trees/runtime/imbalance/bnary}
+        }
+    }
 \end{figure}
 
 \subsection{Lösungsqualitat}

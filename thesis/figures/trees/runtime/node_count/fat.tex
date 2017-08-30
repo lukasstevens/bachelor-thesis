@@ -1,0 +1,48 @@
+\documentclass[tikz]{standalone}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\datadir}{data/trees/runtime/node_count/fat}
+    \newcommand{\firstdataset}[1]
+        {\addplot+ [boxplot, TUMBlue] table[y=#1] {\datadir/k2i1div3.dat};}
+    \newcommand{\seconddataset}[1]
+        {\addplot+ [boxplot, TUMAccentOrange] table[y=#1] {\datadir/k3i1div3.dat};}
+    \newcommand{\thirddataset}[1]
+        {\addplot+ [boxplot, TUMAccentGreen] table[y=#1] {\datadir/k2i1div4.dat};}
+    % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
+    \begin{axis}[
+	    boxplot/draw direction=y,
+	    ylabel={\small Laufzeit (ms)},
+	    xlabel={\small Knotenanzahl},
+	    boxplot={
+	        draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
+	        box extend=0.2,
+	    },
+        ymax=1200,
+        height=6cm,
+	    x=1.5cm,
+	    xtick={0,1,2,...,10},
+	    x tick label as interval,
+	    xticklabels={%
+	        {70},%
+	        {90},%
+	        {110},%
+	        {130},%
+        },
+        y tick label style={
+            font=\small
+        },
+        x tick label style={
+            text width=2.5cm,
+            align=center,
+            font=\small
+        }
+    ]
+        \foreach \i in {70,90,110,130} {
+            \firstdataset{\i}
+            \seconddataset{\i}
+            \thirddataset{\i}
+        }
+    \end{axis}
+\end{tikzpicture}
+\end{document}
