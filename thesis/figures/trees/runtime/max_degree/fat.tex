@@ -2,32 +2,34 @@
 
 \begin{document}
 \begin{tikzpicture}
-    \newcommand{\datadir}{data/trees/runtime/imbalance/rand_attach}
+    \newcommand{\datadir}{data/trees/runtime/max_degree/fat}
     \newcommand{\firstdataset}[1]
-        {\addplot+ [boxplot, TUMBlue] table[y=#1] {\datadir/n50k2.dat};}
+        {\addplot+ [boxplot, TUMBlue] table[y=#1] {\datadir/n60k2i1div4.dat};}
     \newcommand{\seconddataset}[1]
-        {\addplot+ [boxplot, TUMAccentOrange] table[y=#1] {\datadir/n50k4.dat};}
+        {\addplot+ [boxplot, TUMAccentOrange] table[y=#1] {\datadir/n60k3i1div3.dat};}
     \newcommand{\thirddataset}[1]
-        {\addplot+ [boxplot, TUMAccentGreen] table[y=#1] {\datadir/n100k2.dat};}
+        {\addplot+ [boxplot, TUMAccentGreen] table[y=#1] {\datadir/n100k2i1div3.dat};}
     % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
     \begin{axis}[
 	    boxplot/draw direction=y,
 	    ylabel={\small Laufzeit (ms)},
-	    xlabel={\small Ungleichgewicht},
+	    xlabel={\small Maximale Kindanzahl},
 	    boxplot={
 	        draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
 	        box extend=0.2,
 	    },
-        ymax=4200,
+        ymax=420,
         height=6cm,
 	    x=1.5cm,
 	    xtick={0,1,2,...,14},
 	    x tick label as interval,
 	    xticklabels={%
-	        {0.35},%
-	        {0.3},%
-	        {0.25},%
-	        {0.2}%
+	        {2},%
+	        {3},%
+	        {4},%
+	        {5},%
+	        {7},%
+	        {9}%
         },
         y tick label style={
             font=\small
@@ -39,7 +41,7 @@
         }
     ]
 
-        \foreach \i in {7/20, 3/10, 5/20, 2/10} {
+        \foreach \i in {3,4,5,6,8,10} {
             \firstdataset{\i}
             \seconddataset{\i}
             \thirddataset{\i}
