@@ -8,7 +8,7 @@ Dabei werden die Schnittkosten, mit denen verglichen, die durch die Heuristiken 
 Da der Algorithmus dieser Arbeit ausschließlich auf Bäumen arbeitet, wird zunächst das Verhalten dieser Kenngrößen in Abhängigkeit der Eingabeparameter auf Bäumen untersucht.
 Anschließend werden die Schnittkosten auf generellen Graphen untersucht.
 Dazu wird zu einem Graph ein entsprechender Baum generiert und der Algorithmus wird auf den Baum angewandt.
-Danach wird die Partitionierung des Baumes in eine Partitionierung des Graphen umgewandelt.
+Danach wird die Partitionierung des Baums in eine Partitionierung des Graphen umgewandelt.
 
 \section{Bäume}
 Es werden vier verschiedene Heuristiken verwendet, um zufällige Bäume zu generieren.
@@ -31,110 +31,134 @@ Wir erhalten einen fast vollständigen $k$\hyp ären Baum, indem wir die Menge d
 
 \begin{figure}
     \centering
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/node_count/rand_attach}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/node_count/pref_attach}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/node_count/fat}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/node_count/bnary}
-        }
-    }
-    \caption{Laufzeit in Abhängigkeit der Knotenanzahl für Random Attachement}
+    \includestandalone{figures/trees/runtime/node_count}
+    \caption{Laufzeit in Abhängigkeit der Knotenanzahl}
 \end{figure}
 
 \begin{figure}
     \centering
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/kparts/rand_attach}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/kparts/pref_attach}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/kparts/fat}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/kparts/bnary}
-        }
-    }
+    \includestandalone{figures/trees/runtime/imbalance}
+    \caption{Laufzeit in Abhängigkeit des Ungleichgewichts}
 \end{figure}
 
 \begin{figure}
     \centering
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/imbalance/rand_attach}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/imbalance/pref_attach}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/imbalance/fat}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/imbalance/bnary}
-        }
-    }
+    \includestandalone{figures/trees/runtime/kparts}
+    \caption{Laufzeit in Abhängigkeit der Teilanzahl}
 \end{figure}
 
 \begin{figure}
     \centering
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/max_degree/pref_attach}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/max_degree/fat}
-        }
-    }
-    \subfigure{
-        \centering
-        \resizebox{0.45\linewidth}{!}{
-            \includestandalone{figures/trees/runtime/max_degree/nary}
-        }
-    }
+    \includestandalone{figures/trees/runtime/max_degree}
+    \caption{Laufzeit in Abhängigkeit des Maximalgrads}
 \end{figure}
+
+
+%\begin{figure}
+%    \centering
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/kparts/rand_attach}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/kparts/pref_attach}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/kparts/fat}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/kparts/bnary}
+%        }
+%    }
+%\end{figure}
+%
+%\begin{figure}
+%    \centering
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/imbalance/rand_attach}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/imbalance/pref_attach}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/imbalance/fat}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/imbalance/bnary}
+%        }
+%    }
+%\end{figure}
+%
+%\begin{figure}
+%    \centering
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/max_degree/pref_attach}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/max_degree/fat}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/runtime/max_degree/nary}
+%        }
+%    }
+%\end{figure}
+%
+%\begin{figure}
+%    \centering
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/quality/tree_heuristics/rand_attach}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/quality/tree_heuristics/pref_attach}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/quality/tree_heuristics/fat}
+%        }
+%    }
+%    \subfigure{
+%        \centering
+%        \resizebox{0.45\linewidth}{!}{
+%            \includestandalone{figures/trees/quality/tree_heuristics/bnary}
+%        }
+%    }
+%\end{figure}
 
 \subsection{Lösungsqualitat}
 \subsection{Graphen}

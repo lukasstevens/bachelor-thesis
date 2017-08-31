@@ -25,9 +25,8 @@
 \usepackage[final]{microtype}
 \usepackage{caption}
 \usepackage[hidelinks]{hyperref} % hidelinks removes colored boxes around references and links
-\usepackage[parfill]{parskip}
 \usepackage[textsize=tiny]{todonotes}
-\usepackage{subfigure}
+\usepackage{subcaption}
 \usepackage{standalone}
 
 \usepackage[chapter]{algorithm}
@@ -104,7 +103,8 @@
     % For available color names, see http://www.latextemplates.com/svgnames-colors
     cycle list={TUMBlue\\TUMAccentOrange\\TUMAccentGreen\\TUMSecondaryBlue2\\TUMDarkGray\\},
 }
-\usetikzlibrary{pgfplots.statistics}
+\usepgfplotslibrary{statistics, groupplots}
+
 
 % Settings for lstlistings
 \lstset{
