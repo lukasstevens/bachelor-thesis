@@ -1,0 +1,93 @@
+\documentclass[tikz]{standalone}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\datadir}{data/trees/runtime/kparts}
+    \newcommand{\plotdata}[2]{%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n50i3div10.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n50i1div4.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n50i1div5.dat};%
+        }
+    
+    \pgfplotsset{
+        boxplot/draw direction=y,
+        boxplot={
+            draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
+            box extend=0.2,
+        },
+        x=1.5cm,
+        xtick={0,1,2,...,14},
+        x tick label as interval,
+        x tick label style={
+            text width=2.5cm,
+            align=center
+        },
+        small
+    }
+    
+    % Useful links: 
+    % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
+    % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
+    \begin{groupplot}[
+            group style={group size=1 by 4},
+            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
+            legend image code/.code={%
+                \draw[#1] (0cm, -0.05cm) rectangle (0.3cm, 0.15cm);
+            },
+            width=5cm,
+            height=5cm
+        ]
+
+        \nextgroupplot[
+            title=Random Attachment,
+            ymax=2800,
+            ytick distance=1000,
+            xticklabels=\empty,
+            legend to name=grouplegend,
+            legend columns=-1,
+            legend style={/tikz/every even column/.append style={column sep=5pt}},
+            ylabel=Laufzeit (ms),
+            yticklabel pos=left
+        ]
+        \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i3div10.dat};%
+        \addlegendentry{{$n=50$, $\varepsilon=3/10$}}
+        \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i1div4.dat};%
+        \addlegendentry{{$n=50$, $\varepsilon=1/4$}}
+        \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i1div5.dat};%
+        \addlegendentry{{$k=50$, $\varepsilon=1/5$}}
+        \pgfplotsinvokeforeach {4, 5, 6, 8, 10} {
+            \plotdata{#1}{rand_attach}
+        }
+
+        \nextgroupplot[
+            title=Preferrential Attachment, ymax=1800,
+            ytick distance=500, xticklabels=\empty,
+            ylabel=Laufzeit (ms), yticklabel pos=left
+        ]
+        \pgfplotsinvokeforeach {3, 4, 5, 6, 8, 10} {
+            \plotdata{#1}{pref_attach}
+        }
+
+        \nextgroupplot[
+            title=Fat Tree, ymax=180,
+            ylabel=Laufzeit (ms), yticklabel pos=left,
+            ytick distance=50, xticklabels=\empty
+        ]
+        \pgfplotsinvokeforeach{3, 4, 5, 6, 8, 10} {
+            \plotdata{#1}{fat}
+        }
+        
+        \nextgroupplot[
+            title=Binärbaum, ymax=3700,
+            ytick distance=1000, xticklabels={3, 4, 5, 6, 8, 10},
+            xlabel=Teilanzahl $k$, ylabel=Laufzeit (ms),
+            yticklabel pos=left
+        ]
+        \pgfplotsinvokeforeach{3, 4, 5, 6, 8, 10} {
+            \plotdata{#1}{bnary}
+        }
+    \end{groupplot}
+    \path (group c1r4.south west) -- node[below, yshift=-1cm]{\small \ref{grouplegend}} (group c1r4.south east);
+
+\end{tikzpicture}
+\end{document}

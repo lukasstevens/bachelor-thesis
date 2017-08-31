@@ -1,0 +1,82 @@
+\documentclass[tikz]{standalone}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\datadir}{data/trees/runtime/max_degree}
+    \newcommand{\plotdata}[2]{%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n60k2i1div4.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n60k3i1div3.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n100k2i1div3.dat};%
+        }
+    
+    \pgfplotsset{
+        boxplot/draw direction=y,
+        boxplot={
+            draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
+            box extend=0.2,
+        },
+        x=1.5cm,
+        xtick={0,1,2,...,10},
+        x tick label as interval,
+        x tick label style={
+            text width=2.5cm,
+            align=center
+        },
+        small
+    }
+    
+    % Useful links: 
+    % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
+    % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
+    \begin{groupplot}[
+            group style={group size=1 by 3},
+            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
+            legend image code/.code={%
+                \draw[#1] (0cm, -0.05cm) rectangle (0.3cm, 0.15cm);
+            }
+        ]
+
+        \nextgroupplot[
+            title=Preferrential Attachment,
+            ymax=630,
+            ytick distance=200,
+            xticklabels=\empty,
+            legend to name=grouplegend,
+            legend columns=-1,
+            legend style={/tikz/every even column/.append style={column sep=5pt}},
+            ylabel=Laufzeit (ms)
+        ]
+        \addplot+ [boxplot] table[y=2] {\datadir/pref_attach/n60k2i1div4.dat};%
+        \addlegendentry{{$n=60$, $k=2$, $\varepsilon=1/4$}}
+        \addplot+ [boxplot] table[y=2] {\datadir/pref_attach/n60k3i1div3.dat};%
+        \addlegendentry{{$n=60$, $k=3$, $\varepsilon=1/3$}}
+        \addplot+ [boxplot] table[y=2] {\datadir/pref_attach/n100k2i1div3.dat};%
+        \addlegendentry{{$n=100$, $k=2$, $\varepsilon=1/3$}}
+        \pgfplotsinvokeforeach {3,4,5,7,9} {
+            \plotdata{#1}{pref_attach}
+        }
+
+        \nextgroupplot[
+            title=Fat Tree, ymax=430,
+            ytick distance=200, xticklabels=\empty,
+            ylabel=Laufzeit (ms)
+        ]
+        \pgfplotsinvokeforeach {3,4,5,6,8,10} {
+            \plotdata{#1}{fat}
+        }
+
+        \nextgroupplot[
+            title={$k$\hyp ärer Baum}, ymax=430,
+            ytick distance=200, xticklabels={2,3,4,5,7,9},
+            ylabel=Laufzeit (ms),
+            xlabel=Knotenanzahl $n$
+        ]
+        \pgfplotsinvokeforeach {3,4,5,6,8,10} {
+            \plotdata{#1}{nary}
+        }
+        
+    \end{groupplot}
+    \path (group c1r3.south west) -- node[below, yshift=-1cm]{\small \ref{grouplegend}} (group c1r3.south east);
+
+\end{tikzpicture}
+\end{document}
