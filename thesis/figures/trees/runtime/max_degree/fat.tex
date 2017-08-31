@@ -12,8 +12,8 @@
     % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
     \begin{axis}[
 	    boxplot/draw direction=y,
-	    ylabel={\small Laufzeit (ms)},
-	    xlabel={\small Maximale Kindanzahl},
+	    ylabel={\Large Laufzeit (ms)},
+	    xlabel={\Large Maximale Kindanzahl},
 	    boxplot={
 	        draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
 	        box extend=0.2,
@@ -32,12 +32,12 @@
 	        {9}%
         },
         y tick label style={
-            font=\small
+            font=\large
         },
         x tick label style={
             text width=2.5cm,
             align=center,
-            font=\small
+            font=\large
         }
     ]
 
