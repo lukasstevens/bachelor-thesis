@@ -11,7 +11,7 @@ Dazu wird zu einem Graph ein entsprechender Baum generiert und der Algorithmus w
 Danach wird die Partitionierung des Baums in eine Partitionierung des Graphen umgewandelt.
 
 \section{Bäume}
-Es werden vier verschiedene Heuristiken verwendet, um zufällige Bäume zu generieren.
+Es wurden vier verschiedene Heuristiken verwendet, um zufällige Bäume zu generieren.
 Die erste Heuristik wird im Weiteren als Random Attachment bezeichnet. 
 Ein Baum mit $n$ Knoten wird generiert, indem mit einem Knoten gestartet wird und iterativ Blätter an zufällige Knoten des Baums angehängt werden, bis die gewünschte Knotenanzahl $n$ erreicht ist.
 Eine weitere Heuristik, die eine abgewandelte Version des Random Attachments ist, wird als Preferrential Attachment bezeichnet.
@@ -28,137 +28,61 @@ Wir erhalten einen fast vollständigen $k$\hyp ären Baum, indem wir die Menge d
 \todo[inline]{Eventuell Visualisierungen}
 
 \subsection{Laufzeit}
+Um die Laufzeit des Algorithmus zu analysieren, wurde wiederholt ein Parameter gewählt, dessen Auswirkung auf die Laufzeit untersucht werden soll.
+Die anderen Parameter wurden festgesetzt und bleiben konstant.
+Dann wurde der gewählte Parameter schrittweise verändert.
+Um Schwankungen auszugleichen, wurden für jede Kombination der Parameter 20 verschiedene Bäume mit den oben genannten Heuristiken generiert und die Laufzeit für jeden Baum gemessen.
+Dabei wurde die Anzahl der Kinder des Fat Trees aus der Menge $\{2, \ldots, 10\}$ gewählt und als $k$\hyp ärer Baum wurde ein Binärbaum gewählt.
+Des Weiteren wurden für die übrigen Parameter jeweils drei verschieden Konfigurationen gewählt.
+In den Abbildungen~\ref{fig:runnodes},~\ref{fig:runimb},~\ref{fig:runkparts} und~\ref{fig:rundeg} werden die gemessenen Zeiten mit Boxplots dargestellt.
+Ein Boxplot besteht aus einer oberen Antenne, einer unteren Antenne, dem oberen Quartil, dem unteren Quartil und dem Median.
+\todo{Was soll mit den Ausreißern gemacht werden?} Die obere Antenne und die untere Antenne stellen jeweils das Maximum beziehungsweise das Minimum der gemessenen Werte dar, falls es keine Ausreißer gibt, die weit vom Rest der Werte entfernt sind.
+In den Messergebnissen kamen in fast allen Fällen pro 20 Durchläufen höchstens drei Ausreißer nach oben vor.
+Nur für kleines $\varepsilon$ kamen bis zu fünf Ausreißer vor.
+Weiterhin liegen $75\%$ der gemessen Werte unterhalb des oberen Quartils, während $25\%$ unterhalb des unteren Quartils liegen.
+Das obere und untere Quartil werden zu einer Box zusammengefasst.
+Zuletzt sind $50\%$ der Werte kleiner als der Median, welcher durch einen Querstrich dargestellt wird.
 
-\begin{figure}
+Abbildung~\ref{fig:runnodes} zeigt die Laufzeit im Millisekunden in Abhängigkeit der Knotenanzahl $n$ des Baums.
+Für jede Heuristik wurde eine Messreihe mit verschieden Konfigurationen der übrigen Parametern angelegt.
+Dabei wird die jeweilige Heuristik in der Graphüberschrift genannt und den verschiedenen Parameterkonfigurationen sind unterschiedliche Farben zugewiesen. 
+\begin{figure}[t]
     \centering
-    \includestandalone{figures/trees/runtime/node_count}
-    \caption{Laufzeit in Abhängigkeit der Knotenanzahl}
+    \scalebox{0.8}{\includestandalone{figures/trees/runtime/node_count}}
+    \caption{Laufzeit in Abhängigkeit der Knotenanzahl}\label{fig:runnodes}
 \end{figure}
 
-\begin{figure}
+Die Abbildung~\ref{fig:runimb} ist aufgebaut wie die vorherige Abbildung, zeigt jedoch die Laufzeit in Abhängigkeit des Ungleichgewichts $\varepsilon$.
+Ein Ungleichgewicht von $\varepsilon$ bedeutet, dass jede Partition der ermittelten Partitionierung höchstens eine Größe von $(1 + \varepsilon) \ceil{n/k}$ hat.
+Wie oben erwähnt, sind die Werte für kleines $\varepsilon$ weiter gestreut.
+\begin{figure}[t]
     \centering
-    \includestandalone{figures/trees/runtime/imbalance}
-    \caption{Laufzeit in Abhängigkeit des Ungleichgewichts}
+    \scalebox{0.8}{\includestandalone{figures/trees/runtime/imbalance}}
+    \caption{Laufzeit in Abhängigkeit des Ungleichgewichts}\label{fig:runimb}
 \end{figure}
 
+In Abbildung~\ref{fig:runkparts} ist die Laufzeit in Abhängigkeit der Anzahl an Partitionen $k$ zu sehen.
+Auch hier führt die Wahl von $\varepsilon=1/5$ zu einer größeren Streuung.
+Weiterhin gilt zu bemerken, dass die Laufzeit für steigendes $k$ zunächst zunimmt und dann wieder abnimmt.
 \begin{figure}
     \centering
-    \includestandalone{figures/trees/runtime/kparts}
-    \caption{Laufzeit in Abhängigkeit der Teilanzahl}
+    \scalebox{0.8}{\includestandalone{figures/trees/runtime/kparts}}
+    \caption{Laufzeit in Abhängigkeit der Teilanzahl}\label{fig:runkparts}
 \end{figure}
 
+Die letzte Abbildung~\ref{fig:rundeg} visualisiert die Laufzeit in Abhängigkeit des Maximalgrads.
+Hierbei wurde die Heuristik Random Attachment weggelassen, da es unwahrscheinlich ist, dass der Maximalgrad bei größeren Werten erreicht wird.
+Beim Fat Tree wurde für die Mindestanzahl an Kindern weiterhin zwei gewählt, während die Maximalanzahl durch den Maximalgrad gegeben ist.
+Anstatt eines Binärbaums wurde ein $k$\hyp ärer Baum betrachtet und die Entwicklung der Laufzeit mit wachsendem $k$ untersucht.
+Wie zu sehen ist nimmt die Laufzeit mit wachsendem Maximalgrad ab.
 \begin{figure}
     \centering
-    \includestandalone{figures/trees/runtime/max_degree}
-    \caption{Laufzeit in Abhängigkeit des Maximalgrads}
+    \scalebox{0.8}{\includestandalone{figures/trees/runtime/max_degree}}
+    \caption{Laufzeit in Abhängigkeit des Maximalgrads}\label{fig:rundeg}
 \end{figure}
 
-
-%\begin{figure}
-%    \centering
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/kparts/rand_attach}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/kparts/pref_attach}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/kparts/fat}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/kparts/bnary}
-%        }
-%    }
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/imbalance/rand_attach}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/imbalance/pref_attach}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/imbalance/fat}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/imbalance/bnary}
-%        }
-%    }
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/max_degree/pref_attach}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/max_degree/fat}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/runtime/max_degree/nary}
-%        }
-%    }
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/quality/tree_heuristics/rand_attach}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/quality/tree_heuristics/pref_attach}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/quality/tree_heuristics/fat}
-%        }
-%    }
-%    \subfigure{
-%        \centering
-%        \resizebox{0.45\linewidth}{!}{
-%            \includestandalone{figures/trees/quality/tree_heuristics/bnary}
-%        }
-%    }
-%\end{figure}
+Insgesamt ist die geringe Streuung der Werte beim Binärbaum bemerkenswert.
+Des Weiteren zeichnet sich der Binärbaum durch eine höhere Laufzeit und der Fat Tree durch eine geringere Laufzeit aus.
 
 \subsection{Lösungsqualitat}
 \subsection{Graphen}
