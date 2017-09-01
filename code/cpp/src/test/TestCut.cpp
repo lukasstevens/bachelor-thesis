@@ -1,5 +1,6 @@
 #include<cstdint>
 #include<fstream>
+#include<iostream>
 #include<set>
 #include<string>
 
@@ -150,4 +151,20 @@ TEST(ComponentSizeBounds, Five) {
 
     test_comp_weight_bounds(cut::Rational(3, 10), 81, 9, 7, 
             should_upper_comp_weight_bounds, should_lower_comp_weight_bounds);
+
+}
+
+TEST(DISABLED_ComponentSizeBounds, PrintCompBoundsForTable) {
+    for (int k = 3; k <= 10; ++k) {
+        if (k == 7 || k == 9) {
+            continue;
+        } else {
+            auto bounds =
+                cut::calculate_upper_component_weight_bounds(cut::Rational(1,4), 50, k);
+            for (auto const& bound : bounds) {
+                std::cerr << bound << " ";
+            }
+            std::cerr << std::endl;
+        }
+    }
 }

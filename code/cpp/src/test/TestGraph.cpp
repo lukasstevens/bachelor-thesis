@@ -209,7 +209,6 @@ TEST(Graph, WithNodeWeightsTwo) {
     std::istringstream graph_stream("3 2 010\n3 1\n1 0 2\n2 1\n");
     graph_stream >> graph;
     auto part = graph.partition(2, graph::Rational(1, 4));
-    std::cerr << graphio::PrintGraphviz<>(graph, part.second);
 }
 
 TEST(GenGraph, TreeFat) {
