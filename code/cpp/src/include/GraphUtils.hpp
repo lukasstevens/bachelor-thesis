@@ -1,3 +1,5 @@
+#pragma once 
+
 #include<algorithm>
 #include<queue>
 #include<random>
@@ -10,7 +12,9 @@ namespace graph {
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         typename Graph<Id, NodeWeight, EdgeWeight>::Matching heavy_edge_matching(
-                Graph<Id, NodeWeight, EdgeWeight> const& graph) {
+                Graph<Id, NodeWeight, EdgeWeight> const& graph,
+                size_t matching_seed=0
+                ) {
 
             using NodeWithDegree = std::pair<size_t, Id>;
             std::priority_queue<NodeWithDegree, 
@@ -48,11 +52,12 @@ namespace graph {
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         Graph<Id, NodeWeight, EdgeWeight> contract_to_n_nodes(
                 Graph<Id, NodeWeight, EdgeWeight> const& graph,
-                decltype(heavy_edge_matching<Id, NodeWeight, EdgeWeight>) find_matching,
-                Id node_cnt) {
+                Id node_cnt, 
+                size_t matching_seed=0
+                ) {
             Graph<Id, NodeWeight, EdgeWeight> graph_cp(graph);
             while(graph_cp.node_cnt() > node_cnt) {
-                auto matching = find_matching(graph_cp);
+                auto matching = heavy_edge_matching(graph_cp);
                 if (graph.node_cnt() - matching.size() < node_cnt) {
                     matching = Matching(matching.cbegin(), matching.cbegin() + (graph.node_cnt() - node_cnt));
                 }
@@ -86,7 +91,7 @@ namespace graph {
                 }
                 for (auto const& neighbor :
                         graph.inc_edges(to)) {
-                    if (!visited.at(neighbor)) {
+                    if (!visited.at(neighbor.first)) {
                         prio_q.emplace(neighbor.second, to, neighbor.first);
                     }
                 }

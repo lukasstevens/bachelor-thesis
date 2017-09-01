@@ -1,7 +1,9 @@
 #include<random>
-#include<limits.h>
+#include<limits>
+#include<memory>
 
-#include<Graph.hpp>
+#include "Graph.hpp"
+#include "GraphUtils.hpp"
 
 namespace graphgen {
 
@@ -299,5 +301,55 @@ namespace graphgen {
 
                     return graph;
                 }
+            };
+
+    template<typename Id=int, typename NodeWeight=int,
+        typename EdgeWeight=int>
+            struct Mst : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+                public:
+                    std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
+
+                    Mst(std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen) :
+                        graph_gen(graph_gen) {}
+
+                    graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                        return graph::mst<Id, NodeWeight, EdgeWeight>((*graph_gen)(seed));
+                    }
+            };
+
+    template<typename Id=int, typename NodeWeight=int,
+        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+            struct Rst : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+                public:
+                    std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
+                    size_t rst_seed;
+
+                    Rst(std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
+                            size_t rst_seed=0) :
+                        graph_gen(graph_gen), rst_seed(rst_seed) {}
+
+                    graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                        return graph::rst<Id, NodeWeight, EdgeWeight, RandGen>(
+                                (*graph_gen)(seed), this->rst_seed);
+                    }
+            };
+
+    template<typename Id=int, typename NodeWeight=int,
+        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+            struct ContractToN : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+                public:
+                    std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
+                    Id node_count;
+                    size_t matching_seed;
+
+                    ContractToN(std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
+                            Id node_count,
+                            size_t matching_seed=0) :
+                        graph_gen(graph_gen), node_count(node_count), matching_seed(matching_seed) {}
+
+                    graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                        return graph::contract_to_n_nodes(
+                                (*graph_gen)(seed), this->node_count, this->matching_seed);
+                    }
             };
 }

@@ -1,5 +1,6 @@
 #include<algorithm>
 #include<iostream>
+#include<memory>
 #include<sstream>
 #include<stdexcept>
 #include<string>
@@ -95,18 +96,6 @@ TEST(Graph, ContractEdges) {
     ASSERT_EQ(contracted_graph.inc_edges(0).size(), 1);
     ASSERT_EQ(contracted_graph.node_repr(0), graph::Graph<>::NodeSet({0, 1}));
     ASSERT_EQ(contracted_graph.node_repr(1), graph::Graph<>::NodeSet({2}));
-}
-
-TEST(Graph, HeavyEdgeMatching) {
-    graph::Graph<> graph;
-    std::stringstream graph_stream("5 6 001\n1 1\n0 1 2 1 3 1\n1 1 3 2 4 1\n1 1 2 2 4 2\n2 1 3 2\n"); 
-    graph_stream >> graph;
-    auto matching = graph::heavy_edge_matching(graph);
-    ASSERT_EQ(matching.size(), 2);
-    ASSERT_TRUE(std::find(matching.begin(), matching.end(), std::make_pair(0, 1)) != matching.end()
-            || std::find(matching.begin(), matching.end(), std::make_pair(1, 0)) != matching.end());
-    ASSERT_TRUE(std::find(matching.begin(), matching.end(), std::make_pair(3, 4)) != matching.end()
-            || std::find(matching.begin(), matching.end(), std::make_pair(4, 3)) != matching.end());
 }
 
 // Metis sometimes violates the constraints because of rounding errors. Therefore this function checks
@@ -217,3 +206,23 @@ TEST(GenGraph, TreeFat) {
     graph::Graph<> graph = (*graph_gen)(0);
     delete graph_gen;
 }
+
+TEST(GenGraph, CutCostForPartition) {
+    graphgen::IGraphGen<>* graph_gen =
+        new graphgen::TreeFat<>(60, std::make_pair(2, 6));
+    for (size_t seed = 0; seed < 20; ++seed) {
+        graph::Graph<> graph = (*graph_gen)(seed);
+        auto partition = graph.partition(2, cut::Rational(1,3));
+        ASSERT_EQ(partition.first, graph.partition_cost(partition.second));
+    }
+    delete graph_gen;
+}
+
+TEST(GenGraph, Mst) {
+    std::shared_ptr<graphgen::IGraphGen<>>
+        graph_gen(new graphgen::GraphEdgeProb<>(30, 0.5));
+    graphgen::Mst<> mst_gen(graph_gen);
+    auto graph = mst_gen(); 
+    graph.partition(2, graph::Rational(1, 2));
+}
+

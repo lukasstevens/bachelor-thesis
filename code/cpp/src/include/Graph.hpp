@@ -352,6 +352,19 @@ namespace graph {
                             std::make_pair(cut_cost, partitioning_formatted));
                 }
 
+                EdgeWeight partition_cost(std::vector<Id> const& partition) {
+                    EdgeWeight cost = 0;
+                    for (Id node = 0; node < this->node_cnt(); ++node) {
+                        for (auto const& edge : this->inc_edges(node)) {
+                            if (edge.first >= node &&
+                                    partition.at(node) != partition.at(edge.first)) {
+                                cost += edge.second;
+                            }
+                        }
+                    }
+                    return cost;
+                }
+
                 Graph<Id, NodeWeight, EdgeWeight> contract_edges(Matching const& matching) {
                     Graph<Id, NodeWeight, EdgeWeight> result_graph(this->node_cnt() - matching.size());
                     std::vector<bool> is_in_result_graph(this->node_cnt());
