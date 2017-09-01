@@ -50,7 +50,7 @@
         \addplot+ [boxplot] table[y=7/20] {\datadir/rand_attach/n50k4.dat};%
         \addlegendentry{{$n=50$, $k=4$}}
         \addplot+ [boxplot] table[y=7/20] {\datadir/rand_attach/n100k2.dat};%
-        \addlegendentry{{$n=100$, $k=1/4$}}
+        \addlegendentry{{$n=100$, $k=2$}}
         \pgfplotsinvokeforeach {3/10, 5/20, 2/10} {
             \plotdata{#1}{rand_attach}
         }
@@ -68,7 +68,7 @@
         \nextgroupplot[
             title=Fat Tree, ymax=550,
             ytick distance=250, xticklabels={0.35, 0.3, 0.25, 0.2},
-            xlabel=Ungleichgewicht $\varepsilon$
+            xlabel=Ungleichgewicht $\eps$
         ]
         \pgfplotsinvokeforeach {7/20, 3/10, 5/20, 2/10} {
             \plotdata{#1}{fat}
@@ -77,7 +77,7 @@
         \nextgroupplot[
             title=Binärbaum, ymax=5800,
             ytick distance=2000, xticklabels={0.35, 0.3, 0.25, 0.2},
-            xlabel=Ungleichgewicht $\varepsilon$, ylabel=Laufzeit (ms),
+            xlabel=Ungleichgewicht $\eps$, ylabel=Laufzeit (ms),
             yticklabel pos=right, y label style={at={(axis description cs:-0.12,0.5)}, anchor=north}
         ]
         \pgfplotsinvokeforeach {7/20, 3/10, 5/20, 2/10} {

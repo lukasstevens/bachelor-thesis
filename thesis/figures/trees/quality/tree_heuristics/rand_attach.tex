@@ -11,6 +11,7 @@
         {\addplot+ [boxplot, TUMAccentGreen] table[y=#1] {\datadir/n70k4i1div3.dat};}
     % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
     \begin{axis}[
+        title=Random Attachment,
 	    boxplot/draw direction=y,
 	    ylabel={\footnotesize Relative Schnittkosten},
 	    xlabel={\footnotesize Methode},

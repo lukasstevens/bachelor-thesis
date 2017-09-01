@@ -4,9 +4,9 @@
 \begin{tikzpicture}
     \newcommand{\datadir}{data/trees/runtime/kparts}
     \newcommand{\plotdata}[2]{%
-        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n50i3div10.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n50i1div3.dat};%
         \addplot+ [boxplot] table[y=#1] {\datadir/#2/n50i1div4.dat};%
-        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n50i1div5.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n60i1div3.dat};%
         }
     
     \pgfplotsset{
@@ -40,7 +40,7 @@
 
         \nextgroupplot[
             title=Random Attachment,
-            ymax=2800,
+            ymax=4700,
             ytick distance=1000,
             xticklabels=\empty,
             legend to name=grouplegend,
@@ -49,12 +49,12 @@
             ylabel=Laufzeit (ms),
             yticklabel pos=left
         ]
-        \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i3div10.dat};%
-        \addlegendentry{{$n=50$, $\varepsilon=3/10$}}
+        \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i1div3.dat};%
+        \addlegendentry{{$n=50$, $\eps=1/3$}}
         \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i1div4.dat};%
-        \addlegendentry{{$n=50$, $\varepsilon=1/4$}}
-        \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i1div5.dat};%
-        \addlegendentry{{$k=50$, $\varepsilon=1/5$}}
+        \addlegendentry{{$n=50$, $\eps=1/4$}}
+        \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n60i1div3.dat};%
+        \addlegendentry{{$n=60$, $\eps=1/3$}}
         \pgfplotsinvokeforeach {4, 5, 6, 8, 10} {
             \plotdata{#1}{rand_attach}
         }
@@ -69,7 +69,7 @@
         }
 
         \nextgroupplot[
-            title=Fat Tree, ymax=180,
+            title=Fat Tree, ymax=220,
             ylabel=Laufzeit (ms), yticklabel pos=left,
             ytick distance=50, xticklabels=\empty
         ]
@@ -78,10 +78,10 @@
         }
         
         \nextgroupplot[
-            title=Binärbaum, ymax=3700,
-            ytick distance=1000, xticklabels={3, 4, 5, 6, 8, 10},
+            title=Binärbaum, ymax=11000,
+            xticklabels={3, 4, 5, 6, 8, 10},
             xlabel=Teilanzahl $k$, ylabel=Laufzeit (ms),
-            yticklabel pos=left
+            yticklabel pos=left, ymode=log
         ]
         \pgfplotsinvokeforeach{3, 4, 5, 6, 8, 10} {
             \plotdata{#1}{bnary}
