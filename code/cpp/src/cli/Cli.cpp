@@ -17,8 +17,13 @@ enum Output {
     GRAPH,
     TIME,
     CUT_COST,
-    GRAPHVIZ_GRAPH,
-    DECOMP_GRAPH
+    GRAPHVIZ_GRAPH
+};
+
+enum OutputMod {
+    ORIG_GRAPH,
+    TREE,
+    BOTH
 };
 
 enum PartMethods {
@@ -58,12 +63,16 @@ Result run_part_method(
     return Result(method_name, method_res, time_elapsed);
 }
 
-void run_gen_group(
-        std::shared_ptr<graphgen::IGraphGen<>> const& generator,
+using IGraphGen = std::shared_ptr<graphgen::IGraphGen<>>;
+
+void run(
+        std::vector<IGraphGen> tree_part_graphs,
+        std::vector<IGraphGen> orig_graphs,
         int32_t kparts,
         graph::Rational imbalance, 
         std::vector<PartMethods> part_methods,
         std::vector<Output> output,
+        OutputMod output_mod,
         size_t seed,
         size_t tries
         ) {
@@ -73,93 +82,114 @@ void run_gen_group(
                 "kparts is required if a partition method is applied.");
     }
 
-    for (size_t trie_idx = 0; trie_idx < tries; ++trie_idx) {
-        graph::Graph<> graph = (*generator)(seed + trie_idx);
-        std::vector<Result> results;
-        for (auto method : part_methods) {
-            switch (method) {
-                case TREE_PARTITION:
-                    results.push_back(run_part_method(
-                                "Tree_Partition",
-                                [graph, kparts, imbalance](){
-                                return graph.partition(kparts, imbalance);
-                                })
-                            );
-                    break;
-                case METIS_KWAY:
-                    results.push_back(run_part_method(
-                                "METIS_Kway",
-                                [graph, kparts, imbalance](){
-                                return graph.partition_metis_kway(kparts, imbalance);
-                                })
-                            );
-                    break;
-                case METIS_REC:
-                    results.push_back(run_part_method(
-                                "METIS_Recursive",
-                                [graph, kparts, imbalance](){
-                                return graph.partition_metis_recursive(kparts, imbalance);
-                                })
-                            );
-                    break;
-                case KAFFPA:
-                    results.push_back(run_part_method(
-                                "KaFFPa",
-                                [graph, kparts, imbalance](){
-                                return graph.partition_kaffpa(kparts, imbalance);
-                                })
-                            );
-                    break;
+    for (size_t graph_idx = 0; graph_idx < orig_graphs.size(); ++graph_idx) {
+        for (size_t trie_idx = 0; trie_idx < tries; ++trie_idx) {
+            graph::Graph<> graph = (*orig_graphs.at(graph_idx))(seed + trie_idx);
+            graph::Graph<> tree_part_graph = (*tree_part_graphs.at(graph_idx))(seed + trie_idx); 
+            std::vector<Result> results;
+            for (auto method : part_methods) {
+                switch (method) {
+                    case TREE_PARTITION:
+                        results.push_back(run_part_method(
+                                    "Tree_Partition",
+                                    [tree_part_graph, graph, kparts, imbalance](){
+                                    auto partition = tree_part_graph.partition(kparts, imbalance);
+                                    return std::make_pair(
+                                            graph.partition_cost(partition.second), partition.second);
+                                    })
+                                );
+                        break;
+                    case METIS_KWAY:
+                        results.push_back(run_part_method(
+                                    "METIS_Kway",
+                                    [graph, kparts, imbalance](){
+                                    return graph.partition_metis_kway(kparts, imbalance);
+                                    })
+                                );
+                        break;
+                    case METIS_REC:
+                        results.push_back(run_part_method(
+                                    "METIS_Recursive",
+                                    [graph, kparts, imbalance](){
+                                    return graph.partition_metis_recursive(kparts, imbalance);
+                                    })
+                                );
+                        break;
+                    case KAFFPA:
+                        results.push_back(run_part_method(
+                                    "KaFFPa",
+                                    [graph, kparts, imbalance](){
+                                    return graph.partition_kaffpa(kparts, imbalance);
+                                    })
+                                );
+                        break;
+                }
             }
-        }
 
-        for (auto output_method : output) {
-            switch (output_method) {
-                case GRAPHVIZ_GRAPH:
-                    std::cout << graphio::PrintGraphviz<>(graph);
-                    std::cout << std::endl;
-                    break;
-                case GRAPHVIZ_GRAPH_PARTITION:
-                    for (auto const& result : results) {
-                        std::cout << graphio::PrintGraphviz<>(graph, result.part_result.second);
-                        std::cout << std::endl;
-                    }
-                    std::cout << std::endl;
-                    break;
-                case DECOMP_GRAPH:
-                    std::cout << graphio::PrintDecompFmt<>(graph, false);
-                    std::cout << std::endl;
-                    break;
-                case PARTITION:
-                    for (auto const& result : results) {
-                        for (auto const part_idx : result.part_result.second) {
-                            std::cout << part_idx << "\n";
+            for (auto output_method : output) {
+                switch (output_method) {
+                    case GRAPHVIZ_GRAPH:
+                        if (output_mod != OutputMod::TREE) {
+                            std::cout << graphio::PrintGraphviz<>(graph);
+                            std::cout << std::endl;
+                        }
+                        if (output_mod != OutputMod::ORIG_GRAPH) {
+                            std::cout << graphio::PrintGraphviz<>(graph);
+                            std::cout << std::endl;
+                        }
+                        break;
+                    case GRAPHVIZ_GRAPH_PARTITION:
+                        for (auto const& result : results) {
+                            std::cout << graphio::PrintGraphviz<>(graph, result.part_result.second);
+                            std::cout << std::endl;
                         }
                         std::cout << std::endl;
-                    }
-                    std::cout << std::endl;
-                    break;
-                case TIME:
-                    for (auto const& result : results) {
-                        std::cout << result.time_elapsed.count() << "\t";
-                    }
-                    std::cout << std::endl;
-                    break;
-                case CUT_COST:
-                    for (auto const& result : results) {
-                        std::cout << result.part_result.first << "\t";
-                    }
-                    std::cout << std::endl;
-                    break;
-                case GRAPH:
-                    std::cout << graph;
-                    std::cout << std::endl;
-                    break;
+                        break;
+                    case PARTITION:
+                        for (auto const& result : results) {
+                            for (auto const part_idx : result.part_result.second) {
+                                std::cout << part_idx << "\n";
+                            }
+                            std::cout << std::endl;
+                        }
+                        std::cout << std::endl;
+                        break;
+                    case TIME:
+                        for (auto const& result : results) {
+                            std::cout << result.time_elapsed.count() << "\t";
+                        }
+                        std::cout << std::endl;
+                        break;
+                    case CUT_COST:
+                        for (auto const& result : results) {
+                            std::cout << result.part_result.first << "\t";
+                        }
+                        std::cout << std::endl;
+                        break;
+                    case GRAPH:
+                        if (output_mod != OutputMod::TREE) {
+                            std::cout << graph;
+                            std::cout << std::endl;
+                        }
+                        if (output_mod != OutputMod::ORIG_GRAPH) {
+                            std::cout << graph;
+                            std::cout << std::endl;
+                        }
+                        break;
+                }
             }
         }
     }
 }
 
+template<typename E>
+std::string option_string(std::unordered_map<std::string, E> const& map) {
+    std::string options("OPTIONS:");
+    for (auto const& option : map) {
+        options += " " + option.first;
+    }
+    return options;
+}
 
 int main(int argc, char** argv) {
     args::ArgumentParser parser(
@@ -193,20 +223,26 @@ int main(int argc, char** argv) {
             {"time", Output::TIME},
             {"cut_cost", Output::CUT_COST},
             {"graphviz_graph", Output::GRAPHVIZ_GRAPH},
-            {"decomp_graph", Output::DECOMP_GRAPH},
             {"graph", Output::GRAPH}
             });
-    std::string output_options("OPTIONS:");
-    for (auto const& option : output_map) {
-        output_options += " " + option.first;
-    }
     args::MapFlagList<std::string, Output> output(
-            parser, "output", "Data to ouput. " + output_options,
+            parser, "output", "Data to ouput. " + option_string(output_map),
             {'o', "output"}, output_map);
 
-    args::Group gen_or_files(parser, "Either generator or input files.",
-            args::Group::Validators::Xor);
-    args::Group gen_group(gen_or_files, "Graph generators.",
+    std::unordered_map<std::string, OutputMod> output_mod_map({
+            {"graph", OutputMod::ORIG_GRAPH},
+            {"tree", OutputMod::TREE},
+            {"time", OutputMod::BOTH},
+            });
+    args::MapFlag<std::string, OutputMod> output_mod(
+            parser, "output modifier",
+            "Output original graph, tree (converted from graph) or both. DEFAULT: graph. " +
+            option_string(output_mod_map),
+            {"output_mod"}, output_mod_map, OutputMod::ORIG_GRAPH);
+
+    args::Group gen_or_files_group(parser, "Either generator or input files.",
+            args::Group::Validators::DontCare);
+    args::Group gen_group(gen_or_files_group, "Graph generators.",
             args::Group::Validators::DontCare);
 
     enum GraphGen {
@@ -224,11 +260,8 @@ int main(int argc, char** argv) {
             {"graph_edge_prob", GraphGen::GRAPH_EDGE_PROB}
             });
     std::string graph_gen_options("OPTIONS:");
-    for (auto const& option : graph_gen_map) {
-        graph_gen_options += " " + option.first;
-    }
-    args::MapFlag<std::string, GraphGen> graph_gen(
-            gen_group, "graph_gen", "Graph generator to use. " + graph_gen_options,
+    args::MapFlagList<std::string, GraphGen> graph_gen_list(
+            gen_group, "graph_gen", "Graph generator to use. " + option_string(graph_gen_map),
             {'g', "generator"}, graph_gen_map);
 
     args::ValueFlag<int32_t> node_count(
@@ -283,17 +316,55 @@ int main(int argc, char** argv) {
             gen_group, "seed", "The initial seed to use for generating graphs.",
             {'s', "seed"}, 0);
 
+    args::Group prep_group(
+            parser, "Preprocessing step for tree partition",
+            args::ArgumentParser::Validators::DontCare);
+    enum Prep {
+        MST,
+        RST,
+        CONTRACT
+    };
+    std::unordered_map<std::string, Prep> prep_map({
+            {"mst", Prep::MST},
+            {"rst", Prep::RST},
+            {"contract", Prep::CONTRACT}
+            });
+    args::MapFlagList<std::string, Prep> prep_list(
+            prep_group, "Preprocessing", "Preprocessing step for tree partition. " + option_string(prep_map),
+            {'p', "prep"}, prep_map);
+    args::ValueFlag<int32_t> contract_to_flag(
+            prep_group, "Number of nodes to contract to",
+            "Number of nodes to contract to when using contract preprocessing.",
+            {"contract_to"});
+
+
+    args::Group file_group(
+            gen_or_files_group, "Use Input files", args::Group::Validators::AtLeastOne);
+    args::ValueFlagList<std::string> file_list(
+            file_group, "files", "File for graph input or - for stdin.",
+            {'f', "file"});
+    args::ValueFlagList<std::string> tree_file_list(
+            file_group, "tree files", "Read a tree from file. For every tree file there must be a graph file."
+            " The tree files are read first then the graph files.",
+            {"tree_file"});
+    args::ValueFlagList<std::string> graph_file_list(
+            file_group, "graph files", "Read a graph from file.",
+            {"tree_file"});
+
     try
     {
         parser.ParseCLI(argc, argv);
 
-        if (gen_group) {
-            if(!graph_gen) {
-                throw args::ValidationError("Graph generator required");
-            }
+        std::vector<IGraphGen> tree_part_graphs;
+        std::vector<IGraphGen> orig_graphs;
 
-            std::shared_ptr<graphgen::IGraphGen<>> generator(nullptr);
-            switch (args::get(graph_gen)) {
+        if(!gen_or_files_group) {
+            throw args::ValidationError("Graph generator or file input required.");
+        }
+
+        for (auto gen : args::get(graph_gen_list)) {
+            IGraphGen generator;
+            switch (gen) {
                 case TREE_RAND_ATTACH:
                     generator =
                         std::shared_ptr<graphgen::IGraphGen<>>(
@@ -345,17 +416,68 @@ int main(int argc, char** argv) {
                                 );
                     break;
             }
-
-            run_gen_group(
-                    generator,
-                    args::get(kparts),
-                    args::get(imbalance),
-                    args::get(part_methods),
-                    args::get(output),
-                    args::get(seed),
-                    args::get(tries)
-                    );
+            tree_part_graphs.push_back(generator);
+            orig_graphs.push_back(generator);
         }
+
+        if (file_list) {
+            for (auto file : args::get(file_list)) {
+                tree_part_graphs.emplace_back(new graphgen::FromFile<>(file));
+                orig_graphs.emplace_back(new graphgen::FromFile<>(file));
+            }
+        }
+
+        if (tree_file_list) {
+            auto tree_files = args::get(tree_file_list);
+            auto graph_files = args::get(graph_file_list);
+            if (tree_files.size() != graph_files.size()) {
+                throw args::ValidationError("Need equal number of tree files and graph files");
+            }
+
+            for (auto const& tree_file : tree_files) {
+                tree_part_graphs.emplace_back(new graphgen::FromFile<>(tree_file));
+            }
+            for (auto const& graph_file : graph_files) {
+                orig_graphs.emplace_back(new graphgen::FromFile<>(graph_file));
+            }
+        }
+
+        if (prep_list) {
+            for (auto prep : args::get(prep_list)) {
+                switch (prep) {
+                    case MST:
+                        for (auto& tree : tree_part_graphs) {
+                            tree = std::shared_ptr<graphgen::IGraphGen<>>(
+                                    new graphgen::Mst<>(tree));
+                        }
+                        break;
+                    case RST:
+                        for (auto& tree : tree_part_graphs) {
+                            tree = std::shared_ptr<graphgen::IGraphGen<>>(
+                                    new graphgen::Rst<>(tree));
+                        }
+                        break;
+                    case CONTRACT:
+                        for (auto& tree : tree_part_graphs) {
+                            tree = std::shared_ptr<graphgen::IGraphGen<>>(
+                                    new graphgen::ContractToN<>(tree, args::get(contract_to_flag)));
+                        }
+                        break;
+                }
+            }
+        }
+
+        run(
+                tree_part_graphs,
+                orig_graphs,
+                args::get(kparts),
+                args::get(imbalance), 
+                args::get(part_methods),
+                args::get(output),
+                args::get(output_mod),
+                args::get(seed),
+                args::get(tries)
+           );
     }
     catch (args::Help)
     {

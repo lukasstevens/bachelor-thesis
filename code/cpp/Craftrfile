@@ -63,7 +63,7 @@ cli_bin = cxx.executable(
             ),
         output = 'cli'
         )
-cli = runtarget(cli_bin)
+cli = runtarget(cli_bin, pool='console')
 
 run = runtarget(test_bin, 
         '--gtest_filter=Run.DISABLED_FromStdinVerbose', '--gtest_also_run_disabled_tests')
