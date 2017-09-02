@@ -7,6 +7,7 @@
 #include<string>
 
 #include "Graph.hpp"
+#include "GraphIo.hpp"
 #include "GraphUtils.hpp"
 
 namespace graphgen {
