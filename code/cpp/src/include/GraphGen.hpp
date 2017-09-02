@@ -1,6 +1,9 @@
-#include<random>
+#include<fstream>
+#include<iostream>
 #include<limits>
 #include<memory>
+#include<random>
+#include<string>
 
 #include "Graph.hpp"
 #include "GraphUtils.hpp"
@@ -352,4 +355,38 @@ namespace graphgen {
                                 (*graph_gen)(seed), this->node_count, this->matching_seed);
                     }
             };
+
+    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+        struct GraphId : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+            public:
+                graph::Graph<Id, NodeWeight, EdgeWeight> graph;
+
+                GraphId(graph::Graph<Id, NodeWeight, EdgeWeight> const& graph) : 
+                    graph(graph) {}
+
+                graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                    return graph;
+                }
+        };
+
+    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+        struct FromFile : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+            private:
+                graph::Graph<Id, NodeWeight, EdgeWeight> graph;
+
+            public:
+                FromFile(std::string filename) {
+                    if (filename == std::string("-")) {
+                        std::cin >> graph;
+                    } else {
+                        std::ifstream file(filename);
+                        file >> graph;
+                    }
+                }
+
+                graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                    return graph;
+                }
+        };
+
 }

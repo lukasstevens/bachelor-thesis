@@ -90,12 +90,12 @@ TEST(Graph, ContractEdges) {
     std::stringstream graph_stream("3 3 011\n1 1 1 2 2\n2 0 1 2 3\n2 0 2 1 3\n"); 
     graph_stream >> graph;
     graph::Graph<>::Matching matching({std::make_pair(0, 1)});
-    graph::Graph<> contracted_graph = graph.contract_edges(matching);
-    ASSERT_EQ(contracted_graph.node_cnt(), 2);
-    ASSERT_EQ(contracted_graph.edge_weight(0, 1), 5);
-    ASSERT_EQ(contracted_graph.inc_edges(0).size(), 1);
-    ASSERT_EQ(contracted_graph.node_repr(0), graph::Graph<>::NodeSet({0, 1}));
-    ASSERT_EQ(contracted_graph.node_repr(1), graph::Graph<>::NodeSet({2}));
+    graph.contract_edges(matching);
+    ASSERT_EQ(graph.node_cnt(), 2);
+    ASSERT_EQ(graph.edge_weight(0, 1), 5);
+    ASSERT_EQ(graph.inc_edges(0).size(), 1);
+    ASSERT_EQ(graph.node_repr(0), graph::Graph<>::NodeSet({0, 1}));
+    ASSERT_EQ(graph.node_repr(1), graph::Graph<>::NodeSet({2}));
 }
 
 // Metis sometimes violates the constraints because of rounding errors. Therefore this function checks
@@ -224,5 +224,24 @@ TEST(GenGraph, Mst) {
     graphgen::Mst<> mst_gen(graph_gen);
     auto graph = mst_gen(); 
     graph.partition(2, graph::Rational(1, 2));
+    ASSERT_EQ(graph.node_cnt(), 30);
+}
+
+TEST(GenGraph, Rst) {
+    std::shared_ptr<graphgen::IGraphGen<>>
+        graph_gen(new graphgen::GraphPrefAttach<>(30, 100));
+    graphgen::Rst<> rst_gen(graph_gen);
+    auto graph = rst_gen(); 
+    graph.partition(2, graph::Rational(1, 2));
+    ASSERT_EQ(graph.node_cnt(), 30);
+}
+
+TEST(GenGraph, Contract) {
+    std::shared_ptr<graphgen::IGraphGen<>>
+        graph_gen(new graphgen::TreeRandAttach<>(60));
+    graphgen::ContractToN<> contract_gen(graph_gen, 30);
+    auto graph = contract_gen(); 
+    graph.partition(2, graph::Rational(1, 2));
+    ASSERT_EQ(graph.node_cnt(), 30);
 }
 

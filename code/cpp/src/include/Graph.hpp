@@ -365,7 +365,7 @@ namespace graph {
                     return cost;
                 }
 
-                Graph<Id, NodeWeight, EdgeWeight> contract_edges(Matching const& matching) {
+                void contract_edges(Matching const& matching) {
                     Graph<Id, NodeWeight, EdgeWeight> result_graph(this->node_cnt() - matching.size());
                     std::vector<bool> is_in_result_graph(this->node_cnt());
                     std::vector<Id> node_in_result_graph(this->node_cnt());
@@ -408,8 +408,7 @@ namespace graph {
                             }
                         }
                     }
-
-                    return result_graph;
+                    *this = result_graph;
                 }
         };
 }

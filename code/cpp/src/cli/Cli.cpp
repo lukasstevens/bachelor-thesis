@@ -2,6 +2,7 @@
 #include<functional>
 #include<iostream>
 #include<limits>
+#include<memory>
 #include<string>
 
 #include<args.hxx>
@@ -12,6 +13,7 @@
 enum Output {
     GRAPHVIZ_GRAPH_PARTITION,
     PARTITION,
+    GRAPH,
     TIME,
     CUT_COST,
     GRAPHVIZ_GRAPH,
@@ -56,7 +58,7 @@ Result run_part_method(
 }
 
 void run_gen_group(
-        graphgen::IGraphGen<>* generator,
+        std::shared_ptr<graphgen::IGraphGen<>> const& generator,
         int kparts,
         graph::Rational imbalance, 
         std::vector<PartMethods> part_methods,
@@ -148,6 +150,10 @@ void run_gen_group(
                     }
                     std::cout << std::endl;
                     break;
+                case GRAPH:
+                    std::cout << graph;
+                    std::cout << std::endl;
+                    break;
             }
         }
     }
@@ -186,7 +192,8 @@ int main(int argc, char** argv) {
             {"time", Output::TIME},
             {"cut_cost", Output::CUT_COST},
             {"graphviz_graph", Output::GRAPHVIZ_GRAPH},
-            {"decomp_graph", Output::DECOMP_GRAPH}
+            {"decomp_graph", Output::DECOMP_GRAPH},
+            {"graph", Output::GRAPH}
             });
     std::string output_options("OPTIONS:");
     for (auto const& option : output_map) {
@@ -284,46 +291,56 @@ int main(int argc, char** argv) {
                 throw args::ValidationError("Graph generator required");
             }
 
-            graphgen::IGraphGen<>* generator = nullptr;
+            std::shared_ptr<graphgen::IGraphGen<>> generator(nullptr);
             switch (args::get(graph_gen)) {
                 case TREE_RAND_ATTACH:
                     generator =
-                        new graphgen::TreeRandAttach<>(
-                                args::get(node_count),
-                                args::get(max_degree)
+                        std::shared_ptr<graphgen::IGraphGen<>>(
+                                new graphgen::TreeRandAttach<>(
+                                    args::get(node_count),
+                                    args::get(max_degree)
+                                    )
                                 );
                     break;
                 case TREE_PREF_ATTACH:
                     generator =
-                        new graphgen::TreePrefAttach<>(
-                                args::get(node_count),
-                                args::get(max_degree)
+                        std::shared_ptr<graphgen::IGraphGen<>>(
+                                new graphgen::TreePrefAttach<>(
+                                    args::get(node_count),
+                                    args::get(max_degree)
+                                    )
                                 );
                     break;
                 case TREE_FAT:
                     generator = 
-                        new graphgen::TreeFat<>(
-                                args::get(node_count),
-                                std::make_pair(
-                                    args::get(min_child_cnt),
-                                    args::get(max_child_cnt)
+                        std::shared_ptr<graphgen::IGraphGen<>>(
+                                new graphgen::TreeFat<>(
+                                    args::get(node_count),
+                                    std::make_pair(
+                                        args::get(min_child_cnt),
+                                        args::get(max_child_cnt)
+                                        )
                                     )
                                 );
                     break;
                 case GRAPH_EDGE_PROB:
                     generator =
-                        new graphgen::GraphEdgeProb<>(
-                                args::get(node_count),
-                                args::get(edge_prob),
-                                args::get(max_degree)
+                        std::shared_ptr<graphgen::IGraphGen<>>(
+                                new graphgen::GraphEdgeProb<>(
+                                    args::get(node_count),
+                                    args::get(edge_prob),
+                                    args::get(max_degree)
+                                    )
                                 );
                     break;
                 case GRAPH_PREF_ATTACH:
                     generator =
-                        new graphgen::GraphPrefAttach<>(
-                                args::get(node_count),
-                                args::get(edge_count),
-                                args::get(max_degree)
+                        std::shared_ptr<graphgen::IGraphGen<>>(
+                                new graphgen::GraphPrefAttach<>(
+                                    args::get(node_count),
+                                    args::get(edge_count),
+                                    args::get(max_degree)
+                                    )
                                 );
                     break;
             }
@@ -337,8 +354,6 @@ int main(int argc, char** argv) {
                     args::get(seed),
                     args::get(tries)
                     );
-
-            delete generator;
         }
     }
     catch (args::Help)
