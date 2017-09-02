@@ -134,7 +134,7 @@ void run(
                             std::cout << std::endl;
                         }
                         if (output_mod != OutputMod::ORIG_GRAPH) {
-                            std::cout << graphio::PrintGraphviz<>(graph);
+                            std::cout << graphio::PrintGraphviz<>(tree_part_graph);
                             std::cout << std::endl;
                         }
                         break;
@@ -172,7 +172,7 @@ void run(
                             std::cout << std::endl;
                         }
                         if (output_mod != OutputMod::ORIG_GRAPH) {
-                            std::cout << graph;
+                            std::cout << tree_part_graph;
                             std::cout << std::endl;
                         }
                         break;
@@ -232,7 +232,7 @@ int main(int argc, char** argv) {
     std::unordered_map<std::string, OutputMod> output_mod_map({
             {"graph", OutputMod::ORIG_GRAPH},
             {"tree", OutputMod::TREE},
-            {"time", OutputMod::BOTH},
+            {"both", OutputMod::BOTH},
             });
     args::MapFlag<std::string, OutputMod> output_mod(
             parser, "output modifier",
@@ -423,7 +423,8 @@ int main(int argc, char** argv) {
         if (file_list) {
             for (auto file : args::get(file_list)) {
                 tree_part_graphs.emplace_back(new graphgen::FromFile<>(file));
-                orig_graphs.emplace_back(new graphgen::FromFile<>(file));
+                auto graph = (*tree_part_graphs.back())();
+                orig_graphs.emplace_back(new graphgen::GraphId<>(graph));
             }
         }
 
