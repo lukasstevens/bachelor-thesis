@@ -1,4 +1,5 @@
 #include<chrono>
+#include<cstdint>
 #include<functional>
 #include<iostream>
 #include<limits>
@@ -29,14 +30,14 @@ enum PartMethods {
 
 struct Result {
     std::string method_name;
-    graph::PartitionResult<int, int> part_result;
+    graph::PartitionResult<int32_t, int32_t> part_result;
     std::chrono::milliseconds time_elapsed;
 
     Result() = default;
 
     Result(
             std::string method_name,
-            graph::PartitionResult<int, int> part_result,
+            graph::PartitionResult<int32_t, int32_t> part_result,
             std::chrono::milliseconds time_elapsed
           ) : 
         method_name(method_name), part_result(part_result),
@@ -46,7 +47,7 @@ struct Result {
 
 Result run_part_method(
         std::string method_name,
-        std::function<graph::PartitionResult<int,int>()> method
+        std::function<graph::PartitionResult<int32_t,int32_t>()> method
         ) {
     using namespace std::chrono;
     auto start = steady_clock::now();
@@ -59,7 +60,7 @@ Result run_part_method(
 
 void run_gen_group(
         std::shared_ptr<graphgen::IGraphGen<>> const& generator,
-        int kparts,
+        int32_t kparts,
         graph::Rational imbalance, 
         std::vector<PartMethods> part_methods,
         std::vector<Output> output,
@@ -230,11 +231,11 @@ int main(int argc, char** argv) {
             gen_group, "graph_gen", "Graph generator to use. " + graph_gen_options,
             {'g', "generator"}, graph_gen_map);
 
-    args::ValueFlag<int> node_count(
+    args::ValueFlag<int32_t> node_count(
             gen_group, "node count", "The number of nodes when using a graph generator.",
             {'n', "nodes"});
 
-    args::ValueFlag<int> edge_count(
+    args::ValueFlag<int32_t> edge_count(
             gen_group, "edge count",
             "The number of edges when using the graph_pref_attach generator.",
             {'e', "edges"});
@@ -248,23 +249,23 @@ int main(int argc, char** argv) {
             gen_group,
             "Child count range for tree_fat, max_degree for everything else.",
             args::Group::Validators::Xor);
-    args::ValueFlag<int> max_degree(
+    args::ValueFlag<int32_t> max_degree(
             degree_group, "max degree", "The maximum degree of a node when using a graph generator.",
-            {'d', "max_degree"}, std::numeric_limits<int>::max());
+            {'d', "max_degree"}, std::numeric_limits<int32_t>::max());
     args::Group child_count_group(
             degree_group,
             "Lower and upper exclusive child count must be specified.",
             args::Group::Validators::All
             );
-    args::ValueFlag<int> min_child_cnt(
+    args::ValueFlag<int32_t> min_child_cnt(
             child_count_group, "min child count", "The minimum number of childs in a fat tree.",
             {"min_child"});
-    args::ValueFlag<int> max_child_cnt(
+    args::ValueFlag<int32_t> max_child_cnt(
             child_count_group, "max child count", "The maximum number of childs in a fat tree.",
             {"max_child"});
 
 
-    args::ValueFlag<int> kparts(
+    args::ValueFlag<int32_t> kparts(
             parser, "kparts", "The number of parts to partition into.",
             {'k', "kparts"}, 0);
     args::ValueFlag<graph::Rational> imbalance(
