@@ -77,22 +77,31 @@ namespace graph {
 
             std::vector<bool> visited(graph.node_cnt());
             Id visited_cnt = 0;
-            while(visited_cnt < graph.node_cnt()) {
+            while(!prio_q.empty()) {
                 EdgeWeight edge_weight;
-                Id from;
-                Id to;
-                std::tie(edge_weight, from, to) = prio_q.top();
+                Id prev_node;
+                Id curr_node;
+                std::tie(edge_weight, prev_node, curr_node) = prio_q.top();
                 prio_q.pop();
-                if (!visited.at(to)) {
-                    visited_cnt += 1;
-                    mst_graph.edge_weight(from, to, edge_weight);
-                    visited.at(to) = true;
+
+                if (visited.at(curr_node)) {
+                    continue;
                 }
+                visited_cnt += 1;
+                mst_graph.edge_weight(prev_node, curr_node, edge_weight);
+                visited.at(curr_node) = true;
+
                 for (auto const& neighbor :
-                        graph.inc_edges(to)) {
+                        graph.inc_edges(curr_node)) {
                     if (!visited.at(neighbor.first)) {
-                        prio_q.emplace(neighbor.second, to, neighbor.first);
+                        prio_q.emplace(neighbor.second, curr_node, neighbor.first);
                     }
+                }
+            }
+
+            for (Id node = 0; node < graph.node_cnt(); ++node) {
+                if (!visited[node]) {
+                    mst_graph.edge_weight(node, 0, 0);
                 }
             }
             mst_graph.remove_edge(0, 0);
@@ -116,25 +125,36 @@ namespace graph {
 
             std::vector<bool> visited(graph.node_cnt());
             Id visited_cnt = 0;
-            while(visited_cnt < graph.node_cnt()) {
+            while(!prio_q.empty()) {
                 EdgeWeight priority;
                 EdgeWeight edge_weight;
-                Id from;
-                Id to;
-                std::tie(priority, edge_weight, from, to) = prio_q.top();
+                Id prev_node;
+                Id curr_node;
+                std::tie(priority, edge_weight, prev_node, curr_node) = prio_q.top();
                 prio_q.pop();
-                if (!visited.at(to)) {
-                    visited_cnt += 1;
-                    rst_graph.edge_weight(from, to, edge_weight);
-                    visited.at(to) = true;
+
+                if (visited.at(curr_node)) {
+                    continue;
                 }
+                visited_cnt += 1;
+                rst_graph.edge_weight(prev_node, curr_node, edge_weight);
+                visited.at(curr_node) = true;
+
                 for (auto const& neighbor :
-                        graph.inc_edges(to)) {
+                        graph.inc_edges(curr_node)) {
                     if (!visited.at(neighbor.first)) {
-                        prio_q.emplace(rand_gen(), neighbor.second, to, neighbor.first);
+                        prio_q.emplace(rand_gen(), neighbor.second,
+                                curr_node, neighbor.first);
                     }
                 }
             }
+
+            for (Id node = 0; node < graph.node_cnt(); ++node) {
+                if (!visited[node]) {
+                    rst_graph.edge_weight(node, 0, 0);
+                }
+            }
+
             rst_graph.remove_edge(0, 0);
             return rst_graph;
         }

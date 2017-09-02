@@ -243,12 +243,6 @@ namespace graphgen {
                         }
                     }
 
-                    for (Id node = 0; node < graph.node_cnt(); ++node) {
-                        // Make the graph connected by adding edges with weight 0.
-                        // This has no influence on the cut costs in the graph.
-                        graph.add_edge_weight(node, (node + 1) % graph.node_cnt(), 0);
-                    }
-
                     return graph;
                 }
             };
@@ -294,12 +288,6 @@ namespace graphgen {
                                 graph.edge_weight(from_node, to_node, edge_weight);
                             }
                         }
-                    }
-
-                    for (Id node = 0; node < graph.node_cnt(); ++node) {
-                        // Make the graph connected by adding edges with weight 0.
-                        // This has no influence on the cut costs in the graph.
-                        graph.add_edge_weight(node, (node + 1) % graph.node_cnt(), 0);
                     }
 
                     return graph;
