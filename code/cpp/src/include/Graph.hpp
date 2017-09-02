@@ -353,7 +353,7 @@ namespace graph {
                             std::make_pair(cut_cost, partitioning_formatted));
                 }
 
-                EdgeWeight partition_cost(std::vector<Id> const& partition) {
+                EdgeWeight partition_cost(std::vector<Id> const& partition) const {
                     EdgeWeight cost = 0;
                     for (Id node = 0; node < this->node_cnt(); ++node) {
                         for (auto const& edge : this->inc_edges(node)) {
