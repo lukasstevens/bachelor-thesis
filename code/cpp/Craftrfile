@@ -12,6 +12,7 @@ libhdecomp = load('hdecomp').hdecomp
 paths = { 
         'metis' : 'deps/metis',
         'kahip' : 'deps/KaHIP',
+        'hdecomp' : 'deps/hierarchical-decomposition'
         }
 
 includes = ['src/include', 'src/main',
@@ -69,6 +70,13 @@ run = runtarget(test_bin,
 
 run_cutting = runtarget(test_bin, 
         '--gtest_filter=Run.DISABLED_FromStdinCutting', '--gtest_also_run_disabled_tests')
+
+run_hdecomp = gentarget(
+        [['java', '-jar', 'build/libs/hierarchical-decomposition.jar']],
+        explicit=True,
+        cwd=local(paths['hdecomp']),
+        pool='console'
+        )
 
 gdb = gentarget([['gdb', '--args', test_bin]], pool='console', explicit=True)
 
