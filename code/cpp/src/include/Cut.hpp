@@ -121,7 +121,7 @@ namespace cut {
      * For an explanation of the types 
      * @see Node
      */
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct Tree {
             public:
                 using Node = Node<Id, NodeWeight, EdgeWeight>; /**< Type of a Node according to template parameters */
@@ -359,7 +359,7 @@ namespace cut {
      * This class is used to build a SignaturesForTree object.
      * We need this class since the members of the SignaturesForTree class are constant.
      */
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct SignaturesForTreeBuilder {
             public:
                 using Tree = Tree<Id, NodeWeight, EdgeWeight>; /**< The tree type with the given template parameters. */

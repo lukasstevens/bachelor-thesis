@@ -1,3 +1,4 @@
+#include<cstdint>
 #include<fstream>
 #include<iostream>
 #include<limits>
@@ -10,7 +11,7 @@
 
 namespace graphgen {
 
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct IGraphGen {
             public:
                 virtual ~IGraphGen() {}
@@ -24,8 +25,8 @@ namespace graphgen {
             return dist(rand_gen);
         }
 
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct TreeRandAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
@@ -67,8 +68,8 @@ namespace graphgen {
                 }
             };
 
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct TreePrefAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
@@ -127,8 +128,8 @@ namespace graphgen {
 
             };
 
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct TreeFat : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
@@ -176,8 +177,8 @@ namespace graphgen {
                     }
             };
 
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct GraphPrefAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
@@ -247,8 +248,8 @@ namespace graphgen {
                 }
             };
     
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct GraphEdgeProb : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
@@ -294,8 +295,8 @@ namespace graphgen {
                 }
             };
 
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t>
             struct Mst : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
@@ -308,8 +309,8 @@ namespace graphgen {
                     }
             };
 
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct Rst : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
@@ -325,8 +326,8 @@ namespace graphgen {
                     }
             };
 
-    template<typename Id=int, typename NodeWeight=int,
-        typename EdgeWeight=int, typename RandGen=std::mt19937_64>
+    template<typename Id=int32_t, typename NodeWeight=int32_t,
+        typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct ContractToN : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
@@ -344,7 +345,7 @@ namespace graphgen {
                     }
             };
 
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct GraphId : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             public:
                 graph::Graph<Id, NodeWeight, EdgeWeight> graph;
@@ -357,7 +358,7 @@ namespace graphgen {
                 }
         };
 
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct FromFile : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             private:
                 graph::Graph<Id, NodeWeight, EdgeWeight> graph;

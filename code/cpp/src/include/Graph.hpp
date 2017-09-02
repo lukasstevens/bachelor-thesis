@@ -2,6 +2,7 @@
 #pragma once
 
 #include<algorithm>
+#include<cstdint>
 #include<limits>
 #include<list>
 #include<set>
@@ -18,7 +19,7 @@
 
 namespace graph {
 
-    template<typename Id=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename EdgeWeight=int32_t>
         using PartitionResult = std::pair<EdgeWeight, std::vector<Id>>;
 
     using Rational = cut::Rational;
@@ -107,7 +108,7 @@ namespace graph {
             }
     };
 
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct Graph {
             public :
                 using NodeSet = std::set<Id>;

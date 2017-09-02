@@ -1,6 +1,7 @@
 /** @file GraphIo.hpp */
 #pragma once
 
+#include<cstdint>
 #include<iostream>
 #include<sstream>
 
@@ -97,7 +98,7 @@ std::ostream& operator<<(std::ostream& os, graph::Graph<Id, NodeWeight, EdgeWeig
 }
 
 namespace graphio {
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct PrintGraphviz {
             graph::Graph<Id, NodeWeight, EdgeWeight> const& graph;
             bool const is_zero_indexed;
@@ -140,7 +141,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 namespace graphio {
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct ReadTreeFormat {
             graph::Graph<Id, NodeWeight, EdgeWeight>& graph;
             bool const is_zero_indexed;
@@ -175,7 +176,7 @@ std::istream& operator>>(std::istream& is, graphio::ReadTreeFormat<Id, NodeWeigh
 }
 
 namespace graphio {
-    template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct PrintDecompFmt {
             graph::Graph<Id, NodeWeight, EdgeWeight> const& graph;
             bool const is_zero_indexed;
@@ -186,7 +187,7 @@ namespace graphio {
         };
 }
 
-template<typename Id=int, typename NodeWeight=int, typename EdgeWeight=int>
+template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
 std::ostream& operator<<(std::ostream& os, graphio::PrintDecompFmt<Id, NodeWeight, EdgeWeight> const& print) {
 
     os << "p " << print.graph.node_cnt() <<  " " << print.graph.edge_cnt() << "\n";
