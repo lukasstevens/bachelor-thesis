@@ -18,7 +18,7 @@ std::istream& operator>>(std::istream& is, graph::Graph<Id, NodeWeight, EdgeWeig
     std::vector<bool*> fmt({&has_node_sizes, &has_node_weights, &has_edge_weights});
 
     std::string line;
-    while (std::getline(is, line) && line.front() == '%') {
+    while (std::getline(is, line) && (line.front() == '%' || line.empty())) {
         // Skip lines with comments
     }
 
