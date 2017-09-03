@@ -16,7 +16,7 @@ Auch in Abbildung~\ref{fig:runnodes} wird ersichtlich, dass eine Erhöhung der K
 Damit kann der Algorithmus dieser Arbeit, im Gegensatz zu den Heuristiken METIS und KaHIP, in der Praxis nicht für größere Bäume eingesetzt werden.
 Beide Heuristiken sind in der Lage auch Graphen mit mehr als $100000$ Knoten zu partitionieren.~\cite{KK98, SS13}
 
-Eine weitere Beobachtung, die aus Abbildung~\ref{fig:runnodes} hervorgeht, ist die geringe Streuung der Messwerte bei vollständig balancierten Binärbäumen, die durch das in Sektion\ref{sec:exprun} beschrieben Verfahren generiert wurden.
+Eine weitere Beobachtung, die aus Abbildung~\ref{fig:runnodes} hervorgeht, ist die geringe Streuung der Messwerte bei vollständig balancierten Binärbäumen, die durch das in Sektion~\ref{sec:exprun} beschrieben Verfahren generiert wurden.
 Da jedes Level des Binärbaums bis auf das letzte vollständig mit Knoten gefüllt ist, haben alle generierten Bäume für eine feste Knotenanzahl die gleiche Struktur.
 Wie oben beschrieben dominiert für festes $k$ und $\eps$ die Schnittphase die Laufzeit.
 Deshalb führen alle generierten Binärbäume zur einer ähnlichen Laufzeit, da die berechneten Signaturen in der Schnittphase allein von der Struktur des Baums abhängig sind.
@@ -27,7 +27,8 @@ Auf dieses Verhalten wird weiter unten genauer eingegangen.
 Nun wird die Auswirkung des maximalen Ungleichgewichts der Partitionierung $\eps$ auf die Laufzeit untersucht, der auschließlich einen negativen Einfluss auf die Laufzeit hat.
 Während bei der Knotenanzahl $n$ steigende Werte die Laufzeit erhöhen, sind es bei $\eps$ fallende.
 Die theoretische Analyse der Laufzeiten für die Schnittphase und die Packphase aus Sektion~\ref{sec:treepartitioning} zeigt, dass die Laufzeit für konstantes $n$ und $k$ mindestens exponentiell mit fallendem $\eps$ steigt.
-\todo{Kann man hier wirklich exponentielle Steigerung sehen?} Die Werte für Random Attachment, Preferrential Attachment und Binärbäume in Abbildung~\ref{fig:runimb} weisen für die Parameterwahl $n = 100$ und $k = 2$ zumindest eine exponentielle Entwicklung auf.
+\todo{Kann man hier wirklich exponentielle Steigerung sehen?} Die Werte für Random Attachment, Preferrential Attachment und Binärbäume in Abbildung~\ref{fig:runimb} lassen für die Parameterwahl $n = 100$ und $k = 2$ zumindest eine exponentielle Entwicklung erahnen.
+\todo[inline]{Auf höhere Streuung bei höherem eps eingehen? Evtl Profiling?}
 
 Der letzte Parameter des Algorithmus ist die Anzahl der Partitionen $k$. 
 Aus der Sektion~\ref{sec:treepartitioning} wissen wir, dass $k$ sowohl in die Laufzeit der Schnittphase, als auch in die Laufzeit der Packphase einfließt.
@@ -56,8 +57,8 @@ Auf der anderen Seite zeigt die Abbildung~\ref{fig:runkparts}, dass schon für $
 \end{table}
 
 Zuletzt wird die Entwicklung der Laufzeit für steigenden Maximalgrad $\Delta$ des Baums analysiert.
-Feldmann und Foschini~\cite{ff13} zeigten, dass das $(k, 1)$\hyp Partitionierungsproblem bereits ab einem Maximalgrad von $\Delta=5$ NP-schwer ist.
-Für einen Maximalgrad von $\Delta=2$ ist das Problem noch in P, da es sich bei dem Graphen dann um einen Pfad handelt.
+Feldmann und Foschini~\cite{ff13} zeigten, dass das $(k, 1)$\hyp Partitionierungsproblem bereits ab einem Maximalgrad von $\Delta=5$ $NP$\hyp schwer ist.
+Für einen Maximalgrad von $\Delta=2$ ist das Problem noch in $P$, da es sich bei dem Graphen dann um einen Pfad oder einen Kreis handelt.
 Weiterhin kann der Algorithmus von MacGregor~\cite{mcg78} angepasst werden, um einen Algorithmus mit Approximationsfaktor $\bigO(\Delta \log_\Delta(n/k))$ zu erhalten.~\cite{ff13}
 Daraus folgt, dass das Problem mit wachsendem Maximalgrad $\Delta$ schwieriger wird.
 Die Experimente, welche durch Abbildung~\ref{fig:rundeg} visualisiert werden, zeigen jedoch, dass die Laufzeit mit wachsendem Maximalgrad abnimmt.
@@ -71,14 +72,13 @@ Andererseits ist die Anzahl der Knoten die keine rechtes Kind dann hoch, wenn al
 Warum also sollte die Laufzeit sinken?
 
 Für ein intuitives Verständnis betrachten wir dazu nur den Spezialfall eines vollständig balancierten $d$\hyp ären Baums, der einen Maximalgrad von $\Delta = d + 1$ hat.
-Ein $d$\hyp ärer Baum $T$ der Höhe $h$ hat $d^h$ Blätter.
-Damit haben genau $d^h$ Knoten von $T$ kein Kind, da der Baum vollständig balanciert ist.
+Ein $d$\hyp ärer Baum $T$ der Höhe $h$ hat $d^h$ Blätter und damit haben genau $d^h$ Knoten von $T$ kein Kind.
 Um die Anzahl der Knoten zu bestimmen, die kein linkes Geschwisterkind haben betrachten wir die Level des Baums.
 In jedem Level hat der erste Knoten des Levels kein linkes Geschwisterkind.
 Ferner hat auch jeder $d+1$\hyp te Knoten kein Geschwisterkind, da sonst der Elternknoten mehr als $d$ Kinder haben müsste.
-Da das Level $l$ genau $d^{l}$ Knoten enthält, ist die Anzahl der Knoten ohne linken Geschwisterknoten
+Da das Level $\ell$ genau $d^{\ell}$ Knoten enthält, ist die Anzahl der Knoten ohne linken Geschwisterknoten
 \begin{equation*}
-    \sum_{l=1}^{h} \frac{d^l}{d} = \frac{d^h - 1}{d - 1}.
+    \sum_{\ell=1}^{h} \frac{d^\ell}{d} = \frac{d^h - 1}{d - 1}.
 \end{equation*}
 Hierbei wurde die Wurzel vernachlässigt, da dort die Signaturen nur anhand der Signaturen des rechten Kinds berechnet werden.
 Weiterhin ist die Anzahl der Knoten im Baum $n = 1 + d + d^2 + \ldots + d^h = (d^{h+1} - 1)/(d - 1)$ oder anders ausgedrückt, hat $T$ eine Höhe $h = \log_d((d-1)n + 1)) - 1$.

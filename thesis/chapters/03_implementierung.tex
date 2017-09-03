@@ -71,8 +71,8 @@ Dafür wird zunächst der Begriff Level definiert.
 
 \begin{defn}[Level]\label{def:level}
     Sei $T = (V,E)$ ein Baum mit Wurzel $r$ und sei für jeden Knoten $v \in V$ eine Ordnung seiner Kindknoten gegeben.
-    Ein Level $L_T(l)$ ist die Menge aller Knoten, die eine Distanz von $l$ zu $r$ haben.
-    Die Knoten in $L_T(l)$ erhalten eine Ordnung, die sich aus der Ordnung der Kindknoten ableitet.
+    Ein Level $L_T(\ell)$ ist die Menge aller Knoten, die eine Distanz von $\ell$ zu $r$ haben.
+    Die Knoten in $L_T(\ell)$ erhalten eine Ordnung, die sich aus der Ordnung der Kindknoten ableitet.
 \end{defn}
 
 Beginnend mit Level $k$ werden alle Level bis Level $1$ durchlaufen.
@@ -425,7 +425,7 @@ Hierbei sind die Typen \texttt{IdType} und \texttt{EdgeWeightType} Integer.
 Ein Knoten $v$ wird durch den Integer \texttt{id} identifiziert. 
 Weiterhin speichert $v$ das Gewicht der Kante, die zu seinem Elternknoten führt, im Feld \texttt{parent\_edge\_weight}.
 Die Felder \texttt{parent\_idx} und \texttt{children\_idx\_range} werden verwendet, um die Struktur des Baums abbzubilden.
-Wenn $v$ nach Definition~\ref{def:level} im Level $l$ liegt, dann speichert das Feld \texttt{parent\_idx} den Index des Elternknotens im Level $l-1$, während das Feld \texttt{children\_idx\_range} die Indices der Kinder von $v$ im Level $l+1$ speichert.
+Wenn $v$ nach Definition~\ref{def:level} im Level $\ell$ liegt, dann speichert das Feld \texttt{parent\_idx} den Index des Elternknotens im Level $\ell-1$, während das Feld \texttt{children\_idx\_range} die Indices der Kinder von $v$ im Level $\ell+1$ speichert.
 Das Feld \texttt{children\_idx\_range} stellt einen rechtsexklusiven Bereich dar, das heißt, $v$ hat genau dann keine Kinder, wenn die beiden Indices des Bereichs gleich sind.
 Weiterhin kann mit dem Feld \texttt{children\_idx\_range} des Elternknotens von $v$, welcher mit \texttt{parent\_idx} ermittelt wird, der linke Geschwisterknoten von $v$ gefunden werden, falls er existiert.
 Insgesamt ist es mit diesen Informationen und den Signaturen des linken Geschwisterknotens und des rechtesten Kinds von $v$ möglich, die Signaturen am Knoten $v$ zu berechnen.

@@ -15,9 +15,9 @@
 \newcommand{\calV}{\mathcal{V}}
 
 \chapter{Theoretischer Hintergrund}\label{chapter:theorie}
-\section{Berechnungskomplexität von perfekt ausgewogenen Partitionierungen \todo{Titel!}}
+\section{Berechnungskomplexität von perfekt ausgewogenen Partitionierungen \todo{Titel!}}\label{sec:complex}
 Wie bereits im vorherigem Kapitel geschildert, ist das $(2,1)$\hyp Partitionierungsproblem, auch \todo{Minimum-Bisection erklären?} Minimum-Bisection-Problem genannt, ein wohlbekanntes Thema in der Forschung. 
-Es ist bereits länger bekannt, dass es sich beim Minimum-Bisection-Problem um ein NP-vollständiges Problem handelt~\parencite{gj79}.
+Es ist bereits länger bekannt, dass es sich beim Minimum-Bisection-Problem um ein $NP$\hyp vollständiges Problem handelt~\parencite{gj79}.
 In jüngerer Vergangenheit wurde von Feige und Krauthgamer ein polynomieller Algorithmus präsentiert, der das Problem mit einem polylogarithmischen Approximationsfaktor löst. \parencite{fk02}
 Wie sich herausstellte, lässt sich dieses Ergebnis jedoch nicht auf auf das $(k,1)$\hyp Partitionierungsproblem übertragen.
 Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem, wobei $k$ keine Konstante ist, geben.
@@ -33,7 +33,7 @@ Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist,
         \sum_{i=1}^{n} a_i = kA.
     \end{equation*}
     Nun soll entschieden werden, ob eine Partitionierung der Zahlen $a_1, \ldots, a_n$ in $k$ Tripel, die alle zu $A$ summieren, möglich ist. 
-    In \parencite{gj79} wurde die starke NP-Vollständigkeit dieses Problems gezeigt, das heißt, es ist auch schon NP-vollständig, wenn sowohl alle $a_i$, als auch $A$, polynomiell beschränkt sind.
+    In \parencite{gj79} wurde die starke $NP$\hyp Vollständigkeit dieses Problems gezeigt, das heißt, es ist auch schon $NP$\hyp vollständig, wenn sowohl alle $a_i$, als auch $A$, polynomiell beschränkt sind.
     Seien die $a_i$ und $A$ im Folgenden polynomiell beschränkt.
 
     \noindent Wir nehmen zum Widerspruch an, dass wir einen Approximationsalgorithmus $\apxalg$ mit endlichem Approximationsfaktor für das $(k,1)$\hyp Partitionierungsproblem haben. 
@@ -47,7 +47,7 @@ Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist,
 \end{proof}
 
 Weiterhin wurde dieses Ergebnis in \parencite{ff13} verfeinert. 
-Dort wurde gezeigt, dass das $(k,1)$\hyp Partitionierungsproblem auch dann NP-vollständig bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
+Dort wurde gezeigt, dass das $(k,1)$\hyp Partitionierungsproblem auch dann $NP$\hyp vollständig bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
 Insbesondere wurden ungewichtete Bäume mit Maximaldurchmesser $4$, das heißt, die Länge des längsten Pfades zwischen zwei beliebigen Blättern ist höchstens $4$, betrachtet.
 Schon für diese Bäume kann für das $(k,1)$\hyp Partitionierungsproblem kein Approximationsalgorithmus mit Approximationsfaktor $n^c$ für beliebige Konstanten $c < 1$ gefunden werden.
 Auch für ungewichtete Bäume mit maximalen Knotengrad $5$ kann es keinen polynomiellen Algorithmus geben.
@@ -210,7 +210,7 @@ Der folgende Satz aus \parencite{ff13} zeigt, dass die oben genannten rekursiven
 \subsection{Die Packphase}\label{sec:packing}
 In der ersten Phase gibt der Algorithmus Mengen von Zusammenhangskomponenten $\calS \in \bbS$ und deren zugehörige optimale Schnittkosten aus.
 Um zu überprüfen, ob eine Menge von Zusammenhangskomponenten $\calS$ für eine gültige $(k,1+\eps)$\hyp Partitionierung des Graphen verwendet werden kann, versucht der Algorithmus in der zweiten Phase die Komponenten in $\calS$ in höchstens $k$ Behälter der Größe $(1 + \eps) \ceil*{n/k}$ zu packen.
-Dieses Problem, genannt Bin-Packing-Problem, ist generell NP-vollständig, da es eine Verallgemeinerung des stark NP-vollständigen 3\hyp Partitionierungsproblems (siehe Satz~\ref{thm:np_comp}) ist.
+Dieses Problem, genannt Bin-Packing-Problem, ist generell $NP$\hyp vollständig, da es eine Verallgemeinerung des stark $NP$\hyp vollständigen 3\hyp Partitionierungsproblems (siehe Satz~\ref{thm:np_comp}) ist.
 Jedoch haben Hochbaum und Shmoys in \parencite{hs86} einen Algorithmus entwickelt, der das Problem in polynomieller Zeit für konstantes $\eps$ löst.
 Im Weiteren wird dieser Algorithmus beschrieben, wie er in \parencite{hs86, va13} vorgestellt wurde.
 

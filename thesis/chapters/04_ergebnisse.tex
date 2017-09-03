@@ -19,13 +19,13 @@ Dabei wird eine neues Blatt nicht zufällig mit einer uniformen Verteilung an ei
 Bei den beiden oben genannten Heuristiken kann zusätzlich noch ein Maximalgrad für die Knoten des Baums festgelegt werden.
 Die dritte Heuristik sind sogenannte Fat Trees.
 Für diese Heuristik wird wiederum mit einem Knoten in Level $0$ gestartet.
-Für das Level $l \geq 1$ des Baums wird aus einer gegebenen Menge zufällig eine Zahl $d$ ausgewählt.
-Dann werden an alle Knoten des Levels $l - 1$ genau $d$ Kinder angehängt.
+Für das Level $\ell \geq 1$ des Baums wird aus einer gegebenen Menge zufällig eine Zahl $d$ ausgewählt.
+Dann werden an alle Knoten des Levels $\ell - 1$ genau $d$ Kinder angehängt.
 Dies wird wiederholt, bis der Baum die gewünschte Anzahl an Knoten hat. 
 Dementsprechend kann es sein, dass das letzte Level nicht vollständig mit Knoten gefüllt ist.
 Fat Trees sind eine Verallgemeinerung von fast vollständigen $d$\hyp ären Bäumen.
 Wir erhalten einen vollständig balancierten $d$\hyp ären Baum, indem wir die Menge der möglichen Kinderanzahlen des Fat Trees auf $\{d\}$ setzen.
-Des Weiteren Kantengewichte der Bäume werden für alle Heuristiken mit einer uniformen Zufallsverteilung aus dem Bereich $[1, 100]$ gewählt.
+Für alle Heuristiken werden die Kantengewichte der Bäume mit einer uniformen Zufallsverteilung aus dem Bereich $[1, 100]$ gewählt.
 \todo[inline]{Eventuell Visualisierungen, Definition fast vollständiger Baum?}
 
 \subsection{Laufzeit}\label{sec:exprun}
@@ -39,7 +39,7 @@ Alle Zeitmessungen wurden auf einem System mit $8$ GB Arbeitsspeicher und einem 
 
 In den Abbildungen~\ref{fig:runnodes},~\ref{fig:runimb},~\ref{fig:runkparts} und~\ref{fig:rundeg} werden die gemessenen Zeiten mit Boxplots dargestellt.
 Ein Boxplot besteht aus einer oberen Antenne, einer unteren Antenne, dem oberen Quartil, dem unteren Quartil und dem Median.
-\todo{Was soll mit den Ausreißern gemacht werden?} Die obere Antenne und die untere Antenne stellen jeweils das Maximum beziehungsweise das Minimum der gemessenen Werte dar, falls es keine Ausreißer gibt, die weit vom Rest der Werte entfernt sind.
+\todo{Was soll mit den Ausreißern gemacht werden?, Vielleicht so lassen, aber average statt median?} Die obere Antenne und die untere Antenne stellen jeweils das Maximum beziehungsweise das Minimum der gemessenen Werte dar, falls es keine Ausreißer gibt, die weit vom Rest der Werte entfernt sind.
 In den Messergebnissen kamen in fast allen Fällen pro 20 Durchläufen höchstens drei Ausreißer nach oben vor.
 Nur für kleines $\eps$ kamen bis zu fünf Ausreißer vor.
 Weiterhin liegen $75\%$ der gemessen Werte unterhalb des oberen Quartils, während $25\%$ unterhalb des unteren Quartils liegen.
@@ -54,7 +54,7 @@ Es wurde jeweils eine Baum mit $200$, $400$ und $800$ Knoten generiert und der A
 Dies führte bei $200$ Knoten zu einer Laufzeit von einer Sekunde, bei $400$ zu 16 Sekunden und bei $800$ Knoten wurde der Prozess terminiert da der Arbeitsspeicher vollständig ausgeschöpft wurde.
 \begin{figure}[t]
     \centering
-    \scalebox{0.8}{\includestandalone{figures/trees/runtime/node_count}}
+    \scalebox{1.0}{\includestandalone{figures/trees/runtime/node_count}}
     \caption{Laufzeit in Abhängigkeit der Knotenanzahl}\label{fig:runnodes}
 \end{figure}
 
@@ -63,7 +63,7 @@ Ein Ungleichgewicht von $\eps$ bedeutet, dass jede Partition der ermittelten Par
 Wie oben erwähnt, sind die Werte für kleines $\eps$ weiter gestreut.
 \begin{figure}[t]
     \centering
-    \scalebox{0.8}{\includestandalone{figures/trees/runtime/imbalance}}
+    \scalebox{1.0}{\includestandalone{figures/trees/runtime/imbalance}}
     \caption{Laufzeit in Abhängigkeit des Ungleichgewichts}\label{fig:runimb}
 \end{figure}
 
@@ -72,7 +72,7 @@ Auch hier führt die Wahl von $\eps=1/5$ zu einer größeren Streuung.
 Weiterhin gilt zu bemerken, dass die Laufzeit für steigendes $k$ zunächst zunimmt und dann wieder abnimmt.
 \begin{figure}
     \centering
-    \scalebox{0.8}{\includestandalone{figures/trees/runtime/kparts}}
+    \scalebox{1.0}{\includestandalone{figures/trees/runtime/kparts}}
     \caption{Laufzeit in Abhängigkeit der Teilanzahl}\label{fig:runkparts}
 \end{figure}
 
@@ -83,7 +83,7 @@ Anstatt eines Binärbaums wurde ein $d$\hyp ärer Baum betrachtet und die Entwic
 Wie zu sehen ist nimmt die Laufzeit mit wachsendem Maximalgrad ab.
 \begin{figure}
     \centering
-    \scalebox{0.8}{\includestandalone{figures/trees/runtime/max_degree}}
+    \scalebox{1.0}{\includestandalone{figures/trees/runtime/max_degree}}
     \caption{Laufzeit in Abhängigkeit des Maximalgrads}\label{fig:rundeg}
 \end{figure}
 

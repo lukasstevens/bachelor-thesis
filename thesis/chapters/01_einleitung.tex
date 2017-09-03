@@ -2,6 +2,41 @@
 % Add the above to each chapter to make compiling the PDF easier in some editors.
 
 \chapter{Einleitung}\label{chapter:introduction}
+Die fortschreitende Verbesserung der Fertigungtechnologien von Transistoren ermöglicht einen ständigen Anstieg der Rechenleistung.
+Während sich die Fertigungtechnologien immer mehr den physikalischen Grenzen nähern, werden neue Möglichkeiten erforscht die Rechenleistung zu steigern.
+Um dies zu erreichen kann die gewonnene Fläche auf einem Computerchip, die durch eine Verkleinerung der Transistoren entsteht, für weitere Prozessorkerne verwendet werden.
+Heutzutage werden Mehrkernarchitekturen von Servern bis zu Mobiltelefonen überall verwendet.
+Um mehrere Kerne effektiv nutzen zu können, muss die Software jedoch auch im Hinblick auf Parallelismus entwickelt werden.
+In vielen Fällen ist eine Parallelisierung schwer zu erreichen.
+Aber auch wenn eine Parallelisierung möglich ist, wie zum Beispiel beim Videoencoding, entstehen mitunter signifikante Kosten, wenn Prozesse auf verschieden Kernen miteinander kommunizieren.~\cite{LTS09}
+
+Die Effektivität von parallelen Anwendungen kann also erhöht werden, indem die Prozesse so auf Kerne verteilt werden, dass die Interprozesskommunikation möglichst auf den jeweiligen Kern beschränkt ist.
+Das Kommunikationsnetzwerk der Prozesse lässt sich als ein ungerichteter einfacher Graph $G = (V, E)$ modellieren.
+Hierbei repräsentiert jeder Knoten $v \in V$ einen Prozess.
+Eine Kante $\{u, v\} \in E$ mit $u, v \in V$ sagt aus, dass der Prozess $u$ mit dem Prozess $v$ kommuniziert.
+Weiterhin wird eine Gewichtsfunktion $\weight : E \rightarrow \reals_{>0}$ verwendet, um das Kommunikationsvolumen zwischen zwei Prozessen zu quantifizieren.
+Eine Verteilung der Prozesse auf Prozessoren entspricht einer Partitionierung des Graphen $G$, also einer Unterteilung der Knoten in disjunkte Teilmengen.
+Wenn wir nun $k$ Prozessoren haben und zusätzlich alle Teilmengen in etwa dieselbe Größe haben sollen, dann erhalten wir das $(k, 1 + \eps)$\hyp Partitionierungsproblem.
+
+\begin{defn}
+    Gegeben sei ein ungerichteter Graph $G = (V, E)$ mit $n$ Knoten und $m$ Kanten.
+    Weiterhin seien die Kanten durch die Funktion $\weight : E \rightarrow \reals_{> 0}$ gewichtet.
+    Das Problem, eine Partitionierung von $G$ in $k$ Partitionen zu finden, wobei jede Partition maximal $(1 + \eps) \ceil{n/k}$ Knoten enthält, wird $(k,1 + \eps)$\hyp Partitionierungsproblem genannt.
+    Die Kosten einer Lösung ist die Summe aller Gewichte von Kanten $\{u, v\}$, für die $u$ und $v$ in verschiedenen Partitionen liegen.
+    Der Spezialfall $\eps=0$ wird $k$\hyp balanciertes Partitionierungsproblem genannt.
+\end{defn}
+
+Für das Aufteilen der Prozesse sind wir an einer Lösung des $(k, 1 + \eps)$\hyp Partitionierungsproblems interessiert, welche die Kosten der Partitionierung minimiert.
+Auch in anderen Domänen tritt dieses Problem auf, wobei ein Beispiel das Design von integrierten Schaltungen ist.
+Dort müssen größere Schaltkreise auf mehrere Komponenten mit etwa gleicher Größe verteilt werden, wobei jede Komponente einen separaten Chip darstellt.
+Da Leitungen zwischen den Chips unter anderem zu einer höheren Latenz führen und einen mehr Energie verbrauchen, soll die Anzahl dieser minimiert werden.
+
+Allerdings ist es nicht praktikabel das $k$\hyp balancierte Partitionierungsproblem zu lösen, da schon der Fall $k=2$, der als das Minimum-Bisection-Problem bekannt ist, NP-schwer ist.~\cite{gj79}
+Deswegen werden Approximationsalgorithmen verwendet, um an das Problem heranzugehen.
+Diese Algorithmen geben nicht die optimale Lösung aus, haben jedoch einen Approximationsfaktor $\alpha$, das heißt, die durch den Algorithmus gefundene Lösung ist um nicht mehr als einen Faktor $\alpha$ von der Optimallösung entfernt.
+Wenn $k$ nicht konstant ist, dann ist eine Approximation der Optimallösung des $k$\hyp balancierten Partitionierungsproblems nicht in polynomieller möglich, außer es gilt $P=NP$.
+Der Beweis von Andreev und Räcke~\cite{ar06} dazu wird in Sektion~\ref{sec:complex} präsentiert.
+
 \section{Problemdefinition}
 \section{Ziel der Arbeit}
 \section{Vorherige Beiträge}
