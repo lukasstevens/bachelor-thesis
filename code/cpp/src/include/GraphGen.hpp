@@ -210,22 +210,36 @@ namespace graphgen {
                             gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
                     }
 
-                    // We choose 1 as degree since the weights for the
-                    // discrete probability distribution must not sum up to 0.
                     std::vector<Id> degree(graph.node_cnt(), 1);
+                    Id degree_sum = graph.node_cnt();
 
                     for (Id edge_idx = 0; edge_idx < this->edge_cnt;) {
-                        std::discrete_distribution<Id> from_dist(degree.cbegin(),
-                                degree.cend());
-                        Id from_node = from_dist(rand_gen);  
+                        std::uniform_int_distribution<Id> dist(0, degree_sum);
 
-                        Id from_node_degree = degree.at(from_node);
-                        // Set the weight of from_node to 0 to avoid loops.
-                        degree.at(from_node) = 0;
-                        std::discrete_distribution<Id> to_dist(degree.cbegin(),
-                                degree.cend());
-                        Id to_node = to_dist(rand_gen);
-                        degree.at(from_node) = from_node_degree;
+                        Id from_node_deg = dist(rand_gen);  
+                        Id from_node = 0;
+                        Id to_node_deg = dist(rand_gen);
+                        Id to_node = 0;
+
+                        for (Id node = 0; node < graph.node_cnt(); ++node) {
+                            if (degree[node] >= from_node_deg) {
+                                from_node = node;
+                                break;
+                            }
+                            from_node_deg -= degree[node];
+                        }
+
+                        for (Id node = 0; node < graph.node_cnt(); ++node) {
+                            if (degree[node] >= to_node_deg) {
+                                to_node = node;
+                                break;
+                            }
+                            to_node_deg -= degree[node];
+                        }
+
+                        if (from_node == to_node) {
+                            to_node = (to_node + 1) % graph.node_cnt();
+                        }
 
                         bool const node_degs_l_max = degree.at(from_node) < this->max_degree &&
                             degree.at(to_node) < this->max_degree;
@@ -240,6 +254,7 @@ namespace graphgen {
                             if (!exists_edge) {
                                 degree.at(from_node) += 1;
                                 degree.at(to_node) += 1;
+                                degree_sum += 2;
                             }
                             ++edge_idx;
                         }
