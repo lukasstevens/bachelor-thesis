@@ -92,10 +92,8 @@ void run(
                     case TREE_PARTITION:
                         results.push_back(run_part_method(
                                     "Tree_Partition",
-                                    [tree_part_graph, graph, kparts, imbalance](){
-                                    auto partition = tree_part_graph.partition(kparts, imbalance);
-                                    return std::make_pair(
-                                            graph.partition_cost(partition.second), partition.second);
+                                    [tree_part_graph, kparts, imbalance](){
+                                    return tree_part_graph.partition(kparts, imbalance);
                                     })
                                 );
                         break;
@@ -140,7 +138,11 @@ void run(
                         break;
                     case GRAPHVIZ_GRAPH_PARTITION:
                         for (auto const& result : results) {
-                            std::cout << graphio::PrintGraphviz<>(graph, result.part_result.second);
+                            if (result.method_name == "Tree_Partition") {
+                                std::cout << graphio::PrintGraphviz<>(tree_part_graph, result.part_result.second);
+                            } else {
+                                std::cout << graphio::PrintGraphviz<>(graph, result.part_result.second);
+                            }
                             std::cout << std::endl;
                         }
                         std::cout << std::endl;
@@ -322,16 +324,18 @@ int main(int argc, char** argv) {
     enum Prep {
         MST,
         RST,
-        CONTRACT
+        CONTRACT,
+        CONTRACT_INF
     };
     std::unordered_map<std::string, Prep> prep_map({
             {"mst", Prep::MST},
             {"rst", Prep::RST},
-            {"contract", Prep::CONTRACT}
+            {"contract", Prep::CONTRACT},
+            {"contract_inf", Prep::CONTRACT_INF}
             });
     args::MapFlagList<std::string, Prep> prep_list(
             prep_group, "Preprocessing", "Preprocessing step for tree partition. " + option_string(prep_map),
-            {'p', "prep"}, prep_map);
+            {'p', "tree_prep"}, prep_map);
     args::ValueFlag<int32_t> contract_to_flag(
             prep_group, "Number of nodes to contract to",
             "Number of nodes to contract to when using contract preprocessing.",
@@ -349,7 +353,7 @@ int main(int argc, char** argv) {
             {"tree_file"});
     args::ValueFlagList<std::string> graph_file_list(
             file_group, "graph files", "Read a graph from file.",
-            {"tree_file"});
+            {"graph_file"});
 
     try
     {
@@ -462,6 +466,12 @@ int main(int argc, char** argv) {
                         for (auto& tree : tree_part_graphs) {
                             tree = std::shared_ptr<graphgen::IGraphGen<>>(
                                     new graphgen::ContractToN<>(tree, args::get(contract_to_flag)));
+                        }
+                        break;
+                    case CONTRACT_INF:
+                        for (auto& tree : tree_part_graphs) {
+                            tree = std::shared_ptr<graphgen::IGraphGen<>>(
+                                    new graphgen::ContractInfEdges<>(tree));
                         }
                         break;
                 }
