@@ -362,19 +362,60 @@ namespace graphgen {
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct FromFile : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             private:
-                graph::Graph<Id, NodeWeight, EdgeWeight> graph;
+                std::vector<graph::Graph<Id, NodeWeight, EdgeWeight>> graphs;
 
             public:
-                FromFile(std::string filename) {
+                FromFile(std::string filename, size_t graph_cnt) {
                     if (filename == std::string("-")) {
-                        std::cin >> graph;
+                        for (size_t graph_idx = 0; graph_idx < graph_cnt; ++graph_idx) {
+                            graphs.emplace_back();
+                            std::cin >> graphs.back();
+                        }
                     } else {
                         std::ifstream file(filename);
-                        file >> graph;
+                        for (size_t graph_idx = 0; graph_idx < graph_cnt; ++graph_idx) {
+                            graphs.emplace_back();
+                            file >> graphs.back();
+                        }
                     }
                 }
 
                 graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                    return graphs.at(seed);
+                }
+        };
+
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
+        struct ContractInfEdges : public IGraphGen<Id, NodeWeight, EdgeWeight> {
+            public:
+                std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
+                EdgeWeight infty;
+
+                ContractInfEdges(
+                        std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
+                        EdgeWeight infty = std::numeric_limits<EdgeWeight>::max()
+                        ) : graph_gen(graph_gen), infty(infty) {}
+
+                graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                    using Graph = graph::Graph<Id, NodeWeight, EdgeWeight>;
+                    Graph graph = (*this->graph_gen)(seed);
+                    typename Graph::Matching matching;
+                    do {
+                        matching = typename Graph::Matching();
+                        std::vector<bool> is_matched(graph.node_cnt());
+                        for (Id node = 0; node < graph.node_cnt(); ++node) {
+                            for (auto const& edge : graph.inc_edges(node)) {
+                                if (edge.second == this->infty &&
+                                        !is_matched.at(node) && !is_matched.at(edge.first)) {
+                                    matching.emplace_back(node, edge.first);
+                                    is_matched[node] = true;
+                                    is_matched[edge.first] = true;
+                                }
+                            }
+                        } 
+                        graph.contract_edges(matching);
+                    } while (matching.size() > 0);
+
                     return graph;
                 }
         };
