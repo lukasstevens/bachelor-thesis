@@ -257,7 +257,7 @@ namespace graph {
                         return CsrGraph<Idx>(metis_xadj, metis_adjncy, metis_vwgt, metis_adjwgt);
                     }
 
-                PartitionResult convert_part_to_node_repr(PartitionResult const& part_result) const {
+                std::vector<Id> convert_part_to_node_repr(std::vector<Id> const& partitioning) const {
                     size_t node_repr_count = 0;
                     for (Id node = 0; node < this->node_cnt(); ++node) {
                         node_repr_count += this->node_repr(node).size(); 
@@ -266,10 +266,10 @@ namespace graph {
                     std::vector<Id> part_repr(node_repr_count);
                     for (Id node = 0; node < this->node_cnt(); ++node) {
                         for (auto const& node_rep : this->node_repr(node)) {
-                            part_repr.at(node_rep) = part_result.second.at(node);
+                            part_repr.at(node_rep) = partitioning.at(node);
                         }
                     }
-                    return std::make_pair(part_result.first, part_repr);
+                    return part_repr;
                 }
 
                 MetisCsrGraph to_metis_graph() const {
@@ -279,13 +279,13 @@ namespace graph {
                 PartitionResult partition_metis_recursive(idx_t kparts, Rational imbalance) const {
                     auto const part_res = this->to_metis_graph().part_graph_recursive(
                             kparts, static_cast<real_t>(1 + imbalance.get_d()));
-                    return this->convert_part_to_node_repr(part_res);
+                    return part_res;
                 } 
 
                 PartitionResult partition_metis_kway(idx_t kparts, Rational imbalance) const {
                     auto const part_res = this->to_metis_graph().part_graph_kway(
                             kparts, static_cast<real_t>(1 + imbalance.get_d()));
-                    return this->convert_part_to_node_repr(part_res);
+                    return part_res;
                 } 
 
                 KahipCsrGraph to_kahip_graph() const {
@@ -294,7 +294,7 @@ namespace graph {
 
                 PartitionResult partition_kaffpa(int kparts, Rational imbalance, long seed=0) const {
                     auto const part_res = this->to_kahip_graph().kaffpa(kparts, imbalance.get_d(), seed);
-                    return this->convert_part_to_node_repr(part_res);
+                    return part_res;
                 } 
 
                 bool is_tree() const {
@@ -349,8 +349,7 @@ namespace graph {
                             partitioning_formatted.at(node) = part_idx;
                         }
                     }
-                    return this->convert_part_to_node_repr(
-                            std::make_pair(cut_cost, partitioning_formatted));
+                    return std::make_pair(cut_cost, partitioning_formatted);
                 }
 
                 EdgeWeight partition_cost(std::vector<Id> const& partition) const {
