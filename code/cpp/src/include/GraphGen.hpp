@@ -365,7 +365,7 @@ namespace graphgen {
                 std::vector<graph::Graph<Id, NodeWeight, EdgeWeight>> graphs;
 
             public:
-                FromFile(std::string filename, size_t graph_cnt) {
+                FromFile(std::string filename, size_t graph_cnt=1) {
                     if (filename == std::string("-")) {
                         for (size_t graph_idx = 0; graph_idx < graph_cnt; ++graph_idx) {
                             graphs.emplace_back();
