@@ -125,7 +125,7 @@ std::ostream& operator<<(std::ostream& os,
         }
         os << "\"";
         if (print.partition.size() != 0) {
-            os << "style=filled, color=\"/spectral9/";
+            os << ", style=filled, color=\"/spectral9/";
             os << (print.partition.at(node) + 1) << "\"";
         }
         os << "];\n";
