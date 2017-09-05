@@ -223,9 +223,15 @@ namespace graphgen {
                     for (Id from_node = this->edge_cnt_p_node; from_node < graph.node_cnt(); ++from_node) {
                         for (Id edge_idx = 0; edge_idx < this->edge_cnt_p_node;) {
 
-                            std::discrete_distribution<Id> dist(degree.cbegin(),
-                                    degree.cbegin() + from_node);
-                            Id to_node = dist(rand_gen);
+                            std::uniform_int_distribution<Id> to_node_deg_dist(0, degree_sum);
+                            Id to_node_deg = to_node_deg_dist(rand_gen);
+                            Id to_node;
+                            for (to_node = 0;; ++to_node) {
+                                if (to_node_deg <= degree[to_node]) {
+                                    break;
+                                }
+                                to_node_deg -= degree[to_node];
+                            }
 
                             bool const node_degs_l_max = degree.at(from_node) < this->max_degree &&
                                 degree.at(to_node) < this->max_degree;
@@ -239,13 +245,13 @@ namespace graphgen {
                                 if (!exists_edge) {
                                     degree.at(from_node) += 1;
                                     degree.at(to_node) += 1;
-                                    degree_sum += 2;
+                                    degree_sum += 1;
                                 }
 
                                 ++edge_idx;
                             }
                         }
-
+                        degree_sum += degree[from_node];
                     }
                     return graph;
                 }
