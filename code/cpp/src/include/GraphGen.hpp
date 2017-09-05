@@ -183,20 +183,20 @@ namespace graphgen {
             struct GraphPrefAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     Id node_cnt;
-                    Id edge_cnt;
+                    Id edge_cnt_p_node;
                     Id max_degree;
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
 
                 GraphPrefAttach(
                         Id node_cnt,
-                        Id edge_cnt,
+                        Id edge_cnt_p_node,
                         Id max_degree = std::numeric_limits<Id>::max(),
                         std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
                         std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
                         ) :
                     node_cnt(node_cnt),
-                    edge_cnt(edge_cnt),
+                    edge_cnt_p_node(edge_cnt_p_node),
                     max_degree(max_degree),
                     node_weight_range(node_weight_range),
                     edge_weight_range(edge_weight_range) {}
@@ -210,60 +210,47 @@ namespace graphgen {
                             gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
                     }
 
-                    std::vector<Id> degree(graph.node_cnt(), 1);
-                    Id degree_sum = graph.node_cnt();
-
-                    for (Id edge_idx = 0; edge_idx < this->edge_cnt;) {
-                        std::uniform_int_distribution<Id> dist(0, degree_sum);
-
-                        Id from_node_deg = dist(rand_gen);  
-                        Id from_node = 0;
-                        Id to_node_deg = dist(rand_gen);
-                        Id to_node = 0;
-
-                        for (Id node = 0; node < graph.node_cnt(); ++node) {
-                            if (degree[node] >= from_node_deg) {
-                                from_node = node;
-                                break;
-                            }
-                            from_node_deg -= degree[node];
-                        }
-
-                        for (Id node = 0; node < graph.node_cnt(); ++node) {
-                            if (degree[node] >= to_node_deg) {
-                                to_node = node;
-                                break;
-                            }
-                            to_node_deg -= degree[node];
-                        }
-
-                        if (from_node == to_node) {
-                            to_node = (to_node + 1) % graph.node_cnt();
-                        }
-
-                        bool const node_degs_l_max = degree.at(from_node) < this->max_degree &&
-                            degree.at(to_node) < this->max_degree;
-                        bool const node_degs_leq_max = degree.at(from_node) <= this->max_degree &&
-                            degree.at(to_node) <= this->max_degree;
-                        bool const exists_edge = graph.exists_edge(from_node, to_node);
-                        if (node_degs_l_max ||
-                                (node_degs_leq_max && exists_edge)) {
-                            EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
-                                    rand_gen, this->edge_weight_range);
-                            graph.add_edge_weight(from_node, to_node, edge_weight);
-                            if (!exists_edge) {
-                                degree.at(from_node) += 1;
-                                degree.at(to_node) += 1;
-                                degree_sum += 2;
-                            }
-                            ++edge_idx;
-                        }
+                    std::vector<Id> degree(graph.node_cnt(), 0);
+                    Id degree_sum = 0;
+                    for (Id node = 0; node < edge_cnt_p_node; ++node) {
+                        graph.edge_weight(node, (node + 1) % edge_cnt_p_node, 
+                                gen_rand_in_range<EdgeWeight, RandGen>(rand_gen, this->edge_weight_range));
+                        degree.at(node) += 1;
+                        degree.at((node + 1) % edge_cnt_p_node) += 1;
+                        degree_sum += 2;
                     }
 
+                    for (Id from_node = this->edge_cnt_p_node; from_node < graph.node_cnt(); ++from_node) {
+                        for (Id edge_idx = 0; edge_idx < this->edge_cnt_p_node;) {
+
+                            std::discrete_distribution<Id> dist(degree.cbegin(),
+                                    degree.cbegin() + from_node);
+                            Id to_node = dist(rand_gen);
+
+                            bool const node_degs_l_max = degree.at(from_node) < this->max_degree &&
+                                degree.at(to_node) < this->max_degree;
+                            bool const exists_edge = graph.exists_edge(from_node, to_node);
+                            if (node_degs_l_max) {
+
+                                EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
+                                        rand_gen, this->edge_weight_range);
+                                graph.add_edge_weight(from_node, to_node, edge_weight);
+
+                                if (!exists_edge) {
+                                    degree.at(from_node) += 1;
+                                    degree.at(to_node) += 1;
+                                    degree_sum += 2;
+                                }
+
+                                ++edge_idx;
+                            }
+                        }
+
+                    }
                     return graph;
                 }
             };
-    
+
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct GraphEdgeProb : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -274,41 +261,41 @@ namespace graphgen {
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
 
-                GraphEdgeProb(
-                        Id node_cnt,
-                        double edge_prob,
-                        Id max_degree = std::numeric_limits<Id>::max(),
-                        std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
-                        std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
-                        ) :
-                    node_cnt(node_cnt),
-                    edge_prob(edge_prob),
-                    max_degree(max_degree),
-                    node_weight_range(node_weight_range),
-                    edge_weight_range(edge_weight_range) {}
+                    GraphEdgeProb(
+                            Id node_cnt,
+                            double edge_prob,
+                            Id max_degree = std::numeric_limits<Id>::max(),
+                            std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
+                            std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
+                            ) :
+                        node_cnt(node_cnt),
+                        edge_prob(edge_prob),
+                        max_degree(max_degree),
+                        node_weight_range(node_weight_range),
+                        edge_weight_range(edge_weight_range) {}
 
-                graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
-                    RandGen rand_gen(seed);
+                    graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                        RandGen rand_gen(seed);
 
-                    graph::Graph<Id, NodeWeight, EdgeWeight> graph(this->node_cnt);
-                    for (Id node = 0; node < graph.node_cnt(); ++node) {
-                        graph.node_weight(node, 
-                            gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
-                    }
-                    
-                    for (Id from_node = 0; from_node < graph.node_cnt(); ++from_node) {
-                        for (Id to_node = from_node + 1; to_node < graph.node_cnt(); ++to_node) {
-                            std::bernoulli_distribution edge_prob_dist(this->edge_prob);
-                            if (edge_prob_dist(rand_gen)) {
-                                EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
-                                        rand_gen, this->edge_weight_range);
-                                graph.edge_weight(from_node, to_node, edge_weight);
+                        graph::Graph<Id, NodeWeight, EdgeWeight> graph(this->node_cnt);
+                        for (Id node = 0; node < graph.node_cnt(); ++node) {
+                            graph.node_weight(node, 
+                                    gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
+                        }
+
+                        for (Id from_node = 0; from_node < graph.node_cnt(); ++from_node) {
+                            for (Id to_node = from_node + 1; to_node < graph.node_cnt(); ++to_node) {
+                                std::bernoulli_distribution edge_prob_dist(this->edge_prob);
+                                if (edge_prob_dist(rand_gen)) {
+                                    EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
+                                            rand_gen, this->edge_weight_range);
+                                    graph.edge_weight(from_node, to_node, edge_weight);
+                                }
                             }
                         }
-                    }
 
-                    return graph;
-                }
+                        return graph;
+                    }
             };
 
     template<typename Id=int32_t, typename NodeWeight=int32_t,
@@ -350,9 +337,11 @@ namespace graphgen {
                     Id node_count;
                     size_t matching_seed;
 
-                    ContractToN(std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
+                    ContractToN(
+                            std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
                             Id node_count,
-                            size_t matching_seed=0) :
+                            size_t matching_seed=0
+                            ) : 
                         graph_gen(graph_gen), node_count(node_count), matching_seed(matching_seed) {}
 
                     graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {

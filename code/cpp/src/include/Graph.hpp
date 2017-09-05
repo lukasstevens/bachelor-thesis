@@ -114,6 +114,7 @@ namespace graph {
                 using NodeSet = std::set<Id>;
                 using Matching = std::vector<std::pair<Id, Id>>;
                 using PartitionResult = PartitionResult<Id, EdgeWeight>;
+                using Edge = std::tuple<Id, Id, EdgeWeight>;
 
             private:
 
@@ -151,12 +152,7 @@ namespace graph {
                 }
 
                 Id edge_cnt() const {
-                    Id edge_cnt = 0;
-                    for (auto const& adj_nodes : adjncy) {
-                        edge_cnt += adj_nodes.size();
-                    }
-                    // Edges are counted at both endpoints.
-                    return edge_cnt / 2;
+                    return this->edge_set().size();
                 }
 
                 NodeWeight node_weight(Id node) const {
@@ -194,6 +190,18 @@ namespace graph {
                 void remove_edge(Id from_node, Id to_node) {
                     this->adjncy.at(from_node).erase(to_node);
                     this->adjncy.at(to_node).erase(from_node);
+                }
+
+                std::vector<Edge> edge_set() const {
+                    std::vector<Edge> edge_set;
+                    for (Id node = 0; node < this->node_cnt(); ++node) {
+                        for (auto const& inc_edge : this->inc_edges(node)) {
+                            if (inc_edge.first >= node) {
+                                edge_set.emplace_back(node, inc_edge.first, inc_edge.second);
+                            }
+                        }
+                    }
+                    return edge_set;
                 }
 
                 std::vector<Id> adj_nodes(Id node) const {
@@ -366,6 +374,19 @@ namespace graph {
                 }
 
                 void contract_edges(Matching const& matching) {
+                    std::vector<bool> is_matched(this->node_cnt());
+                    for (auto const& edge : matching) {
+                        auto match = [&is_matched](Id node){
+                            if (!is_matched.at(node)) {
+                                is_matched[node] = true;
+                            } else {
+                                throw std::logic_error("Not a matching.");
+                            }
+                        };
+                        match(edge.first);
+                        match(edge.second);
+                    }
+
                     Graph<Id, NodeWeight, EdgeWeight> result_graph(this->node_cnt() - matching.size());
                     std::vector<bool> is_in_result_graph(this->node_cnt());
                     std::vector<Id> node_in_result_graph(this->node_cnt());
@@ -388,7 +409,7 @@ namespace graph {
                         curr_node += 1;
                     }
 
-                    for (Id node = 0; static_cast<size_t>(node) < is_in_result_graph.size(); ++node) {
+                    for (Id node = 0; node < this->node_cnt(); ++node) {
                         if (!is_in_result_graph[node]) {
                             result_graph.node_weight(curr_node, this->node_weight(node));
                             result_graph.vrepr.at(curr_node) = this->node_repr(node);
@@ -398,7 +419,7 @@ namespace graph {
                         }
                     }
 
-                    for (Id node = 0; static_cast<size_t>(node) < this->node_cnt(); ++node) {
+                    for (Id node = 0; node < this->node_cnt(); ++node) {
                         for (auto const& inc_edge : this->inc_edges(node)) {
                             Id const from_in_res = node_in_result_graph.at(node);
                             Id const to_in_res = node_in_result_graph.at(inc_edge.first);
