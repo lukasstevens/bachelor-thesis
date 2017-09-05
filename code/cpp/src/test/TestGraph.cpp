@@ -229,7 +229,7 @@ TEST(GenGraph, Mst) {
 
 TEST(GenGraph, Rst) {
     std::shared_ptr<graphgen::IGraphGen<>>
-        graph_gen(new graphgen::GraphPrefAttach<>(30, 100));
+        graph_gen(new graphgen::GraphPrefAttach<>(30, 10));
     graphgen::Rst<> rst_gen(graph_gen);
     auto graph = rst_gen(); 
     graph.partition(2, graph::Rational(1, 2));
@@ -245,3 +245,32 @@ TEST(GenGraph, Contract) {
     ASSERT_EQ(graph.node_cnt(), 30);
 }
 
+// TEST(Graph, Hdecomp) {
+//     using IGraphGen = std::shared_ptr<graphgen::IGraphGen<>>;
+//      IGraphGen tree_gen(new graphgen::ContractInfEdges<>(IGraphGen(
+//             new graphgen::FromFile<>("resources/tree.graph"))));
+//     auto tree = (*tree_gen)();
+//     IGraphGen graph_gen(new graphgen::FromFile<>("resources/graph.graph"));
+//     auto graph = (*graph_gen)();
+// 
+//     auto tree_part_res = tree.partition(3, graph::Rational(1, 3));
+//     auto graph_part_res = graph.partition_kaffpa(3, graph::Rational(1, 3));
+// 
+//     std::cerr << tree_part_res.first << " " << graph_part_res.first;
+//     auto tree_part_repr = tree.convert_part_to_node_repr(tree_part_res.second);
+//     auto actual_tree_cost = graph.partition_cost(std::vector<int32_t>(
+//                 tree_part_repr.cbegin(), tree_part_repr.cbegin() + graph.node_cnt()));
+//     std::cerr << " " << actual_tree_cost;
+// }
+
+TEST(Graph, ContractBigGraph) {
+    std::shared_ptr<graphgen::IGraphGen<>> graph_gen(
+            new graphgen::GraphPrefAttach<>(200, 10));
+    graph::Graph<> graph = (*graph_gen)(0);
+    for (int32_t node = 0; node < graph.node_cnt(); ++node) {
+        for (auto const& edge : graph.inc_edges(node)) {
+            ASSERT_NE(node, edge.first);
+        }
+    }
+    graph::contract_to_n_nodes(graph, 100);
+}
