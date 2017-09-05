@@ -270,10 +270,10 @@ int main(int argc, char** argv) {
             gen_group, "node count", "The number of nodes when using a graph generator.",
             {'n', "nodes"});
 
-    args::ValueFlag<int32_t> edge_count(
-            gen_group, "edge count",
-            "The number of edges when using the graph_pref_attach generator.",
-            {'e', "edges"});
+    args::ValueFlag<int32_t> edge_cnt_p_node(
+            gen_group, "edge count per node",
+            "The number of edges per node when using the graph_pref_attach generator.",
+            {'e', "edges_p_node"});
 
     args::ValueFlag<double> edge_prob(
             gen_group, "edge probability",
@@ -414,7 +414,7 @@ int main(int argc, char** argv) {
                         std::shared_ptr<graphgen::IGraphGen<>>(
                                 new graphgen::GraphPrefAttach<>(
                                     args::get(node_count),
-                                    args::get(edge_count),
+                                    args::get(edge_cnt_p_node),
                                     args::get(max_degree)
                                     )
                                 );
