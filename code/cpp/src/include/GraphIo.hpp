@@ -177,6 +177,44 @@ std::istream& operator>>(std::istream& is, graphio::ReadTreeFormat<Id, NodeWeigh
 
 namespace graphio {
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
+        struct ReadSnapFormat {
+            graph::Graph<Id, NodeWeight, EdgeWeight>& graph;
+
+            ReadSnapFormat(graph::Graph<Id, NodeWeight, EdgeWeight>& graph) :
+                graph(graph) {}
+        };
+}
+
+template<typename Id, typename NodeWeight, typename EdgeWeight>
+std::istream& operator>>(std::istream& is, graphio::ReadSnapFormat<Id, NodeWeight, EdgeWeight>& read) {
+    Id node_cnt;
+    Id edge_cnt;
+    is >> node_cnt >> edge_cnt;
+    // Delete everything in the graph first.
+    std::unordered_map<Id, Id> node_labels;
+    Id node_label = 0;
+    read.graph = graph::Graph<Id, NodeWeight, EdgeWeight>(node_cnt);
+    for (Id edge_idx = 0; edge_idx < edge_cnt; ++edge_idx) {
+        Id from_node;
+        Id to_node;
+        is >> from_node >> to_node;
+        if (node_labels.find(from_node) == node_labels.cend()) {
+            node_labels[from_node] = node_label;
+            node_label += 1;
+        }
+        if (node_labels.find(to_node) == node_labels.cend()) {
+            node_labels[to_node] = node_label;
+            node_label += 1;
+        }
+        read.graph.edge_weight(
+                node_labels.at(from_node), node_labels.at(to_node), 1);
+    }
+
+    return is;
+}
+
+namespace graphio {
+    template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct PrintDecompFmt {
             graph::Graph<Id, NodeWeight, EdgeWeight> const& graph;
             bool const is_zero_indexed;
