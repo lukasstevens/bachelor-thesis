@@ -359,13 +359,16 @@ namespace graphgen {
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct GraphId : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             public:
-                graph::Graph<Id, NodeWeight, EdgeWeight> graph;
+                std::vector<graph::Graph<Id, NodeWeight, EdgeWeight>> graphs;
 
                 GraphId(graph::Graph<Id, NodeWeight, EdgeWeight> const& graph) : 
-                    graph(graph) {}
+                    graphs({graph}) {}
+
+                GraphId(std::vector<graph::Graph<Id, NodeWeight, EdgeWeight>> graphs) :
+                    graphs(graphs) {}
 
                 graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
-                    return graph;
+                    return graphs.at(seed);
                 }
         };
 
@@ -373,25 +376,45 @@ namespace graphgen {
         struct FromFile : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             private:
                 std::vector<graph::Graph<Id, NodeWeight, EdgeWeight>> graphs;
+                std::string filename;
+                bool do_read_on_demand;
 
             public:
-                FromFile(std::string filename, size_t graph_cnt=1) {
-                    if (filename == std::string("-")) {
-                        for (size_t graph_idx = 0; graph_idx < graph_cnt; ++graph_idx) {
-                            graphs.emplace_back();
-                            std::cin >> graphs.back();
-                        }
-                    } else {
-                        std::ifstream file(filename);
-                        for (size_t graph_idx = 0; graph_idx < graph_cnt; ++graph_idx) {
-                            graphs.emplace_back();
-                            file >> graphs.back();
+                FromFile(std::string filename, size_t graph_cnt=1, bool do_read_on_demand=false) :
+                    filename(filename), do_read_on_demand(do_read_on_demand) {
+                        if (!do_read_on_demand) {
+                            if (filename == std::string("-")) {
+                                for (size_t graph_idx = 0; graph_idx < graph_cnt; ++graph_idx) {
+                                    graphs.emplace_back();
+                                    std::cin >> graphs.back();
+                                }
+                            } else {
+                                std::ifstream file(filename);
+                                for (size_t graph_idx = 0; graph_idx < graph_cnt; ++graph_idx) {
+                                    graphs.emplace_back();
+                                    file >> graphs.back();
+                                }
+                            }
                         }
                     }
-                }
 
                 graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
-                    return graphs.at(seed);
+                    if (do_read_on_demand) {
+                        graph::Graph<Id, NodeWeight, EdgeWeight> graph;
+                        if (filename == std::string("-")) {
+                            for (size_t graph_idx = 0; graph_idx <= seed; ++graph_idx) {
+                                std::cin >> graph;
+                            }
+                        } else {
+                            std::ifstream file(filename);
+                            for (size_t graph_idx = 0; graph_idx <= seed; ++graph_idx) {
+                                file >> graph;
+                            }
+                        }
+                        return graph;
+                    } else {
+                        return graphs.at(seed);
+                    }
                 }
         };
 
