@@ -274,3 +274,14 @@ TEST(Graph, ContractBigGraph) {
     }
     graph::contract_to_n_nodes(graph, 100);
 }
+
+TEST(Graph, Output) {
+    using IGraphGenPtr = std::shared_ptr<graphgen::IGraphGen<>>;
+    IGraphGenPtr graph_gen(new graphgen::ContractToN<>(
+                IGraphGenPtr(new graphgen::GraphPrefAttach<>(10000, 10)),
+                80
+                )
+            );
+    graph::Graph<> graph = (*graph_gen)(0);
+    std::cerr << graph;
+}
