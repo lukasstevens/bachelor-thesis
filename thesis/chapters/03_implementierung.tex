@@ -6,9 +6,10 @@
 Bevor wird die Implementierung näher betrachteten, werden die verwendeten Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, vorgestellt.
 Danach wird anhand von Pseudocode erläutert, wie der Algorithmus als Programm umgesetzt wurde. 
 Zuletzt werden die Datenstrukturen beschrieben, welche für die Implementierung verwendet wurden.
-\todo[inline]{Danach Datenstrukturen, Zuletzt evtl. noch einzelne \Cpp\hyp Ausschnitte} 
 
 \section{Drittmaterialien}
+\todo[inline]{Taywee/args als Drittmaterialien} 
+
 \paragraph{\Cpp}
 Der Quellcode der Implementierung wurde in der Programmiersprache \Cpp{} verfasst.
 Diese Programmiersprache wurde ausgewählt, da sie maschinennahe Programmierung zulässt und eine umfangreiche Standardbibliothek anbietet.
@@ -479,7 +480,7 @@ Die Hashfunktion und der Gleichheitstest müssen manuell spezifiziert werden, da
 Der Vergleich erfolgt komponentenweise.
 Die Implementierung der Hashfunktion ist in Listing~\ref{lst:hashing} zu sehen.
 Mit dieser Implementierung kann die Hashfunktion in konstanter Zeit ausgewertet werden, da eine Signatur für konstantens $\eps$ eine konstante Länge hat.
-\todo[inline]{Selbe Implementierung wie Boost, evtl. Experimente zu Kollisionen?}
+\todo[inline]{Boost referenzieren}
 
 \begin{lstlisting}[float, floatplacement=h, caption={Hashing mit \texttt{ValarrayHasher}}, label={lst:hashing}]
 template<typename T> struct ValarrayHasher {

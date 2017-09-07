@@ -30,10 +30,7 @@
     % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
     \begin{groupplot}[
             group style={group size=1 by 3},
-            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
-            legend image code/.code={%
-                \draw[#1] (0cm, -0.05cm) rectangle (0.3cm, 0.15cm);
-            }
+            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen}
         ]
 
         \nextgroupplot[

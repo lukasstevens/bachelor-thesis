@@ -1,0 +1,96 @@
+\documentclass[tikz]{standalone}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\datadir}{data/graphs/imbalance/edge_prob}
+    \newcommand{\plotdata}[3]{%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2_#3_mst_n80k2.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2_#3_mst_n80k3.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2_#3_mst_n80k4.dat};%
+        }
+    
+    \pgfplotsset{
+        boxplot/draw direction=y,
+        boxplot={
+            draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
+            box extend=0.2,
+        },
+        x=1.5cm,
+        xtick={0,1,2,...,10},
+        x tick label as interval,
+        x tick label style={
+            text width=2.5cm,
+            align=center
+        },
+        small
+    }
+    
+    % Useful links: 
+    % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
+    % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
+    \begin{groupplot}[
+            group style={group size=2 by 3},
+            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
+            ymin=0.9,
+            ymax=2.5,
+            ytick distance=0.2,
+            ymajorgrids,
+            xticklabels={0.4,0.35,0.3,0.25}
+        ]
+
+        \nextgroupplot[
+            legend to name=grouplegend,
+            legend columns=-1,
+            legend style={/tikz/every even column/.append style={column sep=5pt}},
+            title={Kantenwahrscheinlichkeit $0.1$},
+            ylabel={Relative Schnittkosten}
+        ]
+        \addplot+ [boxplot] table[y=8/20] {\datadir/METIS_Recursive_edge_prob1_mst_n80k2.dat};%
+        \addlegendentry{{$n=80$, $k=2$}}
+        \addplot+ [boxplot] table[y=8/20] {\datadir/METIS_Recursive_edge_prob1_mst_n80k3.dat};%
+        \addlegendentry{{$n=80$, $k=3$}}
+        \addplot+ [boxplot] table[y=8/20] {\datadir/METIS_Recursive_edge_prob1_mst_n80k4.dat};%
+        \addlegendentry{{$n=80$, $k=4$}}
+        \pgfplotsinvokeforeach {7/20,6/20,5/20} {
+            \plotdata{#1}{METIS_Recursive}{edge_prob1}
+        }
+
+        \nextgroupplot[
+            title={Kantenwahrscheinlichkeit $0.3$},
+        ]
+        \pgfplotsinvokeforeach {8/20,7/20,6/20,5/20} {
+            \plotdata{#1}{METIS_Recursive}{edge_prob3}
+        }
+
+        \nextgroupplot[
+            ylabel={Relative Schnittkosten}
+        ]
+        \pgfplotsinvokeforeach {8/20,7/20,6/20,5/20} {
+            \plotdata{#1}{METIS_Kway}{edge_prob1}
+        }
+
+        \nextgroupplot[
+        ]
+        \pgfplotsinvokeforeach {8/20,7/20,6/20,5/20} {
+            \plotdata{#1}{METIS_Kway}{edge_prob3}
+        }
+
+        \nextgroupplot[
+            xlabel={Knotenanzahl $n$},
+            ylabel={Relative Schnittkosten}
+        ]
+        \pgfplotsinvokeforeach {8/20,7/20,6/20,5/20} {
+            \plotdata{#1}{KaFFPa}{edge_prob1}
+        }
+
+        \nextgroupplot[
+            xlabel={Knotenanzahl $n$}
+        ]
+        \pgfplotsinvokeforeach {8/20,7/20,6/20,5/20} {
+            \plotdata{#1}{KaFFPa}{edge_prob3}
+        }
+    \end{groupplot}
+    \path (group c1r3.south east) -- node[below, yshift=-1cm]{\small \ref{grouplegend}} (group c2r3.south west);
+
+\end{tikzpicture}
+\end{document}

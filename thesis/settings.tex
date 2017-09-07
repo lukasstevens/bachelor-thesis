@@ -102,6 +102,9 @@
 \pgfplotsset{
     % For available color names, see http://www.latextemplates.com/svgnames-colors
     cycle list={TUMBlue\\TUMAccentOrange\\TUMAccentGreen\\TUMSecondaryBlue2\\TUMDarkGray\\},
+    legend image code/.code={%
+        \draw[#1] (0cm, -0.1cm) rectangle (0.3cm, 0.1cm);
+    }
 }
 \usepgfplotslibrary{statistics, groupplots}
 

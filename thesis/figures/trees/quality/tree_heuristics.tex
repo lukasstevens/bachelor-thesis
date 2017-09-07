@@ -1,0 +1,87 @@
+\documentclass[tikz]{standalone}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\datadir}{data/trees/quality/tree_heuristics}
+    \newcommand{\plotdata}[2]{%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n100k3i1div3.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n70k4i1div3.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/#2/n70k3i1div4.dat};%
+        }
+    
+    \pgfplotsset{
+        boxplot/draw direction=y,
+        boxplot={
+            draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
+            box extend=0.2,
+        },
+        x=1.5cm,
+        xtick={0,1,2,...,10},
+        x tick label as interval,
+        x tick label style={
+            text width=1.5cm,
+            align=center
+        },
+        small
+    }
+    
+    % Useful links: 
+    % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
+    % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
+    \begin{groupplot}[
+            group style={group size=2 by 2},
+            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
+            ymax=1.2,
+            ytick={0.2, 0.4, 0.6, 0.8, 1.0},
+            ymajorgrids
+    ]
+
+        \nextgroupplot[
+            title=Random Attachment,
+            xticklabels=\empty,
+            legend to name=grouplegend,
+            legend columns=-1,
+            legend style={/tikz/every even column/.append style={column sep=5pt}},
+            ylabel=Relative Schnittkosten
+        ]
+        \addplot+ [boxplot] table[y=METIS_Recursive] {\datadir/rand_attach/n100k3i1div3.dat};%
+        \addlegendentry{{$n=100$, $k=3$, $\eps=1/3$}}
+        \addplot+ [boxplot] table[y=METIS_Recursive] {\datadir/rand_attach/n70k4i1div3.dat};%
+        \addlegendentry{{$n=70$, $k=4$, $\eps=1/3$}}
+        \addplot+ [boxplot] table[y=METIS_Recursive] {\datadir/rand_attach/n70k3i1div4.dat};%
+        \addlegendentry{{$n=70$, $k=3$, $\eps=1/4$}}
+        \pgfplotsinvokeforeach {METIS_Kway, KaFFPa} {
+            \plotdata{#1}{rand_attach}
+        }
+
+        \nextgroupplot[
+            title=Preferrential Attachment,
+            xticklabels=\empty,
+            yticklabels=\empty
+        ]
+        \pgfplotsinvokeforeach {METIS_Recursive, METIS_Kway, KaFFPa} {
+            \plotdata{#1}{pref_attach}
+        }
+
+        \nextgroupplot[
+            title=Fat Tree,
+            ylabel=Relative Schnittkosten,
+            xticklabels={METIS Recursive, METIS k-way, KaFFPa}
+        ]
+        \pgfplotsinvokeforeach {METIS_Recursive, METIS_Kway, KaFFPa} {
+            \plotdata{#1}{fat}
+        }
+
+        \nextgroupplot[
+            title=Binärbaum,
+            xticklabels={METIS Recursive, METIS k-way, KaFFPa},
+            yticklabels=\empty
+        ]
+        \pgfplotsinvokeforeach {METIS_Recursive, METIS_Kway, KaFFPa} {
+            \plotdata{#1}{bnary}
+        }
+    \end{groupplot}
+    \path (group c1r2.south east) -- node[below, yshift=-1cm]{\small \ref{grouplegend}} (group c2r2.south west);
+
+\end{tikzpicture}
+\end{document}
