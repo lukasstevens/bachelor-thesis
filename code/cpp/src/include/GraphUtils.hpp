@@ -99,7 +99,7 @@ namespace graph {
                 };
                 std::sort(inc_edges.begin(), inc_edges.end(), comp);
                 for (Edge edge : inc_edges) {
-                    if (!is_matched.at(edge.first)) {
+                    if (!is_matched.at(edge.first) && node != edge.first) {
                         matching.push_back(std::make_pair(node, edge.first));
                         is_matched[node] = true;
                         is_matched[edge.first] = true;
