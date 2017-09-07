@@ -58,12 +58,22 @@ test = runtarget(test_bin)
 cli_bin = cxx.executable(
         inputs = cxx.compile_cpp(
             include = [local('deps/args')],
-            sources = glob('src/cli/*.cpp'),
+            sources = glob('src/cli/Cli.cpp'),
             frameworks = [mylib]
             ),
         output = 'cli'
         )
 cli = runtarget(cli_bin, pool='console')
+
+snapconvert_bin = cxx.executable(
+        inputs = cxx.compile_cpp(
+            sources = glob('src/cli/SnapConvert.cpp'),
+            frameworks = [mylib]
+            ),
+        output = 'snapconvert'
+        )
+snapconvert = runtarget(snapconvert_bin, pool='console')
+
 
 run = runtarget(test_bin, 
         '--gtest_filter=Run.DISABLED_FromStdinVerbose', '--gtest_also_run_disabled_tests')
@@ -85,7 +95,7 @@ docs = gentarget([['doxygen', '.doxygen.config']], explicit=True, cwd=project_di
 
 # Symlink resource file for execution 
 try:
-    os.symlink(local('src/test/resources'), local('build/resources'))
+    os.symlink(local('resources'), local('build/resources'))
 except:
     pass
 
