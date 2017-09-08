@@ -345,7 +345,7 @@ namespace graph {
 
                 PartitionResult partition(Id kparts, Rational imbalance, Id root=0) const {
                     cut::Tree<Id, NodeWeight, EdgeWeight> tree = this->to_tree(root);
-                    auto signatures = tree.cut(imbalance, kparts);
+                    auto signatures = tree.cut(imbalance, kparts, true);
 
                     std::vector<std::set<Id>> partitioning;
                     typename cut::Tree<Id, NodeWeight, EdgeWeight>::Signature signature;

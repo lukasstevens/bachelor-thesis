@@ -167,11 +167,14 @@ namespace cut {
                  * Cuts the tree with the given parameters.
                  * @param eps The approximation factor to use.
                  * @param part_cnt The number of parts in which the tree should be partitioned.
+                 * @param delete_signatures Indicates if the signatures at the nodes except the root
+                 *  should be delete if they are not needed any more.
                  * @returns The signatures calculated for the given parameters.
                  *
                  * @see SignaturesForTree
                  */
-                SignaturesForTree<Id, NodeWeight, EdgeWeight> cut(Rational eps, NodeWeight part_cnt);
+                SignaturesForTree<Id, NodeWeight, EdgeWeight> cut(Rational eps, NodeWeight part_cnt,
+                        bool delete_signatures=false);
 
                 /**
                  * Calculates the signatures of the tree with information about the previous signatures.

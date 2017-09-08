@@ -163,7 +163,7 @@ namespace cut {
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         SignaturesForTree<Id, NodeWeight, EdgeWeight> Tree<Id, NodeWeight, EdgeWeight>::cut(
-                Rational eps, NodeWeight part_cnt) {
+                Rational eps, NodeWeight part_cnt, bool delete_signatures) {
 
             std::vector<std::vector<Tree::SignatureMap>> signatures;
             for (auto const& lvl : this->levels) {
@@ -206,6 +206,17 @@ namespace cut {
                     signatures[lvl_idx][node_idx] = cut_at_node(node, node_subtree_weight, left_siblings_weight,
                             *left_sibling_sigs, *child_sigs, comp_weight_bounds);
                     left_siblings_weight += node_subtree_weight;
+
+                    // Delete unnecessary signatures after using them.
+                    if (delete_signatures) {
+                        if (node_has_left_sibling) {
+                            signatures[lvl_idx][node_idx - 1] = SignatureMap();
+                        }
+                        for (Id child_idx = node.children_idx_range.first;
+                                child_idx < node.children_idx_range.second; ++child_idx) { 
+                            signatures[lvl_idx + 1][child_idx] = SignatureMap();
+                        }
+                    }
                 }
             }
 
@@ -233,7 +244,11 @@ namespace cut {
                 }
             }
 
-            return SignaturesForTree<Id, NodeWeight, EdgeWeight>(part_cnt, eps, *this, signatures);
+            // Delete the signatures of the right child of the root.
+            if (delete_signatures) {
+                signatures[1].back() = SignatureMap();
+            }
+            return SignaturesForTree<Id, NodeWeight, EdgeWeight>(part_cnt, eps, *this, std::move(signatures));
         }
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
