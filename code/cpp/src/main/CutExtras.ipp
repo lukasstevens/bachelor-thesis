@@ -18,6 +18,8 @@ namespace cut {
 
             std::stringstream stream;
             stream << "digraph tree {\n";
+            stream << "\t" << this->levels[0][0].id << "[label=\"" << this->levels[0][0].id;
+            stream << "(w:" << this->levels[0][0].parent_edge_weight << ")\"]\n";
             for (size_t lvl_idx = this->levels.size() - 1; lvl_idx > 0; --lvl_idx) {
                 for (size_t node_idx = 0; node_idx < this->levels[lvl_idx].size(); ++node_idx) {
                     Tree::Node const& node = this->levels[lvl_idx][node_idx];
