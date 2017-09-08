@@ -134,7 +134,7 @@ namespace cut {
                             // Second case: The edge from the current node to its parent is cut.
                             NodeWeight const node_comp_weight = node_subtree_weight - child_weight_cnt;
                             // Check if the current weight of the component which includes the current node is smaller than
-                            // the maximum allowed weihgt.
+                            // the maximum allowed weight.
                             if (node_comp_weight >= comp_weight_bounds.back()) {
                                 continue;
                             } else {
@@ -217,9 +217,9 @@ namespace cut {
             root_sigs = SignatureMap(tree_weight_st + 1);
             Tree::SignatureMap& child_sigs = signatures.at(1).back();
 
-            for (NodeWeight root_comp_weight_cnt = comp_weight_bounds.back() - 1; 
-                    root_comp_weight_cnt >= this->levels[0][0].weight; --root_comp_weight_cnt) {
-                for (auto const& sig : child_sigs[static_cast<size_t>(tree_weight - root_comp_weight_cnt)]) {
+            for (NodeWeight root_comp_weight_cnt = this->levels[0][0].weight; 
+                    root_comp_weight_cnt < comp_weight_bounds.back(); ++root_comp_weight_cnt) {
+                for (auto const& sig : child_sigs.at(static_cast<size_t>(tree_weight - root_comp_weight_cnt))) {
                     Tree::Signature root_sig(sig.first);
                     size_t i = 0;
                     while(root_comp_weight_cnt >= comp_weight_bounds[i]) { ++i; }
@@ -237,7 +237,7 @@ namespace cut {
         }
 
     template<typename Id, typename NodeWeight, typename EdgeWeight>
-       SignatureMapWithPrev<NodeWeight, EdgeWeight> Tree<Id, NodeWeight, EdgeWeight>::cut_at_node_with_prev(
+        SignatureMapWithPrev<NodeWeight, EdgeWeight> Tree<Id, NodeWeight, EdgeWeight>::cut_at_node_with_prev(
                 Tree::Node const& node, 
                 NodeWeight node_subtree_weight,
                 Tree::SignatureMapWithPrev const& left_sibling_sigs, 
@@ -489,7 +489,7 @@ namespace cut {
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         std::vector<std::map<Id, NodeWeight>>
         SignaturesForTree<Id, NodeWeight, EdgeWeight>::components_for_cut_edges(
-            SignaturesForTree::CutEdges const& cut_edges) const {
+                SignaturesForTree::CutEdges const& cut_edges) const {
 
             std::vector<std::map<Id, NodeWeight>> components;
 
