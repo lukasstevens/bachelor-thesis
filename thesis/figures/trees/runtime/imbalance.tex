@@ -1,4 +1,6 @@
-\documentclass[tikz]{standalone}
+\documentclass{standalone}
+
+\usepackage{figurepreamble}
 
 \begin{document}
 \begin{tikzpicture}
@@ -63,9 +65,9 @@
         }
 
         \nextgroupplot[
-            title=Fat Tree, ymax=550,
-            ytick distance=250, xticklabels={0.35, 0.3, 0.25, 0.2},
-            xlabel=Ungleichgewicht $\eps$
+            title=Fat Tree, ymax=900,
+            ytick distance=200, xticklabels={0.35, 0.3, 0.25, 0.2},
+            xlabel=Ungleichgewicht $\varepsilon$
         ]
         \pgfplotsinvokeforeach {7/20, 3/10, 5/20, 2/10} {
             \plotdata{#1}{fat}
@@ -74,14 +76,14 @@
         \nextgroupplot[
             title=Binärbaum, ymax=5800,
             ytick distance=2000, xticklabels={0.35, 0.3, 0.25, 0.2},
-            xlabel=Ungleichgewicht $\eps$, ylabel=Laufzeit (ms),
+            xlabel=Ungleichgewicht $\varepsilon$, ylabel=Laufzeit (ms),
             yticklabel pos=right, y label style={at={(axis description cs:-0.12,0.5)}, anchor=north}
         ]
         \pgfplotsinvokeforeach {7/20, 3/10, 5/20, 2/10} {
             \plotdata{#1}{bnary}
         }
     \end{groupplot}
-    \path (group c1r2.south east) -- node[below, yshift=-1cm]{\small \ref{grouplegend}} (group c2r2.south west);
+    \path (group c1r2.south east) -- node[below, yshift=-1cm]{\small \pgfplotslegendfromname{grouplegend}} (group c2r2.south west);
 
 \end{tikzpicture}
 \end{document}

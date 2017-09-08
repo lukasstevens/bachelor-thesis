@@ -5,6 +5,11 @@
 \usepackage[ngerman]{babel}
 \usepackage{hyphenat}
 
+\usepackage[
+    subpreambles,
+    mode=buildnew
+]{standalone}
+
 \usepackage[autostyle]{csquotes}
 \usepackage[%
   url=false,
@@ -24,10 +29,8 @@
 \usepackage{booktabs}
 \usepackage[final]{microtype}
 \usepackage{caption}
-\usepackage[hidelinks]{hyperref} % hidelinks removes colored boxes around references and links
 \usepackage[textsize=tiny]{todonotes}
 \usepackage{subcaption}
-\usepackage{standalone}
 
 \usepackage[chapter]{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -98,8 +101,8 @@
 }
 
 % Settings for pgfplots
-\pgfplotsset{compat=newest}
 \pgfplotsset{
+    compat=newest,
     % For available color names, see http://www.latextemplates.com/svgnames-colors
     cycle list={TUMBlue\\TUMAccentOrange\\TUMAccentGreen\\TUMSecondaryBlue2\\TUMDarkGray\\},
     legend image code/.code={%
@@ -124,3 +127,5 @@
     belowskip=\intextsep,
     frame=single
 }
+
+\usepackage[hidelinks]{hyperref} % hidelinks removes colored boxes around references and links

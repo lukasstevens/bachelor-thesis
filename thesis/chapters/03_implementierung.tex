@@ -23,7 +23,7 @@ Zur Kompilierung des \Cpp\hyp Quellcodes wird die Toolchain Clang\footnote{Webpr
 
 \paragraph{Google Test}
 Google Test ist ein Test-Framework für \Cpp, das eine Vielzahl von Werkzeugen zur Verfügung stellt, um Komponententests durchzuführen. 
-Google Test wird auf Github\footnote{https://github.com/google/googletest} entwickelt.
+Google Test wird auf Github\footnote{Auf Github: \url{https://github.com/google/googletest}} entwickelt.
 Weiterhin wird Google Test von Craftr unterstützt und wurde mit Hilfe von Craftr eingebunden.
 
 \paragraph{GMP}
@@ -218,9 +218,9 @@ Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
     In Sektion~\ref{sec:cutting} haben wir den Fall, dass $v$ weder einen linken Geschwisterknoten $w$ noch ein rechtestes Kind $u$ hat, speziell behandelt.
     Für diesen Fall gilt $C_v((0,\ldots,0), 0) = 0)$ und $C_v(\vec{e}(1), 1) = \weight(e)$. 
     Alle anderen Funktionswerte sind unendlich.
-    Da $w$ und $u$ nicht existieren, haben wir $T(C_w) = T(C_u) = \{(0, \{((0, \ldots, 0), 0)\} \}$.
+    In den oben genannten Algorithmen haben wir $T(C_w) = T(C_u) = \{(0, \{((0, \ldots, 0), 0)\} \}$, falls $w$ und $u$ nicht existieren.
     Mit diesen Tabellen setzt Algorithmus~\ref{alg:encfun} den Eintrag $T(C_v)[0][(0,\ldots, 0)]$ auf den Wert $0$ und Algorithmus~\ref{alg:ecfun} den Eintrag $T(C_v)[1][\vec{e}(1)]$ auf $\weight(v,p)$, wobei $p$ der Elternknoten von $v$ ist.
-    Damit wird dieser Spezialfall bereits durch die oben genannten Algorithmen abgedeckt.
+    Dadurch muss dieser Fall nicht gesondert behandelt werden.
 \end{rem}
 
 Um die Schnittphase abzuschließen, wird nun betrachtet, wie die Funktion \carfun{} die Signaturen an der Wurzel $r$ mit der Rekursionsgleichung~\eqref{eq:root} berechnet.
@@ -494,4 +494,51 @@ template<typename T> struct ValarrayHasher {
 };
 \end{lstlisting}
 
+Die Datenstruktur \texttt{std::valarray} kann in der Packphase weiterverwendet werden.
+Sowohl die Behältersignaturen als auch der Zustand eines Packings kann mit dieser Datenstruktur gespeicher werden.
+Für ein Packing, in dem die ursprünglichen Komponentengrößen wiederhergestellt wurden, wird eine Liste von Listen von Knotenmengen verwendet.
+
 \section{Erweiterung des Algorithmus auf Bäume mit Knotengewichten}
+Der oben beschriebene Algorithmus arbeitet auf Bäumen mit Kantengewichten, er erlaubt jedoch keine Knotengewichte.
+Es ist leicht zu sehen, dass Knotengewichte in der Praxis Anwendungen finden können.
+Zu Anfang wurde das Beispielproblem genannt, welches verlangt, Prozesse auf Prozessorkerne zu verteilen, und dabei die Kommunikationslast zwischen verschiedenen Prozessorkernen zu minimieren.
+Dabei wurden die Prozesse als Knoten und die Kommunikation zwischen den Prozessen als Kanten eines Graphen interpretiert.
+Durch eine Partitionierung der Knoten können die Prozesse dann auf Kerne verteilt werden, sodass jeder Kern eine ähnliche Arbeitslast erhält.
+Es ist hingegen nicht realistisch, dass alle Prozesse gleich viele Prozessorressourcen in Anspruch nehmen.
+Der Ressourcenanspruch kann mit Knotengewichten dargestellt werden. 
+Durch eine Partitionierung, die Knotengewichte miteinbezieht, ist es möglich allen Kernen eine ähnliche Last zuzuweisen.
+Ferner sind Knotengewichte direkt für das Verfahren aus Sektion~\ref{sec:decomptrees} relevant. 
+Dort muss eine Partitionierung der Blätter des Baums berechnet werden.
+Dies kann realisiert werden, indem die Knotengewichte der inneren Knoten auf $0$ gesetzt werden, während die Gewichte der Blätter weiterhin $1$ sind.
+
+Die Implementierung von Knotengewichten kann durch wenige Änderungen umgesetzt werden.
+In dieser Arbeit werden nur integrale Knotengewichte behandelt.
+Für einen Baum $T=(V,E)$ mit $n$ Knoten stellen wir das Gewicht eines Knotens mit der Gewichtsfunktion $\pi : V \rightarrow \mathbb{N}_0$ dar.
+Nun wird nicht mehr eine Partitionierung der Knoten in Teile mit maximaler Größe $(1+\eps) \ceil{n/k}$ berechnet, sondern in $k$ Partitionen mit maximalen Gesamtgewicht $(1+\eps) \ceil{\pi(V)/k}$, wobei $\pi(V) = \sum_{v \in V} \pi(v)$ gilt.
+Die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} müssen dahingehend angepasst werden, dass $m$ in der Funktion $C_v(\vec{g}, m)$ am Knoten $v$ nicht eine Anzahl von Knoten darstellt, sondern das Gesamtgewicht der Zusammenhangskomponenten, die durch $\vec{g}$ gezählt werden.
+Weiterhin ist $x$ in Gleichung~\eqref{eq:e_cut} das Gesamtgewicht der Zusammenhangskomponente, in der $v$ liegt, anstatt die Größe der Komponente.
+Außerdem wird die Knotenanzahl $n_v$ des in $v$ gewurzelten Teilbaums in Gleichung~\eqref{eq:e_cut} durch die Summe der Knotengewichte des in $v$ gewurzelten Teilbaums ersetzt.
+Diese Änderungen können direkt in Änderungen von Algorithmus~\ref{alg:encfun} und~\ref{alg:ecfun} übersetzt werden.
+Die Packphase muss nicht angepasst werden, weil die obigen Änderungen keinen Einfluss auf die Form der Signaturen haben.
+
+Bei den Datenstrukturen muss dem \texttt{struct Node} ein weiteres Feld \texttt{weight} hinzugefügt werden, welches jedem Knoten ein Gewicht zuweist.
+Des Weiteren speichert \texttt{struct Tree} in der Lookup-Tabelle \texttt{tree\_sizes} nun nicht mehr die Größe des Teilbaums, sondern das Gesamtgewicht der Knoten im Teilbaum.
+
+\begin{rem}
+    Falls der Graph uniform gewichtet ist, kann immer eine Lösung für das $(k,1+\eps)$\hyp Partitionierungsproblem gefunden werden, da man alle Kanten schneiden kann und die Knoten greedy packen kann.
+    Sind die Knoten gewichtet, ist dies nicht mehr der Fall.
+    Wenn wir den Graphen aus Abbildung~\ref{fig:graph} verwenden, in dem alle Knoten ein Gewicht von $2$ haben und wir eine $(2, 1 + \eps)$\hyp Partitionierung verlangen, dann kann jede Partition ein Gesamtgewicht von maximal $(1 + \eps) \ceil{6/2} = (1 + \eps) \cdot 3$ haben.
+    Da wir die Knoten in maximal zwei Partitionen aufteilen dürfen, gibt es für $\eps < 1/3$ keine Lösung.
+\end{rem}
+
+\begin{figure}[b]
+    \centering
+    \begin{tikzpicture}[node/.style={circle, draw}]
+        \node at (-1, 0) [node] (A) {$2$};
+        \node at (0, 0) [node] (B) {$2$};
+        \node at (1, 0) [node] (C) {$2$};
+        \draw (A) -- (B) -- (C);
+    \end{tikzpicture}
+    \caption{Beispielgraph mit Knotengewichten\label{fig:graph}}
+\end{figure}
+

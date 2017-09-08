@@ -55,13 +55,14 @@ Später verbesserten Arora, Rao und Vazirani~\cite{ARV09} den Approximationsfakt
 Unter Verwendung der Ergebnisse von Leighton und Rao entwickelten Feige, Krauthgamer und Nissim~\cite{FKN00} einen echten, also nicht-bikriteriellen Algorithmus mit Approximationsfator $\bigO(\sqrt{n} \log n)$.
 Kurze Zeit später stellten Feige und Krauthgamer einen Algorithmus mit einem verbesserten Approximationsfaktor von $\bigO(\log^{1.5} n)$ vor.
 Zuletzt gab Räcke~\cite{rc08} einen echten Approximationsalgorithmus mit Approximationsfaktor $\bigO(\log n)$ an.
-Dabei wurde eine hierarchische Dekomposition verwendet, was informell ausgedrückt eine Wahrscheinlichkeitsverteilung von Bäumen ist, die die Schnittkosten des Eingabegraphen erwartungsgemäß gut approximimiern und deren Blätter die Knoten des Eingabegraphen sind.
+Dabei wurde eine hierarchische Dekomposition verwendet, was informell ausgedrückt eine Wahrscheinlichkeitsverteilung von Bäumen ist, die die Schnittkosten des Eingabegraphen erwartungsgemäß gut approximimiert.
+Die Blätter der Bäume korrespondieren mit den Knoten des Eingabegraphen.
 Indem eine minimale Bisektion der Blätter berechnet wird, kann die optimale Bisektion im Eingabegraphen approximiert werden.
 Diese Bisektion kann zum Beispiel mit einem Algorithmus von Macgregor~\cite{mcg78} berechnet werden, dessen Laufzeit $\bigO(n^2)$ ist.
 Derselbe Algorithmus kann verallgemeinert werden, um einen Algorithmus für das $(k, 1)$\hyp Partitionierungsproblem auf Bäumen zu erhalten, der für konstantes $k$ eine polynomielle Laufzeit hat.
 
-Auf generellen Graphen kann das $(k, 1)$\hyp Partionierungsproblem nicht approximiert werden, wie bereits oben erläutert wurde.
-Deshalb wird ein bikriterieller Ansatz verfolgt und stattdessen das $(k,1+\eps)$\hyp Partitionierungsproblem betrachtet.
+Dennoch kann das $(k, 1)$\hyp Partionierungsproblem auf generellen Graphen nicht approximiert werden, wie bereits oben erwähnt wurde (siehe auch Sektion~\ref{sec:complex}).
+Deshalb wird ein bikriterieller Ansatz verfolgt, der stattdessen das $(k,1+\eps)$\hyp Partitionierungsproblem löst und die Lösung mit der Optimallösung des $(k, 1)$\hyp Partitionierungsproblems vergleicht.
 Für den Fall $\eps = 1$ sind bereits seit längerem Approximationsalgorithmen bekannt.
 Event et al.~\cite{ENR+97} benutzten Spreading Metriken, um einen Algorithmus mit Approximationsfaktor $\bigO(\log n)$ zu erhalten.
 Simon und Teng~\cite{ST97} verwendeten die bereits erwähnten Algorithmen~\cite{LR99, ARV09}, um rekursiv eine $(k, 2)$\hyp Partitionierung zu berechnen, deren Schnittkosten um maximal einen Faktor $\bigO(\log k \sqrt{\log n})$ von der Optimallösung entfernt sind.
@@ -69,11 +70,11 @@ Krauthgamer, Naor und Schwartz~\cite{KNS09} konnten mit Hilfe einer semidefinite
 
 Einige der obigen Algorithmen teilen den Graphen zuerst in Partitionen, die kleiner als $\ceil{n/k}$ sind, und packen diese Teile anschließend in Behälter der Größe $2 \ceil{n/k}$, um die Größenbeschränkung von $2 \ceil{n/k}$ einzuhalten.
 In diese Fall können die Teile greedy gepackt werden.
-Gilt allerdings $\eps < 1$ muss eine komplexeres Verfahren verwendet werden, um die Behälter zu packen. 
+Allerdings muss für den Fall $\eps < 1$ ein komplexeres Verfahren verwendet werden, um die Behälter zu packen. 
 Damit wird das Problem deutlich schwerer.
 Erst später konnten Andreev und Räcke~\cite{ar06} für den Fall $\eps = 1$ einen Algorithmus finden.
 Dieser hat einen Approximationsfaktor von $\bigO(\log^{1.5}(n)/\eps^2)$.
-Zuletzt präsentierten Feldmann und Foschini~\cite{ff13} einen Algorithmus, der den Faktor auf $\bigO(\log n)$ verbessert.
+Zuletzt präsentierten Feldmann und Foschini~\cite{ff13} einen Algorithmus, der den Faktor auf $\bigO(\log n)$ verbessert und damit die Abhängigkeit von $\eps$ entfernt.
 Dies wurde erreicht, indem zunächst ein bikiterielle Approximationsalgorithmus mit Approximationsfaktor $1$ für das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen entwickelt wurde.
 Der Algorithmus kann mit den bereits erwähnten Ergebnissen von Räcke~\cite{rc08} auf allgemeine Graphen erweitert werden.
 Da das Verfahren von Räcke den asymptotisch optimalen Approximationsfaktor von $\bigO(\log n)$ erreicht, ist eine Verbesserung des Approximationsfaktors unter Verwendung dieses Schemas nicht möglich.

@@ -1,18 +1,25 @@
-FILE := main
-OUT  := build
+file := main
+out  := build
+options := -bibtex -interaction=nonstopmode -halt-on-error -pdf -pdflatex="pdflatex -shell-escape %O %S"
 
 .PHONY: pdf
 pdf:
-	latexmk -bibtex -interaction=nonstopmode -outdir=$(OUT) -pdf -halt-on-error $(FILE)
+	latexmk $(options) -outdir=$(out) $(file)
+
+.PHONY: force
+force:
+	latexmk $(options) -gg -outdir=$(out) $(file)
 
 .PHONY: watch
 watch:
-	latexmk -bibtex -interaction=nonstopmode -outdir=$(OUT) -pdf -pvc -halt-on-error $(FILE)
+	latexmk $(options) -pvc -outdir=$(out) $(file)
 
 .PHONY: clean
 clean:
-	rm -rf $(filter-out $(OUT)/$(FILE).pdf, $(wildcard $(OUT)/*))
+	rm -rf $(filter-out $(out)/$(file).pdf, $(wildcard $(out)/*))
+	rm -rf figures/**/*.aux figures/**/*.log figures/**/*.out figures/**/*.pdf
 
 .PHONY: purge
 purge:
-	rm -rf $(OUT)
+	rm -rf $(out)
+	rm -rf figures/**/*.aux figures/**/*.log figures/**/*.pdf
