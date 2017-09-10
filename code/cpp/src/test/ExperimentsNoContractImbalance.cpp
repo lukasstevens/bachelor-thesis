@@ -425,4 +425,39 @@ namespace nocontractimbalance {
                 10
                 );
     }
+
+    TEST(DISABLED_Trees, Imbalance) {
+        std::vector<std::string> tree_gen_names({
+                "rand_attach", "pref_attach", "fat", "bnary"
+                });
+        for (auto const& gen_name : tree_gen_names) {
+            std::vector<IGraphGenPtr> graph_gens;
+            for (size_t i = 0; i < imbalances.size(); ++i) {
+                IGraphGenPtr graph_gen;
+                if (gen_name == "rand_attach") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreeRandAttach<>(node_count));
+                } else if (gen_name == "pref_attach") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreePrefAttach<>(node_count));
+                } else if (gen_name == "fat") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreeFat<>(node_count, std::make_pair(2, 11)));
+                } else if (gen_name == "bnary") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreeFat<>(node_count, std::make_pair(2, 3)));
+                }
+                graph_gens.push_back(graph_gen);
+            }
+            imbalance_table(
+                    imbalances,
+                    gen_name,
+                    params,
+                    graph_gens,
+                    graph_gens,
+                    graph_gens,
+                    20 
+                    );
+        }
+    }
 }

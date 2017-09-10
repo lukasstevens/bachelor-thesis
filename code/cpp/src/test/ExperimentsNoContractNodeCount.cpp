@@ -2,6 +2,7 @@
 #include<iostream>
 #include<memory>
 #include<sstream>
+#include<thread>
 
 #include<gtest/gtest.h>
 
@@ -9,6 +10,20 @@
 #include "GraphGen.hpp"
 
 namespace nocontractnodecount {
+
+    // Check if partition violates balance constraints
+    bool violates_max_part_size(std::vector<int32_t> partition, int32_t kparts, graph::Rational imbalance) {
+        int32_t max_part_size = gmputils::floor_to_int<int32_t>((graph::Rational(1) + imbalance) *
+                gmputils::ceil_to_int<int32_t>(graph::Rational(partition.size(), kparts)));
+
+        std::vector<int32_t> part_size(static_cast<size_t>(kparts));
+        for (auto const in_part : partition) {
+            part_size.at(static_cast<size_t>(in_part)) += 1;
+        }
+
+        return std::any_of(part_size.cbegin(), part_size.cend(),
+                [max_part_size](int32_t const part_size){ return part_size > max_part_size; });
+    }
 
     using IGraphGen = graphgen::IGraphGen<>;
     using IGraphGenPtr = std::shared_ptr<IGraphGen>;
@@ -24,8 +39,8 @@ namespace nocontractnodecount {
     };
 
     void node_count_table(
-            std::vector<int32_t> node_counts,
-            std::string tree_gen_name,
+            std::vector<int32_t> const& node_counts,
+            std::string const& tree_gen_name,
             std::vector<Params> const& params,
             std::vector<IGraphGenPtr> const& orig_graph_gens,
             std::vector<IGraphGenPtr> const& contract_graph_gens,
@@ -66,7 +81,6 @@ namespace nocontractnodecount {
             print_header(metis_kway_file);
             print_header(kaffpa_file);
 
-
             for (size_t trie = 0; trie < tries; ++trie) {
                 metis_rec_file << trie;
                 metis_kway_file << trie;
@@ -84,11 +98,30 @@ namespace nocontractnodecount {
                     auto kaffpa_graph_part =
                         orig_graph.partition_kaffpa(param.kparts, param.imbalance);
 
-                    double tree_part_cut_cost = 
+                    int32_t tree_part_cut_cost = 
                         contract_graph.partition_cost(tree.convert_part_to_node_repr(tree_part.second));
-                    metis_rec_file << "\t" << (tree_part_cut_cost / metis_rec_graph_part.first);
-                    metis_kway_file << "\t" << (tree_part_cut_cost / metis_kway_graph_part.first);
-                    kaffpa_file << "\t" << (tree_part_cut_cost / kaffpa_graph_part.first);
+
+                    if (metis_rec_graph_part.first < tree_part_cut_cost && 
+                            !violates_max_part_size(metis_rec_graph_part.second, param.kparts, param.imbalance)) {
+                        std::cerr << "metis_rec does not violate and is better for n:" << node_counts.at(idx); 
+                        std::cerr << ",k:" << param.kparts << ",i:" << param.imbalance << std::endl;
+                    }
+                    if (metis_kway_graph_part.first < tree_part_cut_cost && 
+                            !violates_max_part_size(metis_kway_graph_part.second, param.kparts, param.imbalance)) {
+                        std::cerr << "metis_kway does not violate and is better for n:" << node_counts.at(idx); 
+                        std::cerr << ",k:" << param.kparts << ",i:" << param.imbalance << std::endl;
+                    }
+                    if (kaffpa_graph_part.first < tree_part_cut_cost && 
+                            !violates_max_part_size(kaffpa_graph_part.second, param.kparts, param.imbalance)) {
+                        std::cerr << "kaffpa does not violate and is better for n:" << node_counts.at(idx); 
+                        std::cerr << ",k:" << param.kparts << ",i:" << param.imbalance << std::endl;
+                    }
+
+                    double tree_part_cut_cost_d = 
+                        contract_graph.partition_cost(tree.convert_part_to_node_repr(tree_part.second));
+                    metis_rec_file << "\t" << (tree_part_cut_cost_d / metis_rec_graph_part.first);
+                    metis_kway_file << "\t" << (tree_part_cut_cost_d / metis_kway_graph_part.first);
+                    kaffpa_file << "\t" << (tree_part_cut_cost_d / kaffpa_graph_part.first);
                 }
                 metis_rec_file << "\n";
                 metis_kway_file << "\n";
@@ -421,5 +454,40 @@ namespace nocontractnodecount {
                 tree_gens,
                 10
                 );
+    }
+
+    TEST(DISABLED_Trees, NodeCount) {
+        std::vector<std::string> tree_gen_names({
+                "rand_attach", "pref_attach", "fat", "bnary"
+                });
+        for (auto const& gen_name : tree_gen_names) {
+            std::vector<IGraphGenPtr> graph_gens;
+            for (size_t i = 0; i < node_counts.size(); ++i) {
+                IGraphGenPtr graph_gen;
+                if (gen_name == "rand_attach") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreeRandAttach<>(node_counts.at(i)));
+                } else if (gen_name == "pref_attach") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreePrefAttach<>(node_counts.at(i)));
+                } else if (gen_name == "fat") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreeFat<>(node_counts.at(i), std::make_pair(2, 11)));
+                } else if (gen_name == "bnary") {
+                    graph_gen =
+                        IGraphGenPtr(new graphgen::TreeFat<>(node_counts.at(i), std::make_pair(2, 3)));
+                }
+                graph_gens.push_back(graph_gen);
+            }
+           node_count_table(
+                    node_counts,
+                    gen_name,
+                    params,
+                    graph_gens,
+                    graph_gens,
+                    graph_gens,
+                    20
+                    );
+        }
     }
 }
