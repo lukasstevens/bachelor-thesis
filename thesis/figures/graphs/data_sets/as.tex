@@ -1,0 +1,75 @@
+\documentclass{standalone}
+
+\usepackage{figurepreamble}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\datadir}{data/graphs/data_sets/as}
+    \newcommand{\datafile}[1]{\datadir/#1_as19990829.dat}
+    
+
+    \pgfplotsset{
+        bar cycle list/.style={
+            cycle list={{fill=TUMBlue}, {fill=TUMAccentOrange}, {fill=TUMAccentGreen}, {fill=TUMSecondaryBlue2}}
+        },
+    }
+
+    % https://tex.stackexchange.com/questions/208102/fix-group-bar-chart-spacing
+    % https://tex.stackexchange.com/questions/101320/grouped-bar-chart
+    \begin{groupplot}[
+            group style={
+                group size=2 by 2,
+                vertical sep=1.5cm,
+                ylabels at=edge left,
+            },
+            xticklabels={0.4,0.35,0.3,0.25},
+    		ymajorgrids,
+            xtick pos=bottom,
+            xtick=data,
+            enlarge x limits=0.25,
+            width=0.6*\textwidth,
+            height=6.25cm,
+            ymax=1.59,
+            ytick distance = 0.2,
+            major x tick style=transparent,
+            ymin=0,
+            xlabel={Ungleichgewicht $\eps$},
+            ylabel={Relative Schnittkosten},
+        ]
+
+        \nextgroupplot[
+            title=METIS recursive,
+            legend to name=grouplegend,
+            legend columns=-1,
+            legend style={/tikz/every even column/.append style={column sep=5pt}},
+            ybar,
+            bar width=4.5pt
+		]
+        \pgfplotsinvokeforeach {2,3,4,6}{
+            \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Recursive}};
+            \addlegendentry{{$k=#1$}}
+        }			
+
+        \nextgroupplot[
+            title=METIS k-way,
+            ybar,
+            bar width=4.5pt,
+		]
+        \pgfplotsinvokeforeach {2,3,4,6}{
+            \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Kway}};
+        }			
+
+        \nextgroupplot[
+            title=KaFFPa,
+            ybar,
+            bar width=4.5pt,
+            xshift=0.3\linewidth
+		]
+        \pgfplotsinvokeforeach {2,3,4,6}{
+            \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
+        }			
+    \end{groupplot}
+    \path (group c1r2.south west) -- node[below, yshift=-1.2cm]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.south east);
+
+\end{tikzpicture}
+\end{document}

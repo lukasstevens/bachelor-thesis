@@ -1,4 +1,6 @@
-\documentclass[tikz]{standalone}
+\documentclass{standalone}
+
+\usepackage{figurepreamble}
 
 \begin{document}
 \begin{tikzpicture}
@@ -14,6 +16,7 @@
         boxplot={
             draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
             box extend=0.2,
+            whisker range=10
         },
         x=1.5cm,
         xtick={0,1,2,...,10},
@@ -90,7 +93,7 @@
             \plotdata{#1}{KaFFPa}{edge_prob3}
         }
     \end{groupplot}
-    \path (group c1r3.south east) -- node[below, yshift=-1cm]{\small \ref{grouplegend}} (group c2r3.south west);
+    \path (group c1r3.south east) -- node[below, yshift=-1cm]{\small \pgfplotslegendfromname{grouplegend}} (group c2r3.south west);
 
 \end{tikzpicture}
 \end{document}

@@ -1,5 +1,6 @@
 \ProvidesPackage{figurepreamble}
 
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage[ngerman]{babel}
@@ -26,8 +27,6 @@
 
 \usepackage{tikz}
 \usepackage{pgfplots}
-\usepackage{pgfplotstable}
-\usepackage{booktabs}
 % Settings for pgfplots
 \pgfplotsset{
     compat=newest,
@@ -38,5 +37,7 @@
     }
 }
 \usepgfplotslibrary{statistics, groupplots}
+
+\newcommand{\eps}{\varepsilon}
 
 \endinput

@@ -1,0 +1,92 @@
+\documentclass{standalone}
+
+\usepackage{figurepreamble}
+
+\begin{document}
+\begin{tikzpicture}
+    \newcommand{\datadir}{data/trees/quality/node_count}
+    \newcommand{\plotdata}[2]{%
+        \addplot+ [boxplot] table[y=#1] {\datadir/METIS_Recursive_#2_k2i1div3.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/METIS_Recursive_#2_k4i1div3.dat};%
+        \addplot+ [boxplot] table[y=#1] {\datadir/METIS_Recursive_#2_k6i1div3.dat};%
+        }
+    
+    \pgfplotsset{
+        boxplot/draw direction=y,
+        boxplot={
+            draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
+            box extend=0.2,
+            whisker range=10
+        },
+        xtick={0,1,2,...,10},
+        x tick label as interval,
+        x tick label style={
+            text width=2.5cm,
+            align=center
+        }
+    }
+    
+    % Useful links: 
+    % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
+    % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
+    \begin{groupplot}[
+            group style={
+                group size=2 by 2,
+                ylabels at=edge left,
+                xlabels at=edge bottom,
+                horizontal sep=1.5cm,
+                vertical sep=1.5cm
+            },
+            height=5.25cm,
+            width=7.25cm,
+            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
+            ylabel=Relative Schnittkosten,
+            xlabel={Knotenanzahl $n$},
+            xticklabels={70,80,90,100},
+            ymax=1.3,
+            ymin=-0.15,
+            ytick distance=0.2,
+            ymajorgrids
+        ]
+
+        \nextgroupplot[
+            title=Random Attachment,
+            legend to name=grouplegend,
+            legend columns=-1,
+            legend style={/tikz/every even column/.append style={column sep=5pt}}
+        ]
+        \addplot+ [boxplot] table[y=70] {\datadir/METIS_Recursive_rand_attach_k2i1div3.dat};%
+        \addlegendentry{{$k=2$, $\eps=1/3$}}
+        \addplot+ [boxplot] table[y=70] {\datadir/METIS_Recursive_rand_attach_k4i1div3.dat};%
+        \addlegendentry{{$k=4$, $\eps=1/3$}}
+        \addplot+ [boxplot] table[y=70] {\datadir/METIS_Recursive_rand_attach_k6i1div3.dat};%
+        \addlegendentry{{$k=6$, $\eps=1/3$}}
+        \pgfplotsinvokeforeach {80,90,100} {
+            \plotdata{#1}{rand_attach}
+        }
+
+        \nextgroupplot[
+            title=Preferential Attachment
+        ]
+        \pgfplotsinvokeforeach {70,80,90,100} {
+            \plotdata{#1}{pref_attach}
+        }
+
+        \nextgroupplot[
+            title=Fat Tree
+        ]
+        \pgfplotsinvokeforeach {70,80,90,100} {
+            \plotdata{#1}{fat}
+        }
+        
+        \nextgroupplot[
+            title=Binärbaum
+        ]
+        \pgfplotsinvokeforeach {70,80,90,100} {
+            \plotdata{#1}{bnary}
+        }
+    \end{groupplot}
+    \path (group c1r2.south east) -- node[below, yshift=-1cm]{\small \pgfplotslegendfromname{grouplegend}} (group c2r2.south west);
+
+\end{tikzpicture}
+\end{document}

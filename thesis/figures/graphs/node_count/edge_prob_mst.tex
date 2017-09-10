@@ -1,4 +1,6 @@
-\documentclass[tikz]{standalone}
+\documentclass{standalone}
+
+\usepackage{figurepreamble}
 
 \begin{document}
 \begin{tikzpicture}
@@ -14,28 +16,37 @@
         boxplot={
             draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
             box extend=0.2,
+            whisker range=10
         },
-        x=1.5cm,
+        x=1.25cm,
         xtick={0,1,2,...,10},
         x tick label as interval,
         x tick label style={
             text width=2.5cm,
             align=center
-        },
-        small
+        }
     }
     
     % Useful links: 
     % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
     % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
     \begin{groupplot}[
-            group style={group size=2 by 3},
             cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
+            group style={
+                group size=2 by 3,
+                ylabels at=edge left,
+                xlabels at=edge bottom,
+                horizontal sep=1.5cm
+            },
+            xticklabels={70,80,90,100},
+            ylabel={Relative Schnittkosten},
+            xlabel={Knotenanzahl $n$},
+            height=6cm,
+            width=7cm,
             ymin=0.9,
             ymax=2.5,
             ytick distance=0.2,
-            ymajorgrids,
-            xticklabels={70,80,90,100}
+            ymajorgrids
         ]
 
         \nextgroupplot[
@@ -54,6 +65,7 @@
         \pgfplotsinvokeforeach {80,90,100} {
             \plotdata{#1}{METIS_Recursive}{edge_prob1}
         }
+        \draw (axis cs:2,2.3) node{METIS recursive};
 
         \nextgroupplot[
             title={Kantenwahrscheinlichkeit $0.3$},
@@ -61,36 +73,37 @@
         \pgfplotsinvokeforeach {70,80,90,100} {
             \plotdata{#1}{METIS_Recursive}{edge_prob3}
         }
+        \draw (axis cs:2,2.3) node{METIS recursive};
 
         \nextgroupplot[
-            ylabel={Relative Schnittkosten}
         ]
         \pgfplotsinvokeforeach {70,80,90,100} {
             \plotdata{#1}{METIS_Kway}{edge_prob1}
         }
+        \draw (axis cs:2,2.3) node{METIS k-way};
 
         \nextgroupplot[
         ]
         \pgfplotsinvokeforeach {70,80,90,100} {
             \plotdata{#1}{METIS_Kway}{edge_prob3}
         }
+        \draw (axis cs:2,2.3) node{METIS k-way};
 
         \nextgroupplot[
-            xlabel={Knotenanzahl $n$},
-            ylabel={Relative Schnittkosten}
         ]
         \pgfplotsinvokeforeach {70,80,90,100} {
             \plotdata{#1}{KaFFPa}{edge_prob1}
         }
+        \draw (axis cs:2,2.3) node{KaFFPa};
 
         \nextgroupplot[
-            xlabel={Knotenanzahl $n$}
         ]
         \pgfplotsinvokeforeach {70,80,90,100} {
             \plotdata{#1}{KaFFPa}{edge_prob3}
         }
+        \draw (axis cs:2,2.3) node{KaFFPa};
     \end{groupplot}
-    \path (group c1r3.south east) -- node[below, yshift=-1cm]{\small \ref{grouplegend}} (group c2r3.south west);
+    \path (group c1r3.south east) -- node[below, yshift=-1cm]{\small \pgfplotslegendfromname{grouplegend}} (group c2r3.south west);
 
 \end{tikzpicture}
 \end{document}

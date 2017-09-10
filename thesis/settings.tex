@@ -1,17 +1,19 @@
 \PassOptionsToPackage{table,svgnames,dvipsnames}{xcolor}
 
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage[ngerman]{babel}
 \usepackage{hyphenat}
 
 \usepackage[
-    subpreambles,
-    mode=buildnew
+    mode=buildnew,
+    subpreambles=true
 ]{standalone}
 
 \usepackage[autostyle]{csquotes}
 \usepackage[%
+  doi=false,
   url=false,
   style=alphabetic,
   maxnames=4,
@@ -26,11 +28,15 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
 \usepackage{booktabs}
 \usepackage[final]{microtype}
 \usepackage{caption}
-\usepackage[textsize=tiny]{todonotes}
 \usepackage{subcaption}
+\usepackage[textsize=tiny]{todonotes}
+\usepackage{numprint}
+\usepackage{float}
 
 \usepackage[chapter]{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -100,18 +106,6 @@
     \renewcommand{\listalgorithmname}{Algorithmenverzeichnis}
 }
 
-% Settings for pgfplots
-\pgfplotsset{
-    compat=newest,
-    % For available color names, see http://www.latextemplates.com/svgnames-colors
-    cycle list={TUMBlue\\TUMAccentOrange\\TUMAccentGreen\\TUMSecondaryBlue2\\TUMDarkGray\\},
-    legend image code/.code={%
-        \draw[#1] (0cm, -0.1cm) rectangle (0.3cm, 0.1cm);
-    }
-}
-\usepgfplotslibrary{statistics, groupplots}
-
-
 % Settings for lstlistings
 \lstset{
 	language=C++,
@@ -129,3 +123,4 @@
 }
 
 \usepackage[hidelinks]{hyperref} % hidelinks removes colored boxes around references and links
+

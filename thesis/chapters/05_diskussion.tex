@@ -11,10 +11,10 @@ In Sektion~\ref{sec:cutting} wurde bewiesen, dass die Schnittphase des Algorithm
 Wie in Sektion~\ref{sec:cutting} beschrieben, hat die Packphase eine Laufzeit von $\bigO(\gamma n ((k/\eps)^{2t} + n^2))$, wobei $t = \ceil{\log_{1 + \eps}(1/\eps)} + 1$ gilt.
 Damit dominiert die Schnittphase für konstantes $k$ und konstantes $\eps$ die Laufzeit.
 Dadurch ist zu erwarten, dass die Lauzeit proportional zu $n$ quartisch steigt.
-Die Werte in Tabelle (INSERT TABLE HERE) bestätigen diese Vermutung, da eine Verdopplung der Knotenanzahl meist zu einen $16$\hyp fachen Anstieg der Laufzeit zur Folge hat.
+Die Werte in Tabelle~\ref{tab:highnodecnt} bestätigen diese Vermutung, da eine Verdopplung der Knotenanzahl die Laufzeit um mehr als das $16$\hyp fachen erhöht.
 Auch in Abbildung~\ref{fig:runnodes} wird ersichtlich, dass eine Erhöhung der Knotenanzahl von $70$ auf $130$ eine ähnliche Auswirkung auf die Laufzeit hat.
-Damit kann der Algorithmus dieser Arbeit, im Gegensatz zu den Heuristiken METIS und KaHIP, in der Praxis nicht für größere Bäume eingesetzt werden.
-Beide Heuristiken sind in der Lage auch Graphen mit mehr als $100000$ Knoten zu partitionieren.~\cite{KK98, SS13}
+Da die Laufzeit für größere Werte von $k$ und kleinere von $\eps$ auch ansteigt, kann der Algorithmus in der Praxis nicht für größere Bäume eingesetzt werden.
+Dies steht im Gegensatz zu den Heuristiken METIS und KaHIP, welche in der Lage sind Graphen mit mehr als $100000$ Knoten zu partitionieren.~\cite{KK98, SS13}
 
 Eine weitere Beobachtung, die aus Abbildung~\ref{fig:runnodes} hervorgeht, ist die geringe Streuung der Messwerte bei vollständig balancierten Binärbäumen, die durch das in Sektion~\ref{sec:exprun} beschrieben Verfahren generiert wurden.
 Da jedes Level des Binärbaums bis auf das letzte vollständig mit Knoten gefüllt ist, haben alle generierten Bäume für eine feste Knotenanzahl die gleiche Struktur.
@@ -27,7 +27,7 @@ Auf dieses Verhalten wird weiter unten genauer eingegangen.
 Nun wird die Auswirkung des maximalen Ungleichgewichts der Partitionierung $\eps$ auf die Laufzeit untersucht, der auschließlich einen negativen Einfluss auf die Laufzeit hat.
 Während bei der Knotenanzahl $n$ steigende Werte die Laufzeit erhöhen, sind es bei $\eps$ fallende.
 Die theoretische Analyse der Laufzeiten für die Schnittphase und die Packphase aus Sektion~\ref{sec:treepartitioning} zeigt, dass die Laufzeit für konstantes $n$ und $k$ mindestens exponentiell mit fallendem $\eps$ steigt.
-\todo{Kann man hier wirklich exponentielle Steigerung sehen?} Die Werte für Random Attachment, Preferrential Attachment und Binärbäume in Abbildung~\ref{fig:runimb} lassen für die Parameterwahl $n = 100$ und $k = 2$ zumindest eine exponentielle Entwicklung erahnen.
+\todo{Kann man hier wirklich exponentielle Steigerung sehen?} Die Werte für Random Attachment, Preferential Attachment und Binärbäume in Abbildung~\ref{fig:runimb} lassen für die Parameterwahl $n = 100$ und $k = 2$ zumindest eine exponentielle Entwicklung erahnen.
 \todo[inline]{Auf höhere Streuung bei höherem eps eingehen? Evtl Profiling?}
 
 Der letzte Parameter des Algorithmus ist die Anzahl der Partitionen $k$. 
@@ -44,22 +44,25 @@ Auf der anderen Seite zeigt die Abbildung~\ref{fig:runkparts}, dass schon für $
 
 \begin{table}
     \centering
-    \begin{tabular}{l|*{11}{c}}
-        $k$ & $g_0$ & $g_1$ & $g_2$ & $g_3$ & $g_4$ & $g_5$ & $g_6$ & $g_7$ & $g_8$ \\ \hline
+    \begin{tabular}{l*{11}{c}}
+        \toprule
+        $k$ & $g_0$ & $g_1$ & $g_2$ & $g_3$ & $g_4$ & $g_5$ & $g_6$ & $g_7$ & $g_8$ \\
+        \midrule
         3 & 5 & 6 & 7 & 9 & 11 & 13 & 17 & 21 & 22 \\
         4 & 4 & 5 & 6 & 7 & 8 & 10 & 13 & 16 & 17 \\
         5 & 3 & 4 & 4 & 5 & 7 & 8 & 10 & 12 & 13 \\ 
         6 & 3 & 3 & 4 & 5 & 6 & 7 & 9 & 11 & 12 \\ 
         8 & 2 & 3 & 3 & 4 & 5 & 6 & 7 & 9 & 9 \\ 
         10 & 2 & 2 & 2 & 3 & 4 & 4 & 5 & 6 & 7 \\ 
+        \bottomrule
     \end{tabular}
     \caption{Exklusive obere Schranken der Signatur $\vec{g}$ für $n=50$ und $\eps=1/4$ in Abhängigkeit von $k$}\label{tab:ksig}
 \end{table}
 
 Zuletzt wird die Entwicklung der Laufzeit für steigenden Maximalgrad $\Delta$ des Baums analysiert.
-Feldmann und Foschini~\cite{ff13} zeigten, dass das $(k, 1)$\hyp Partitionierungsproblem bereits ab einem Maximalgrad von $\Delta=5$ $NP$\hyp schwer ist.
+Feldmann und Foschini~\cite{FF15} zeigten, dass das $(k, 1)$\hyp Partitionierungsproblem bereits ab einem Maximalgrad von $\Delta=5$ $NP$\hyp schwer ist.
 Für einen Maximalgrad von $\Delta=2$ ist das Problem noch in $P$, da es sich bei dem Graphen dann um einen Pfad oder einen Kreis handelt.
-Weiterhin kann der Algorithmus von MacGregor~\cite{mcg78} angepasst werden, um einen Algorithmus mit Approximationsfaktor $\bigO(\Delta \log_\Delta(n/k))$ zu erhalten.~\cite{ff13}
+Weiterhin kann der Algorithmus von MacGregor~\cite{mcg78} angepasst werden, um einen Algorithmus mit Approximationsfaktor $\bigO(\Delta \log_\Delta(n/k))$ zu erhalten.~\cite{FF15}
 Daraus folgt, dass das Problem mit wachsendem Maximalgrad $\Delta$ schwieriger wird.
 Die Experimente, welche durch Abbildung~\ref{fig:rundeg} visualisiert werden, zeigen jedoch, dass die Laufzeit mit wachsendem Maximalgrad abnimmt.
 Um eine Intuition zu geben, warum dies der Fall ist müssen wir zuerst betrachten, wodurch die Laufzeit verringert wird.

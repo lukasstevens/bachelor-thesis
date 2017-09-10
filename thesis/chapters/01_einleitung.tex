@@ -39,7 +39,7 @@ Der Beweis von Andreev und Räcke~\cite{ar06} dazu wird in Sektion~\ref{sec:comp
 
 Aufgrund dessen liegt ein bikriterieller Ansatz nahe, das heißt, der Algorithmus approximiert die Schnittkosten der Optimallösung des $k$\hyp balancierten Partitionierungsproblems und erlaubt sich dabei eine Partitionierung auszugeben, die nicht perfekt balanciert ist.
 Konkret bedeutet das: Ein bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\alpha$ löst das $(k, 1 + \eps)$\hyp Partitionierungsproblem und gibt eine Lösung aus, deren Schnittkosten nicht mehr als um einen Faktor $\alpha$ von denen der Optimallösung des $k$\hyp balancierten Partitionierungsproblems entfernt sind.
-In dieser Arbeit wird ein Algorithmus von Feldmann und Foschini~\cite{ff13} vorgestellt der diese Anforderungen erfüllt.
+In dieser Arbeit wird ein Algorithmus von Feldmann und Foschini~\cite{FF15} vorgestellt der diese Anforderungen erfüllt.
 Bevor der Algoritmus näher behandelt wird, werden zunächst einige vorherigen Forschungsergebnisse präsentiert, die sich auch mit Graphpartitionierungsproblemen beschäftigen.
 
 \section{Vorherige Ergebnisse}
@@ -64,7 +64,7 @@ Derselbe Algorithmus kann verallgemeinert werden, um einen Algorithmus für das 
 Dennoch kann das $(k, 1)$\hyp Partionierungsproblem auf generellen Graphen nicht approximiert werden, wie bereits oben erwähnt wurde (siehe auch Sektion~\ref{sec:complex}).
 Deshalb wird ein bikriterieller Ansatz verfolgt, der stattdessen das $(k,1+\eps)$\hyp Partitionierungsproblem löst und die Lösung mit der Optimallösung des $(k, 1)$\hyp Partitionierungsproblems vergleicht.
 Für den Fall $\eps = 1$ sind bereits seit längerem Approximationsalgorithmen bekannt.
-Event et al.~\cite{ENR+97} benutzten Spreading Metriken, um einen Algorithmus mit Approximationsfaktor $\bigO(\log n)$ zu erhalten.
+Even et al.~\cite{ENR+97} benutzten Spreading Metriken, um einen Algorithmus mit Approximationsfaktor $\bigO(\log n)$ zu erhalten.
 Simon und Teng~\cite{ST97} verwendeten die bereits erwähnten Algorithmen~\cite{LR99, ARV09}, um rekursiv eine $(k, 2)$\hyp Partitionierung zu berechnen, deren Schnittkosten um maximal einen Faktor $\bigO(\log k \sqrt{\log n})$ von der Optimallösung entfernt sind.
 Krauthgamer, Naor und Schwartz~\cite{KNS09} konnten mit Hilfe einer semidefiniter Relaxierung den Approximationsfaktor weiter auf $\bigO(\sqrt{\log n \log k})$ verringern.
 
@@ -74,7 +74,7 @@ Allerdings muss für den Fall $\eps < 1$ ein komplexeres Verfahren verwendet wer
 Damit wird das Problem deutlich schwerer.
 Erst später konnten Andreev und Räcke~\cite{ar06} für den Fall $\eps = 1$ einen Algorithmus finden.
 Dieser hat einen Approximationsfaktor von $\bigO(\log^{1.5}(n)/\eps^2)$.
-Zuletzt präsentierten Feldmann und Foschini~\cite{ff13} einen Algorithmus, der den Faktor auf $\bigO(\log n)$ verbessert und damit die Abhängigkeit von $\eps$ entfernt.
+Zuletzt präsentierten Feldmann und Foschini~\cite{FF15} einen Algorithmus, der den Faktor auf $\bigO(\log n)$ verbessert und damit die Abhängigkeit von $\eps$ entfernt.
 Dies wurde erreicht, indem zunächst ein bikiterielle Approximationsalgorithmus mit Approximationsfaktor $1$ für das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen entwickelt wurde.
 Der Algorithmus kann mit den bereits erwähnten Ergebnissen von Räcke~\cite{rc08} auf allgemeine Graphen erweitert werden.
 Da das Verfahren von Räcke den asymptotisch optimalen Approximationsfaktor von $\bigO(\log n)$ erreicht, ist eine Verbesserung des Approximationsfaktors unter Verwendung dieses Schemas nicht möglich.
@@ -84,4 +84,5 @@ Zum Schluss wird ein verwandtes Problem des $(k, 1+\eps)$\hyp Partitionierungspr
 Anstatt das Gesamtgewicht der geschnittenen Kanten zu minmieren, wird bei diese Problem das kumulative Maximalgewicht der Kanten, die eine einzige Partition verlassen, über alle Partitionen minimiert.
 Bansal et al.~\cite{BFK+11} fanden einen bikriteriellen Approximationsalgorithmus, der das min-max $(k, 2 + \eps)$\hyp Partitionierungsproblem mit einem von Approximationsfaktor $\bigO(\sqrt{\log n \log k})$ löst.
 Anschließend gelang es Räcke und Stotz~\cite{RS16}, die Relaxierung der Partitionsgrößen von $2 + \eps$ auf $1 + \eps$ für $0 < \eps < 1$ zu verringern und dabei einen Approximationsfaktor von $\bigO(\log^{1.5} n \cdot \log \log n)$ zu erreichen.
-\section{Vorherige Beiträge}
+
+\section{Ziel dieser Arbeit}

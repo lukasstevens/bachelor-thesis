@@ -17,7 +17,7 @@ watch:
 .PHONY: clean
 clean:
 	rm -rf $(filter-out $(out)/$(file).pdf, $(wildcard $(out)/*))
-	rm -rf figures/**/*.aux figures/**/*.log figures/**/*.out figures/**/*.pdf
+	rm -rf figures/**/*.aux figures/**/*.log figures/**/*.pdf
 
 .PHONY: purge
 purge:

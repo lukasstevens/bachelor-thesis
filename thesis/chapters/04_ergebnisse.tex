@@ -14,7 +14,7 @@ Danach wird die Partitionierung des Baums in eine Partitionierung des Graphen um
 Es wurden vier verschiedene Heuristiken verwendet, um zufällige Bäume zu generieren.
 Die erste Heuristik wird im Weiteren als Random Attachment bezeichnet. 
 Ein Baum mit $n$ Knoten wird generiert, indem mit einem Knoten gestartet wird und iterativ Blätter an zufällige Knoten des Baums angehängt werden, bis die gewünschte Knotenanzahl $n$ erreicht ist.
-Eine weitere Heuristik, die eine abgewandelte Version des Random Attachments ist, wird als Preferrential Attachment bezeichnet.
+Eine weitere Heuristik, die eine abgewandelte Version des Random Attachments ist, wird als Preferential Attachment bezeichnet.
 Dabei wird eine neues Blatt nicht zufällig mit einer uniformen Verteilung an einen Knoten des Baums angehängt, sondern die Wahrscheinlichkeit ist proportional zum Grad des Knotens.
 Bei den beiden oben genannten Heuristiken kann zusätzlich noch ein Maximalgrad für die Knoten des Baums festgelegt werden.
 Die dritte Heuristik sind sogenannte Fat Trees.
@@ -49,28 +49,47 @@ Zuletzt sind $50\%$ der Werte kleiner als der Median, welcher durch einen Querst
 Abbildung~\ref{fig:runnodes} zeigt die Laufzeit im Millisekunden in Abhängigkeit der Knotenanzahl $n$ des Baums.
 Für jede Heuristik wurde eine Messreihe mit verschieden Konfigurationen der übrigen Parametern angelegt.
 Dabei wird die jeweilige Heuristik in der Graphüberschrift genannt und den verschiedenen Parameterkonfigurationen sind unterschiedliche Farben zugewiesen. 
-\todo{Hier eine Tabelle für alle Heuristiken machen. Dieser kurze Test zeigt schon die $n^4$ Laufzeit.} Außerdem wurde eine weitere Messung für höhere Knotenanzahlen durchgeführt, wobei die Heuristik Preferrential Attachment verwendet wurde.
-Es wurde jeweils eine Baum mit $200$, $400$ und $800$ Knoten generiert und der Algorithmus auf diese Bäume mit den Parametern $k = 2$ und $\eps = 1/3$ angewandt.
-Dies führte bei $200$ Knoten zu einer Laufzeit von einer Sekunde, bei $400$ zu 16 Sekunden und bei $800$ Knoten wurde der Prozess terminiert da der Arbeitsspeicher vollständig ausgeschöpft wurde.
+Des Weiteren wurde eine Messreihe erstellt, welche die Abhängigkeit der Laufzeit von der Knotenanzahl für höhere Knotenanzahlen zeigt.
+Dabei wurde $k=2$ und $\eps=1/2$ gesetzt und für jede Knotenanzahl ein Baum jeder Heuristik generiert und die Laufzeit gemessen.
+Die Ergebnisse der Messreihe sind in Tabelle~\ref{tab:highnodecnt} zu sehen.
+
 \begin{figure}[t]
     \centering
-    \resizebox{\linewidth}{!}{\includestandalone{figures/trees/runtime/node_count}}
+    \includestandalone{figures/trees/runtime/node_count}
     \caption{Laufzeit in Abhängigkeit der Knotenanzahl\label{fig:runnodes}}
+\end{figure}
+
+\vspace{0.5cm}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l*{4}{c}}
+        \toprule
+        & 100 & 200 & 400 & 800 \\
+        \midrule
+        Random Attachment & 82 & 1249 & 26505 & 451628 \\ 
+        Preferential Attachment & 49 & 452 & 9741 & 160347 \\
+        Fat Tree & 23 & 496 & 10941 & 139296 \\ 
+        Binärbaum & 132 & 2228 & 37758 & 644216 \\ 
+        \bottomrule
+    \end{tabular}
+    \caption{Die Laufzeit in Millisekunden in Abhängigkeit der Knotenanzahl und Baumheuristik mit $k=2$ und $\eps=1/2$\label{tab:highnodecnt}}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/trees/runtime/imbalance}
+    \caption{Laufzeit in Abhängigkeit des Ungleichgewichts\label{fig:runimb}}
 \end{figure}
 
 Die Abbildung~\ref{fig:runimb} ist aufgebaut wie die vorherige Abbildung, zeigt jedoch die Laufzeit in Abhängigkeit des Ungleichgewichts $\eps$.
 Ein Ungleichgewicht von $\eps$ bedeutet, dass jede Partition der ermittelten Partitionierung höchstens eine Größe von $(1 + \eps) \ceil{n/k}$ hat.
 Wie oben erwähnt, sind die Werte für kleines $\eps$ weiter gestreut.
-\begin{figure}[t]
-    \centering
-    \resizebox{\linewidth}{!}{\includestandalone{figures/trees/runtime/imbalance}}
-    \caption{Laufzeit in Abhängigkeit des Ungleichgewichts\label{fig:runimb}}
-\end{figure}
 
 In Abbildung~\ref{fig:runkparts} ist die Laufzeit in Abhängigkeit der Anzahl an Partitionen $k$ zu sehen.
 Auch hier führt die Wahl von $\eps=1/5$ zu einer größeren Streuung.
 Weiterhin gilt zu bemerken, dass die Laufzeit für steigendes $k$ zunächst zunimmt und dann wieder abnimmt.
-\begin{figure}
+
+\begin{figure}[H]
     \centering
     \includestandalone{figures/trees/runtime/kparts}
     \caption{Laufzeit in Abhängigkeit der Teilanzahl\label{fig:runkparts}}
@@ -81,7 +100,8 @@ Hierbei wurde die Heuristik Random Attachment weggelassen, da es unwahrscheinlic
 Beim Fat Tree wurde weiterhin zwei für die Mindestanzahl an Kindern gewählt, während die Maximalanzahl $\Delta - 1$ ist.
 Anstatt eines Binärbaums wurde ein $d$\hyp ärer Baum betrachtet und die Entwicklung der Laufzeit mit wachsendem $d$ untersucht.
 Wie zu sehen ist nimmt die Laufzeit mit wachsendem Maximalgrad ab.
-\begin{figure}
+
+\begin{figure}[H]
     \centering
     \includestandalone{figures/trees/runtime/max_degree}
     \caption{Laufzeit in Abhängigkeit des Maximalgrads\label{fig:rundeg}}
@@ -90,88 +110,321 @@ Wie zu sehen ist nimmt die Laufzeit mit wachsendem Maximalgrad ab.
 Insgesamt ist die geringe Streuung der Werte beim Binärbaum bemerkenswert.
 Des Weiteren zeichnet sich der Binärbaum durch eine höhere Laufzeit und der Fat Tree durch eine geringere Laufzeit aus.
 
-%\subsection{Lösungsqualitat}
-%
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/trees/quality/tree_heuristics}
-%    \caption{Relative Schnittkosten in Abhängigkeit der Baumheuristik\label{fig:treecutcost}}
-%\end{figure}
-%
-%\subsection{Graphen}
-%
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/node_count/edge_prob_rst}
-%    \caption{Relative Schnittkosten für die Heuristik GraphEdgeProb und RST in Abhängigkeit der Knotenanzahl $n$}
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/node_count/edge_prob_mst}
-%    \caption{Relative Schnittkosten für die Heuristik GraphEdgeProb und MST in Abhängigkeit der Knotenanzahl $n$}
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/node_count/edge_prob_decomp}
-%    \caption{Relative Schnittkosten für die Heuristik GraphEdgeProb und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$}
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/node_count/pref_attach_rst}
-%    \caption{Relative Schnittkosten für die Heuristik Preferrential Attachment und RST in Abhängigkeit der Knotenanzahl $n$}
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/node_count/pref_attach_mst}
-%    \caption{Relative Schnittkosten für die Heuristik Preferrential Attachment und MST in Abhängigkeit der Knotenanzahl $n$}
-%\end{figure}
-%
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/node_count/pref_attach_decomp}
-%    \caption{Relative Schnittkosten für die Heuristik Preferrential Attachment und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$}
-%\end{figure}
+\subsection{Lösungsqualitat}
+In dieser Sektion wird die Lösungsqualität des Algorithmus auf Bäumen evaluiert.
+Nach bestem Wissen des Autors gibt es keine Implementierung eines vergleichbaren Approximationsalgorithmus und deshalb wird die Lösungsqualität durch einen Vergleich mit Heuristiken beurteilt.
+Da es sich bei dem $(k,1+\eps)$\hyp Partitionierungsproblem um ein Problem handelt, dass viele Praxisanwendungen hat, wurden bereits einige heuristische Ansätze entwickelt. 
+Das Survey~\cite{BMS+16} gibt einen Überblick über die verschiedenen Ansätze.
 
-\pagebreak
+In dieser Arbeit wird die Lösungsqualität mit den Heuristiken METIS~\cite{KK98} und KaHIP~\cite{SS13} ausgewählt.
+Beide Heuristiken verwenden eine Multilevel-Schema.
+Dabei wird der Graph zuerst in mehreren Schritten verkleinert, indem kontrahiert werden.
+Danach wird im verkleinerten Graph eine Partitionierung mit hoher Qualität berechnet.
+Zuletzt werden die kontrahierten Kanten wieder expandiert, wobei in jedem Schritt lokale Verbesserung der Partitionierung durchgeführt werden.
+Um die Kanten zu kontrahieren, werden Matchings verwendet.
+METIS und KaHIP behaupten Partitionierungen mit hoher Qualität im Vergleich zu anderen viel verwendeten Heuristiken zu finden.
+KaHIP gelang es bei der zehnten DIMACS Implementation Challenge~\cite{BMS+13} die beste Lösungsqualität im Vergleich zu anderen Heuristiken zu erreichen.
+
+Für die folgenden Versuche wurden von METIS die Graphpartitionierungsmethoden METIS recursive und METIS k-way verwendet.
+Alle zusätzlichen Konfigurationsoptionen, die METIS bereitstellt, wurden auf den Standartwerten belassen.
+Von KaHIP wird der Karlsruhe Fast Flow Partitioner (KaFFPa) verwendet.
+KaFFPa stellt verschieden Modi bereit, die die Laufzeit und die Lösungsqualität beinflussen.
+Hier wurde der Modus STRONG gewählt.
+Alle anderen Optionen wurden nicht verändert.
+Bei der Berechnung der Partitionierung erhalten der Algorithmus dieser Arbeit sowie die Heuristiken METIS und KaHIP dieselben Parameter $k$ und $\eps$.
+Um die Eingabebäume zu generieren, werden die gleichen Methoden wie in der vorherigen Sektion~\ref{sec:exprun} verwendet.
+Hierbei wurden jeweils 20 unterschiedliche Bäume für jede Heuristik generiert.
+
+Die Abbildungen~\ref{fig:mrectreesnodes},~\ref{fig:mkwaytreesnodes} und~\ref{fig:kaffpatreesnodes} zeigen die relative Lösungsqualität der jeweiligen Graphpartitionierungsheuristik in Abhängigkeit der Knotenanzahl $n$.
+Dabei ist die relative Lösungsqualität die Schnittkosten des Algorithmus dieser Arbeit geteilt durch die Schnittkosten der Graphpartitionierungsheuristik.
+Für alle Experimente wurde $\eps=1/3$ gewählt.
+Außerdem wurden für jeden Baum jeweils drei Durchläufe mit $k \in \{2, 4, 6\}$ durchgeführt, welche unterschiedlich eingefärbt sind.
+
+Für METIS recursive in Abbildung~\ref{fig:mrectreesnodes} fällt auf, dass die Lösungsqualität mit wachsendem $k$ steigt und die Streuung sinkt.
+Außerdem treten Ausreißer nach unten hautpsächlich für $k=2$ auf.
+Für $k=6$ kommen auch Ausreißer vor, deren Wert über $1$ liegt, das heißt, in diesem Fall hat METIS recursive eine bessere Partitionierung gefunden als der Algorithmus dieser Arbeit.
+Dazu muss jedoch erwähnt werden, dass einige dieser Partitionierungen das gegebene Ungleichgewicht $\eps=1/3$ verletzen.
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/trees/quality/node_count/metis_recursive}
+    \caption{Relative Schnittkosten von METIS recursive in Abhängigkeit der Knotenanzahl $n$\label{fig:mrectreesnodes}}
+\end{figure}
+
+Ähnlich zu METIS recursive ist bei METIS k-way die relative Lösungsqualität schlechter und die Streuung höher für $k=2$, wie in Abbildung~\ref{fig:mkwaytreesnodes} zu sehen ist.
+Zwischen $k=4$ und $k=6$ ist jedoch kein klarer Unterschied zu sehen.
+Außerdem sind weist METIS k-way für $k=2$ einige Ausreißer mit sehr schlechter relativen Lösungsqualität auf, während hingegen nur ein Ausreißer mit einem Wert von mehr als $1$ auftritt.
+In diesem Fall verletzt die Partitionierung nicht das gegeben Ungleichgewicht.
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/trees/quality/node_count/metis_kway}
+    \caption{Relative Schnittkosten von METIS k-way in Abhängigkeit der Knotenanzahl $n$\label{fig:mkwaytreesnodes}}
+\end{figure}
+
+Die Heuristik KaFFPa erreicht im Vergleich zu METIS recursive und METIS k-way bessere Lösungsqualität und eine geringere Streuung.
+Dabei treten auch vergleichsweise wenig Ausreißer mit eine Wert von unter $0.2$ auf.
+Während die Lösungsqualität bei KaFFPa nicht merklich mit wachsendem $k$ steigt, sinkt die Streuung jedoch weiterhin.
+Insgesamt wird keine Abhängigkeit der Lösungsqualität von der Knotenanzahl für die gewählten Parameter sichtbar.
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/trees/quality/node_count/kaffpa}
+    \caption{Relative Schnittkosten von KaFFPa in Abhängigkeit der Knotenanzahl $n$\label{fig:kaffpatreesnodes}}
+\end{figure}
+
+Die folgenden Abbildungen~\ref{fig:mrecctreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
+Die verschiedenen Werte für $k \in \{2,4,6\}$ sind weiterhin entsprechend eingefärbt.
+Wiederum ist die Streuung für $k=2$ höher und für METIS recursive und METIS k-way ist die Performanz tendenziell schlechter.
+Bemerkenswert ist, dass die Ausreißer bei METIS recursive (siehe Abbildung~\ref{mrectreesimb}) hauptsächlich bei $k=3$ auftreten.
+Auch liefert KaFFPa wie vorher die besten Ergebnisse.
+Alles in Allem ist keine klare Abhängigkeit der Lösungsqualität für die gegebenen Parameter zu sehen.
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/trees/quality/imbalance/metis_recursive}
+    \caption{Relative Schnittkosten von METIS recursive in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mrectreesimb}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/trees/quality/imbalance/metis_kway}
+    \caption{Relative Schnittkosten von METIS k-way in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mkwaytreesimb}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/trees/quality/imbalance/kaffpa}
+    \caption{Relative Schnittkosten von KaFFPa in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:kaffpatreesimb}}
+\end{figure}
+
+\section{Lösungsqualität auf Graphen}
+Nachdem in der vorherigen Sektion die relative Lösungsqualität der Heuristiken auf Bäumen behandelt wurde, werden nun Graphen untersucht.
+Da der Algorithmus dieser Arbeit jedoch nur auf Bäume angewandt werden kann, muss ein Eingabegraph vorher in einen Baum umgewandelt werden.
+Die Partitionierung des Graphen ist dann durch die des Baums gegeben.
+Dafür kann eine hierarchische Dekomposition verwendet werden, wie sie in Sektion~\ref{sec:decomptrees} vorgestellt wurde.
+Der genannte Algorithmus kann jedoch nicht verwendet werden, da es keine Implementierung gibt.
+Anstattdessen wird ein ähnlicher Algorithmus benutzt, der von Räcke, Shah und Täubig~\cite{RST14} entwickelt wurde.
+Im Gegensatz zum Algorithmus aus Sektion~\ref{sec:decomptrees} gibt dieser Algorithmus nur einen einzigen Baum aus.
+Allerdings ist der Approximationsfaktor mit $\bigO(\log^4 n)$ schlechter.
+Der Algorithmus wurde von Moritz Fuchs implementiert und ist auf Github verfügbar.\footnote{Repositorium auf Github: \url{https://github.com/moritzFuchs/hierarchical-decomposition}}
+Des Weiteren wurden Experimente mit zufälligen Spannbäumen (RST) und minimalen Spannbäumen (MST) durchgeführt.
+Als Eingabegraphen werden Zufallsgraphen und Echtdaten verwendet.
+
+\subsection{Zufallsgraphen}
+Zufällige Eingabegraphen werden nach zwei verschiedenen Modellen generiert.
+Das erste Modell wird Erdős-Rnyi-Modell und das zweite Barabási-Albert-Modell genannt.
+Diese Modelle wurden unter anderem von Barabási und Albert~\cite{AB02} analysiert.
+Das Erdős-Rényi-Modell generiert einen Graphen $G=(V,E)$ mit $n$ Knoten für eine Wahrscheinlichkeit $p$, indem für jede Kante $\{u, v\} \in E$ mit einer Bernoulliverteilung mit Parameter $p$ entschieden wird, ob die Kante existiert.
+Das Barabási-Albert-Modell erzeugt einen Graphen $G=(V,E)$ mit $n$ Knoten für ein Kantenanzahl $m$ aus einem Graphen $H$ mit $m_0$ Knoten, wobei $m \leq m_0 \leq n$ gilt.
+Um $G$ zu erhalten, werden iterativ $n - m_0$ Knoten zu $H$ hinzugefügt.
+Jeder dieser Knoten wird mit $m$ Knoten in $H$ verbunden, welche zufällig mit einer Wahrscheinlichkeit proportional zu ihrem Grad gewählt werden.
+
+Die Kantengewichte für beide Modelle werden uniform aus dem Bereich $[1, 100]$ gewählt.
+Falls ein Knoten im Barabási-Albert-Modell zweimal in einem Schritt gewählt wird, dann werden die Kantengewichte addiert.
+Der Grad erhöht sich dadurch nicht.
+Im Falle des Barabási-Albert-Modells ist der initiale Graph $H$ für den Parameter $m$ ein Kreis mit $m$ Knoten.
+Für jeden Kombination aus Knotenanzahl und Parameter des jeweiligen Modells wurden zehn Graphen generiert.
+
+Für die folgenden Experimente wurde $\eps=1/3$ gewählt und $k \in \{2, 4, 6\}$, wobei die Ergebnisse für die verschiedenen Werte von $k$ farblich voneinander abgesetzt sind.
+Die Abbildungen~\ref{fig:edgeprobrstnode},~\ref{fig:edgeprobmstnode} und~\ref{fig:edgeprobhdecompnode} zeigen die relativen Schnittkosten der Heuristiken METIS recursive, METIS k-way und KaFFPa in Abhängigkeit der Knotenanzahl für das Erdős-Rényi-Modell mit $p=0.1$ beziehungsweise $p=0.3$.
+Die Ergebnisse bei der Verwendung von RST und MST sind ähnlich, wobei die Performanz des MST insgesamt etwas schlechter ist.
+In beiden Fällen tritt für $k=2$ die höchste Streuung auf und zusätzlich sinken die relativen Schnittkosten für wachsendes $k$, was im Gegensatz zu den Resultaten auf Bäumen steht.
+Wenn hierarchische Dekomposition verwendet wird, dann ist die relative Lösungsqualität für $k=2$ besser, während für $k=4$ und $k=6$ die Qualität gleich ist.
+Insgesamt ist die Qualität für $p=0.3$ in allen Fällen besser als für $p=0.1$.
+Zwischen den verschiedenen Heuristiken besteht kein wesentlicher Unterschied in der Lösungsqualität.
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/node_count/edge_prob_rst}
+    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und RST in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobrstnode}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/node_count/edge_prob_mst}
+    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und MST in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobmstnode}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/node_count/edge_prob_decomp}
+    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobhdecompnode}}
+\end{figure}
+
+
+In den Abbildungen~\ref{fig:prefattachrstnode},~\ref{fig:prefattachmstnode} und~\ref{fig:prefattachhdecompnode} ist die relative Lösungsqualität der Graphpartitionierungsheuristiken in Abhängigkeit für das Barabási-Albert-Modell mit den Parameter $m=5$ und $m=10$ zu sehen.
+Wie vorher ist die Streuung für $k=2$ am höchsten und die Lösungsqualität am schlechtesten für RST und MST, während die Lösungsqualität für hierarchische Dekomposition bei $k=2$ am besten ist.
+Für $k=2$ und $k=4$ ist der Unterschied gering.
+Weiterhin weist die Lösungsqualitat der Graphpartitionierungsheuristiken insgesamt nur geringe Unterschiede auf.
+Bemerkenswert ist, dass hierarchische Dekomposition auf Eingabegraphen des Barabási-Albert-Modells merkbar besser ist als MST und RST
+Ferner gibt es Ausreißer mit einem Wert kleiner als $1$.
+Analog zum Erdős-Rényi-Modell ist die Lösungsqualität für eine höhere Anzahl von Kanten besser.
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/node_count/pref_attach_rst}
+    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und RST in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachrstnode}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/node_count/pref_attach_mst}
+    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und MST in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachmstnode}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/node_count/pref_attach_decomp}
+    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachhdecompnode}}
+\end{figure}
+
 
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/edge_prob_rst}
-%    \caption{Relative Schnittkosten für die Heuristik GraphEdgeProb und RST in Abhängikeit von $\eps$}
+%    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und RST in Abhängikeit von $\eps$}
 %\end{figure}
 %
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/edge_prob_mst}
-%    \caption{Relative Schnittkosten für die Heuristik GraphEdgeProb und MST in Abhängikeit von $\eps$}
+%    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und MST in Abhängikeit von $\eps$}
 %\end{figure}
+
+Zuletzt wird die Lösungsqualität in Abhängigkeit des Ungleichgewichts $\eps$ untersucht.
+Dafür wird $n=80$ gewählt und $k \in \{2, 4, 6\}$, wobei die Einfärbung der Ergebnisse den unterschiedlichen Werten von $k$ entspricht.
+Dabei wurden RST und MST weggelassen, da zwischen MST, RST und hierarchischer Dekomposition beim Erdős-Rényi-Modell keine wesentlichen Unterschiede in der Lösungsqualität bestanden und hierarchische Dekomposition für das Barabási-Albert-Modell bessere Ergbnisse lieferte.
+Die Ergebnisse sind in Abbildung~\ref{fig:edgeprobhdecompimb} und~\ref{fig:prefattachhdecompimb} zu sehen.
+Das Verhalten für $k=2$ ist wieder weitgehend wie oben, wobei zusätzlich auffällt, dass die Lösungsqualität mit fallendem $\eps$ abnimmt.
+Den Experimenten nach scheinen für $k=4$ und $k=6$ verschiedene Werte von $\eps$ keinen Einfluss auf die Lösungsqualität zu haben.
 
 \todo[inline]{Ergebniss zu rst und mst in den Anhang?}
 
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/imbalance/edge_prob_decomp}
-%    \caption{Relative Schnittkosten für die Heuristik GraphEdgeProb und Hierarchical Decomposition in Abhängikeit von $\eps$}
-%\end{figure}
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/imbalance/edge_prob_decomp}
+    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:edgeprobhdecompimb}}
+\end{figure}
 
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/pref_attach_rst}
-%    \caption{Relative Schnittkosten für die Heuristik Preferrential Attachment und RST in Abhängikeit von $\eps$}
+%    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und RST in Abhängikeit von $\eps$}
 %\end{figure}
 %
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/pref_attach_mst}
-%    \caption{Relative Schnittkosten für die Heuristik Preferrential Attachment und MST in Abhängikeit von $\eps$}
+%    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und MST in Abhängikeit von $\eps$}
 %\end{figure}
 
-%\begin{figure}
-%    \centering
-%    \includestandalone{figures/graphs/imbalance/pref_attach_decomp}
-%    \caption{Relative Schnittkosten für die Heuristik Preferrential Attachment und Hierarchical Decomposition in Abhängikeit von $\eps$}
-%\end{figure}
+\begin{figure}[H]
+    \centering
+    \includestandalone{figures/graphs/imbalance/pref_attach_decomp}
+    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:prefattachhdecompimb}}
+\end{figure}
+
+\subsection{Graphen aus Echtdaten}
+Zum Schluss wird die Lösungsqualität des Algorithmus dieser Arbeit anhand von echten Datensätzen durch einen Vergleich mit den Heuristiken METIS recursive, METIS k-way und KaFFPa ermittelt.
+Alle verwendeten Datensätze sind der Stanford Large Network Dataset Collection entnommen.~\cite{LK14}
+Die folgende Tabelle gibt einen Überblick über diese Datensätze.
+Mit dem Clusteringkoeffizient ist hierbei der durchschnittliche Clusteringkoeffizient gemeint.
+
+\vspace{0.5cm}
+\begin{table}[H]
+    \footnotesize
+    \centering
+    \begin{tabular}{lcccc}
+        \toprule
+        Datensatz & Knoten & Kanten & Clusteringkoeffizient & Referenz \\
+        \midrule
+        as19990829 & 103 & 248 & 0.5296 & \cite{LKF05} \\
+        email-Eu-core & 1005 & 25571 & 0.3994 & \cite{LKF07} \\
+        ca-GrQc & 5242 & 14496 & 0.5296 & \cite{LKF07} \\
+        ego-Facebook & 4039 & 88234 & 0.6055 & \cite{ML14} \\
+        \bottomrule
+    \end{tabular}
+    \caption{Überblick über die Datensätze}
+\end{table}
+
+Wie in der Tabelle zu sehen ist, haben die Graphen in drei von vier Fällen über $1000$ Knoten.
+Des Weiteren erhöht die Umwandlung des Graphen in einen Baum mit hierarchischer Dekomposition die Anzahl der Knoten. 
+Damit liegen diese Graphen außerhalb der Möglichkeiten des Algorithmus dieser Arbeit, da die Laufzeit zu hoch ist.
+Deshalb muss der Graph zuerst verkleinert werden, bevor er in einen Baum umgewandelt wird.
+
+Dafür wurde ein Verfahren verwendet, welches Heavy Edge Matching genannt wird und bereits von Karypis und Kumar~\cite{KK98} für die Verkleinerung des Graphen für die Heuristik METIS vorgeschlagen und experimentell evaluiert wurde.
+Das Verfahren verkleinert den Graph iterativ, indem ein Matching ermittelt wird und alle Kanten des Matchings kontrahiert werden.
+Dass Matching wird folgendermaßen ermittelt:
+Die Knoten werden anhand einer zufälligen Reihenfolge besucht und es wird der Knoten $v$ mit dem adjazenten Knoten $u$ gematcht, falls die Kante $\{v, u\}$ die Kante mit maximalen Gewicht ist, sodass weder $v$ noch $u$ bereits gematcht sind.
+Wenn es keine solche Kante gibt, dann wird mit dem nächsten Knoten fortgefahren.
+Es gilt zu bemerken, dass mit diesem Verfahren nicht unbedingt das größtmögliche Matching gefunden wird.
+Falls durch die Kontraktion parallele Kanten entstehen würden, dann werden die Kantengewichte addiert.
+Außerdem werden die Knotengewichte der kontrahierten Knoten addiert, wobei die Knoten zu Anfang uniform gewichtet sind.
+Hier kommt die Erweiterung des Algorithmus auf Bäume mit Knotengewichten aus Sektion~\ref{sec:nodeweights} zum tragen.
+Die obigen Schritte werden so lange wiederholt bis der Graph auf die gewünschte Knotenanzahl verkleinert wurde.
+Wichtig ist, dass das beschrieben Verfahren die Schnittkosten einer Partitionierung im Graphen nicht verändert, sondern nur Partitionierungen unmöglich macht.
+
+In unserem Fall werden die Graphen aus den drei größeren Datensätzen auf $100$ Knoten kontrahiert.
+Anschließend wird die hierarchische Dekomposition auf den Graphen angewendet.
+Dann wird der Baum partitioniert und die Partitionierung des Baums wird auf den Graph angewandt.
+Für jeden Datensatz wurde die relative Lösungsqualität für alle Kombinationen aus Partitionsanzahl $k \in \{2,3,4,6\}$ und Ungleichgewicht $\eps \in \{8/20, 7/20, 6/20, 5/20\}$ ermittelt, falls die Laufzeit und der Speicherbedarf des Algorithmus dies zuließ.
+Die Ergebnisse für verschieden $k$ sind unterschiedlich eingefärbt.
+
+Der erste Datensatz trägt den Namen as19990829 und ist ein Graph mit $103$ Knoten und $248$ Kanten.
+Dieser Datensatz ist das Kommunikationsnetzwerk eines autonomen Systems, wobei ein autonomes System ein Subnetzwerk von Routern im Internet ist.
+Die Abbildung~\ref{fig:as} zeigt die Resultate.
+Wie bei den Zufallsgraphen ist die Lösungsqualität für $k=2$ am besten.
+Des Weiteren sinkt die Lösungsqualität im Vergleich zu KaFFPa mit steigendem $k$.
+Bemerkenswert ist die Lösungsqualität im Vergleich zu METIS recursive.
+Auf der anderen Seite ist der Algorithmus für keine Parameterkombination besser als KaFFPa.
+Das Ungleichgewicht $\eps$ scheint nur für $k=2$ einen Einfluss auf die Lösungsqualität im Vergleich zu den Methoden von METIS zu haben.
+
+Der zweite Datensatz heißt email-Eu-core und ist ein gerichteter Graph mit $1005$ Knoten und $25571$ Kanten.
+Dabei handelt es sich um ein eMail\hyp Kommunikationsnetzwerk einer europäischen Forschungseinrichtung.
+Das Netzwerk umfasst nur die Kommunikation von Mitgliedern der Institution und enthält eine Kante $(u, v)$, falls Person $u$ mindestens eine eMail an Person $v$ geschickt hat.
+Da der Algorithmus dieser Arbeit nur ungerichtete Bäume partitioniert, wurden die gerichteten Kanten in ungerichtete umgewandelt.
+Wie in Abbildung~\ref{fig:email} zu sehen ist, ist die Lösungsqualität im Vergleich zu METIS recursive und METIS k-way wiederum für $k=2$ maximal.
+Bei KaFFPa zeigt sich keine Unterschiede für verschieden Werte von $k$.
+Interessanterweise verschlechtert sich die Lösungsqualität im Vergleich zum Datensatz as19990829 nur leicht, obwohl der Graph zunächst kontrahiert wird.
+Weiterhin sinkt die Lösungsqualität im Vergleich zu METIS recursive und METIS k-way für fallendes $\eps$.
+
+Der dritte Datensatz ca-GrQc ist ein Graph mit $5242$ Kanten und $25571$ Kanten.
+Dieser stellt ein Kollaborationsnetzwerk von Wissenschaftlern innerhalb des Felds der Relativitätstheorie dar.
+Für diesen Graph konnten die Experimente für $k=6$ nicht durchgeführt werden, da die Laufzeit und der Speicherbedarf zu hoch sind. 
+Die Abbildung~\ref{fig:cagrqc} zeigt die Ergebnisse der Experimente.
+Obwohl dieser Graph größer ist als der vorherige, ist die Lösungsqualität noch verhältnismäßig hoch.
+Des Weiteren ist KaFFPa für diesen Graph merkbar besser als beide Methoden von METIS.
+In diesem Graph verändert sich die Lösungsqualität nicht in Abhängigkeit von $\eps$.
+
+Der letzte Datensatz heißt ego-Facebook und ist ein Graph mit $4039$ Knoten und $88234$ Kanten.
+Dieser Graph bildet alle Freundschaften der Teilnehmer im sozialen Netzwerk facebook\footnote{\url{https://facebook.com}} ab.
+Auch für diesen Graph war es nicht möglich die Schnittkosten für $k=6$ zu berechnen.
+Wie die Abbildung~\ref{fig:facebook} zeigt, sind die relativen Schnittkosten in diesem Graph deutlich schlechter als in den vorhigeren Graphen, besonders für $k=3$ und $k=4$.
+Während die Lösungsqualität für $k=2$ mit fallendem $\eps$ steigt, sinkt sie für $k=4$ auf der anderen Seite tendenziell.
+
+\begin{figure}[t]
+    \centering
+    \includestandalone{figures/graphs/data_sets/as}
+    \caption{Relative Schnittkosten für den Datensatz as19990829\label{fig:as}}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includestandalone{figures/graphs/data_sets/email}
+    \caption{Relative Schnittkosten für den Datensatz email-Eu-core\label{fig:email}}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includestandalone{figures/graphs/data_sets/caGrQc}
+    \caption{Relative Schnittkosten für den Datensatz ca-GrQc\label{fig:cagrqc}}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includestandalone{figures/graphs/data_sets/facebook}
+    \caption{Relative Schnittkosten für den Datensatz ego-Facebook\label{fig:facebook}}
+\end{figure}
+

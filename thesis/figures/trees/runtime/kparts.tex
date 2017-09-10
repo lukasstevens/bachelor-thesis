@@ -17,70 +17,74 @@
             draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
             box extend=0.2,
         },
-        x=1.5cm,
         xtick={0,1,2,...,14},
         x tick label as interval,
         x tick label style={
             text width=2.5cm,
             align=center
-        },
-        small
+        }
     }
+
     
     % Useful links: 
     % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
     % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
     \begin{groupplot}[
-            group style={group size=1 by 4},
             cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
-            width=5cm,
-            height=5cm
+            group style={
+                group size=1 by 4,
+                ylabels at=edge left,
+                xlabels at=edge bottom,
+                xticklabels at=edge bottom,
+                horizontal sep=1.5cm
+            },
+            width=12cm,
+            height=5cm,
+            ylabel=Laufzeit (ms),
+            xlabel={Teilanzahl $k$},
+            xticklabels={3, 4, 5, 6, 8, 10}
         ]
 
         \nextgroupplot[
             title=Random Attachment,
             ymax=4700,
             ytick distance=1000,
-            xticklabels=\empty,
             legend to name=grouplegend,
-            legend columns=-1,
-            legend style={/tikz/every even column/.append style={column sep=5pt}},
-            ylabel=Laufzeit (ms),
-            yticklabel pos=left
+            legend columns=-1
         ]
         \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i1div3.dat};%
-        \addlegendentry{{$n=50$, $\varepsilon=1/3$}}
+        \addlegendentry{{$n=50$, $\eps=1/3$}}
         \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n50i1div4.dat};%
-        \addlegendentry{{$n=50$, $\varepsilon=1/4$}}
+        \addlegendentry{{$n=50$, $\eps=1/4$}}
         \addplot+ [boxplot] table[y=3] {\datadir/rand_attach/n60i1div3.dat};%
-        \addlegendentry{{$n=60$, $\varepsilon=1/3$}}
+        \addlegendentry{{$n=60$, $\eps=1/3$}}
         \pgfplotsinvokeforeach {4, 5, 6, 8, 10} {
             \plotdata{#1}{rand_attach}
         }
 
         \nextgroupplot[
-            title=Preferrential Attachment, ymax=1800,
-            ytick distance=500, xticklabels=\empty,
-            ylabel=Laufzeit (ms), yticklabel pos=left
+            title=Preferential Attachment,
+            ymax=1800,
+            ytick distance=500
         ]
         \pgfplotsinvokeforeach {3, 4, 5, 6, 8, 10} {
             \plotdata{#1}{pref_attach}
         }
 
         \nextgroupplot[
-            title=Fat Tree, ymax=220,
-            ylabel=Laufzeit (ms), yticklabel pos=left,
-            ytick distance=50, xticklabels=\empty
+            title=Fat Tree,
+            ymax=220,
+            ytick distance=50
         ]
         \pgfplotsinvokeforeach{3, 4, 5, 6, 8, 10} {
             \plotdata{#1}{fat}
         }
         
         \nextgroupplot[
-            title=Binärbaum, ymax=11000,
-            xticklabels={3, 4, 5, 6, 8, 10},
-            xlabel=Teilanzahl $k$, ylabel=Laufzeit (ms),
-            yticklabel pos=left, ymode=log
+            title=Binärbaum,
+            ymax=11000,
+            xlabel=Teilanzahl $k$,
+            ymode=log
         ]
         \pgfplotsinvokeforeach{3, 4, 5, 6, 8, 10} {
             \plotdata{#1}{bnary}

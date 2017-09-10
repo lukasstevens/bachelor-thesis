@@ -17,22 +17,31 @@
             draw position={1/4 + floor(\plotnumofactualtype/3) + 1/4*mod(\plotnumofactualtype,3)},
             box extend=0.2,
         },
-        x=1.5cm,
         xtick={0,1,2,...,10},
         x tick label as interval,
         x tick label style={
             text width=2.5cm,
             align=center
-        },
-        small
+        }
     }
     
     % Useful links: 
     % https://tex.stackexchange.com/questions/37568/colors-and-legend-in-groupplots-barplot
     % https://tex.stackexchange.com/questions/183778/how-can-several-boxplots-be-combined-into-a-single-figure-as-groups
     \begin{groupplot}[
-            group style={group size=2 by 2},
-            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen}
+            group style={
+                group size=2 by 2,
+                ylabels at=edge left,
+                xlabels at=edge bottom,
+                xticklabels at=edge bottom,
+                horizontal sep=1.5cm
+            },
+            height=5.25cm,
+            width=7.25cm,
+            cycle list={TUMBlue, TUMAccentOrange, TUMAccentGreen},
+            ylabel=Laufzeit (ms),
+            xlabel={Ungleichgewicht $\eps$},
+            xticklabels={0.35, 0.3, 0.25, 0.2}
         ]
 
         \nextgroupplot[
@@ -55,29 +64,24 @@
         }
 
         \nextgroupplot[
-            title=Preferrential Attachment, ymax=2700,
-            ytick distance=1000, xticklabels=\empty,
-            ylabel=Laufzeit (ms), yticklabel pos=right,
-            y label style={at={(axis description cs:-0.12,0.5)}, anchor=north}
+            title=Preferential Attachment, ymax=2700,
+            ytick distance=1000
         ]
         \pgfplotsinvokeforeach {7/20, 3/10, 5/20, 2/10} {
             \plotdata{#1}{pref_attach}
         }
 
         \nextgroupplot[
-            title=Fat Tree, ymax=900,
-            ytick distance=200, xticklabels={0.35, 0.3, 0.25, 0.2},
-            xlabel=Ungleichgewicht $\varepsilon$
+            title=Fat Tree, ymax=650,
+            ytick distance=200,
         ]
         \pgfplotsinvokeforeach {7/20, 3/10, 5/20, 2/10} {
             \plotdata{#1}{fat}
         }
-        
+
         \nextgroupplot[
             title=Binärbaum, ymax=5800,
-            ytick distance=2000, xticklabels={0.35, 0.3, 0.25, 0.2},
-            xlabel=Ungleichgewicht $\varepsilon$, ylabel=Laufzeit (ms),
-            yticklabel pos=right, y label style={at={(axis description cs:-0.12,0.5)}, anchor=north}
+            ytick distance=2000
         ]
         \pgfplotsinvokeforeach {7/20, 3/10, 5/20, 2/10} {
             \plotdata{#1}{bnary}
