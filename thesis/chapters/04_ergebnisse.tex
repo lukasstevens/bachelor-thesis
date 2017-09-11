@@ -176,10 +176,10 @@ Insgesamt wird keine Abhängigkeit der Lösungsqualität von der Knotenanzahl f�
     \caption{Relative Schnittkosten von KaFFPa in Abhängigkeit der Knotenanzahl $n$\label{fig:kaffpatreesnodes}}
 \end{figure}
 
-Die folgenden Abbildungen~\ref{fig:mrecctreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
+Die folgenden Abbildungen~\ref{fig:mrectreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
 Die verschiedenen Werte für $k \in \{2,4,6\}$ sind weiterhin entsprechend eingefärbt.
 Wiederum liefern METIS recursive und METIS k-way für $k=2$ eine geringe Lösungsqualität.
-Bemerkenswert ist, dass die Ausreißer bei METIS recursive (siehe Abbildung~\ref{mrectreesimb}) hauptsächlich bei $k=3$ auftreten.
+Bemerkenswert ist, dass die Ausreißer bei METIS recursive (siehe Abbildung~\ref{fig:mrectreesimb}) hauptsächlich bei $k=3$ auftreten.
 Auch liefert KaFFPa wie vorher die besten Ergebnisse.
 Alles in Allem ist keine klare Abhängigkeit der Lösungsqualität für die gegebenen Parameter zu sehen.
 
@@ -218,7 +218,7 @@ Als Eingabegraphen werden sowohl Zufallsgraphen als auch Echtdaten verwendet.
 
 \subsection{Zufallsgraphen}
 Zufällige Eingabegraphen werden nach zwei verschiedenen Modellen generiert.
-Das erste Modell wird Erdős-Rnyi-Modell und das zweite Barabási-Albert-Modell genannt.
+Das erste Modell wird Erdős-Rényi-Modell und das zweite Barabási-Albert-Modell genannt.
 Diese Modelle wurden unter anderem von Barabási und Albert~\cite{AB02} analysiert.
 Das Erdős-Rényi-Modell generiert einen Graphen $G=(V,E)$ mit $n$ Knoten für eine Wahrscheinlichkeit $p$, indem für jede Kante $\{u, v\} \in E$ mit einer Bernoulliverteilung mit Parameter $p$ entschieden wird, ob die Kante existiert.
 Das Barabási-Albert-Modell erzeugt einen Graphen $G=(V,E)$ mit $n$ Knoten für ein Kantenanzahl $m$ aus einem Graphen $H$ mit $m_0$ Knoten, wobei $m \leq m_0 \leq n$ gilt.
