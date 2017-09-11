@@ -133,14 +133,17 @@ Hier wurde der Modus STRONG gewählt.
 Alle anderen Optionen wurden nicht verändert.
 Bei der Berechnung der Partitionierung erhalten der Algorithmus dieser Arbeit sowie die Heuristiken METIS und KaHIP dieselben Parameter $k$ und $\eps$.
 Um die Eingabebäume zu generieren, werden die gleichen Methoden wie in der vorherigen Sektion~\ref{sec:exprun} verwendet.
-Hierbei wurden jeweils 20 unterschiedliche Bäume für jede Heuristik generiert.
+Hierbei wurden jeweils 20 unterschiedliche Bäume für jede Baumheuristik generiert.
 
 Die Abbildungen~\ref{fig:mrectreesnodes},~\ref{fig:mkwaytreesnodes} und~\ref{fig:kaffpatreesnodes} zeigen die relative Lösungsqualität der jeweiligen Graphpartitionierungsheuristik in Abhängigkeit der Knotenanzahl $n$.
-Dabei ist die relative Lösungsqualität die Schnittkosten des Algorithmus dieser Arbeit geteilt durch die Schnittkosten der Graphpartitionierungsheuristik.
+Dabei ist die relative Lösungsqualität als die Schnittkosten der Lösung des Algorithmus dieser Arbeit geteilt durch die Schnittkosten der Lösung der Graphpartitionierungsheuristik definiert.
+Das bedeutet, dass der Algorithmus dieser Arbeit eine günstigere Partitionierung als eine Graphpartitionierungsheuristik gefunden hat, wenn die relative Lösungsqualität kleiner als $1$ ist.
+Andernfalls liefert die Heuristik ein besseres Ergebnis.
 Für alle Experimente wurde $\eps=1/3$ gewählt.
 Außerdem wurden für jeden Baum jeweils drei Durchläufe mit $k \in \{2, 4, 6\}$ durchgeführt, welche unterschiedlich eingefärbt sind.
 
-Für METIS recursive in Abbildung~\ref{fig:mrectreesnodes} fällt auf, dass die Lösungsqualität mit wachsendem $k$ steigt und die Streuung sinkt.
+Für METIS recursive in Abbildung~\ref{fig:mrectreesnodes} fällt auf, dass die relative Lösungsqualität mit wachsendem $k$ steigt.
+Relativ zu METIS recursive ist die Performanz des Algorithms dieser Arbeit damit für höheres $k$ schlechter.
 Außerdem treten Ausreißer nach unten hautpsächlich für $k=2$ auf.
 Für $k=6$ kommen auch Ausreißer vor, deren Wert über $1$ liegt, das heißt, in diesem Fall hat METIS recursive eine bessere Partitionierung gefunden als der Algorithmus dieser Arbeit.
 Dazu muss jedoch erwähnt werden, dass einige dieser Partitionierungen das gegebene Ungleichgewicht $\eps=1/3$ verletzen.
@@ -151,10 +154,10 @@ Dazu muss jedoch erwähnt werden, dass einige dieser Partitionierungen das gegeb
     \caption{Relative Schnittkosten von METIS recursive in Abhängigkeit der Knotenanzahl $n$\label{fig:mrectreesnodes}}
 \end{figure}
 
-Ähnlich zu METIS recursive ist bei METIS k-way die relative Lösungsqualität schlechter und die Streuung höher für $k=2$, wie in Abbildung~\ref{fig:mkwaytreesnodes} zu sehen ist.
+Wie vorher ist bei METIS k-way die relative Lösungsqualität geringer für $k=2$, wie in Abbildung~\ref{fig:mkwaytreesnodes} zu sehen ist.
 Zwischen $k=4$ und $k=6$ ist jedoch kein klarer Unterschied zu sehen.
-Außerdem sind weist METIS k-way für $k=2$ einige Ausreißer mit sehr schlechter relativen Lösungsqualität auf, während hingegen nur ein Ausreißer mit einem Wert von mehr als $1$ auftritt.
-In diesem Fall verletzt die Partitionierung nicht das gegeben Ungleichgewicht.
+Außerdem weist METIS k-way für $k=2$ einige Ausreißer mit sehr niedrigen relativen Lösungsqualität auf, während hingegen nur ein Ausreißer mit einem Wert von mehr als $1$ auftritt.
+Damit liefert der Algorithmus dieser Arbeit im Vergleich zu METIS k-way eine gute Lösungsqualität.
 
 \begin{figure}[H]
     \centering
@@ -162,9 +165,9 @@ In diesem Fall verletzt die Partitionierung nicht das gegeben Ungleichgewicht.
     \caption{Relative Schnittkosten von METIS k-way in Abhängigkeit der Knotenanzahl $n$\label{fig:mkwaytreesnodes}}
 \end{figure}
 
-Die Heuristik KaFFPa erreicht im Vergleich zu METIS recursive und METIS k-way bessere Lösungsqualität und eine geringere Streuung.
+Die Heuristik KaFFPa erreicht im Vergleich zu METIS recursive und METIS k-way höhere Lösungsqualität.
 Dabei treten auch vergleichsweise wenig Ausreißer mit eine Wert von unter $0.2$ auf.
-Während die Lösungsqualität bei KaFFPa nicht merklich mit wachsendem $k$ steigt, sinkt die Streuung jedoch weiterhin.
+Die Lösungsqualität bei KaFFPa ändert sich nicht merklich mit wachsendem $k$.
 Insgesamt wird keine Abhängigkeit der Lösungsqualität von der Knotenanzahl für die gewählten Parameter sichtbar.
 
 \begin{figure}[H]
@@ -175,7 +178,7 @@ Insgesamt wird keine Abhängigkeit der Lösungsqualität von der Knotenanzahl f�
 
 Die folgenden Abbildungen~\ref{fig:mrecctreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
 Die verschiedenen Werte für $k \in \{2,4,6\}$ sind weiterhin entsprechend eingefärbt.
-Wiederum ist die Streuung für $k=2$ höher und für METIS recursive und METIS k-way ist die Performanz tendenziell schlechter.
+Wiederum liefern METIS recursive und METIS k-way für $k=2$ eine geringe Lösungsqualität.
 Bemerkenswert ist, dass die Ausreißer bei METIS recursive (siehe Abbildung~\ref{mrectreesimb}) hauptsächlich bei $k=3$ auftreten.
 Auch liefert KaFFPa wie vorher die besten Ergebnisse.
 Alles in Allem ist keine klare Abhängigkeit der Lösungsqualität für die gegebenen Parameter zu sehen.
@@ -201,15 +204,17 @@ Alles in Allem ist keine klare Abhängigkeit der Lösungsqualität für die gege
 \section{Lösungsqualität auf Graphen}
 Nachdem in der vorherigen Sektion die relative Lösungsqualität der Heuristiken auf Bäumen behandelt wurde, werden nun Graphen untersucht.
 Da der Algorithmus dieser Arbeit jedoch nur auf Bäume angewandt werden kann, muss ein Eingabegraph vorher in einen Baum umgewandelt werden.
-Die Partitionierung des Graphen ist dann durch die des Baums gegeben.
+Die Partitionierung der Knoten, die der Algorithmus dieser Arbeit auf dem Baum findet, wird dann auf eine des Graphen übertragen.
 Dafür kann eine hierarchische Dekomposition verwendet werden, wie sie in Sektion~\ref{sec:decomptrees} vorgestellt wurde.
 Der genannte Algorithmus kann jedoch nicht verwendet werden, da es keine Implementierung gibt.
 Anstattdessen wird ein ähnlicher Algorithmus benutzt, der von Räcke, Shah und Täubig~\cite{RST14} entwickelt wurde.
 Im Gegensatz zum Algorithmus aus Sektion~\ref{sec:decomptrees} gibt dieser Algorithmus nur einen einzigen Baum aus.
 Allerdings ist der Approximationsfaktor mit $\bigO(\log^4 n)$ schlechter.
 Der Algorithmus wurde von Moritz Fuchs implementiert und ist auf Github verfügbar.\footnote{Repositorium auf Github: \url{https://github.com/moritzFuchs/hierarchical-decomposition}}
+Da für diesen Algorithmus nur die Blätter des Baums mit den Knoten des Graphen korrespondieren, wird die Partitionierung der Blätter als die Partitionierung des Graphen verwendet.
 Des Weiteren wurden Experimente mit zufälligen Spannbäumen (RST) und minimalen Spannbäumen (MST) durchgeführt.
-Als Eingabegraphen werden Zufallsgraphen und Echtdaten verwendet.
+Für diese Methoden kann eine Partitionierung des Baums direkt in eine Partitionierung des Graphen umgewandelt werden, da beide dieselbe Knotenmenge besitzen.
+Als Eingabegraphen werden sowohl Zufallsgraphen als auch Echtdaten verwendet.
 
 \subsection{Zufallsgraphen}
 Zufällige Eingabegraphen werden nach zwei verschiedenen Modellen generiert.
