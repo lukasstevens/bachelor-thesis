@@ -168,7 +168,7 @@ Damit liefert der Algorithmus dieser Arbeit im Vergleich zu METIS k-way eine gut
 Die Heuristik KaFFPa erreicht im Vergleich zu METIS recursive und METIS k-way höhere Lösungsqualität.
 Dabei treten auch vergleichsweise wenig Ausreißer mit eine Wert von unter $0.2$ auf.
 Die Lösungsqualität bei KaFFPa ändert sich nicht merklich mit wachsendem $k$.
-Insgesamt wird keine Abhängigkeit der Lösungsqualität von der Knotenanzahl für die gewählten Parameter sichtbar.
+Insgesamt wird keine Abhängigkeit der relativen Lösungsqualität von der Knotenanzahl für die gewählten Parameter sichtbar.
 
 \begin{figure}[H]
     \centering
@@ -178,10 +178,10 @@ Insgesamt wird keine Abhängigkeit der Lösungsqualität von der Knotenanzahl f�
 
 Die folgenden Abbildungen~\ref{fig:mrectreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
 Die verschiedenen Werte für $k \in \{2,4,6\}$ sind weiterhin entsprechend eingefärbt.
-Wiederum liefern METIS recursive und METIS k-way für $k=2$ eine geringe Lösungsqualität.
+Wiederum liefern METIS recursive und METIS k-way für $k=2$ meist eine geringe relative Lösungsqualität.
 Bemerkenswert ist, dass die Ausreißer bei METIS recursive (siehe Abbildung~\ref{fig:mrectreesimb}) hauptsächlich bei $k=3$ auftreten.
 Auch liefert KaFFPa wie vorher die besten Ergebnisse.
-Alles in Allem ist keine klare Abhängigkeit der Lösungsqualität für die gegebenen Parameter zu sehen.
+Alles in Allem ist keine klare Abhängigkeit der relativen Lösungsqualität von $\eps$ für die gegebenen Parameter zu sehen.
 
 \begin{figure}[H]
     \centering
@@ -220,9 +220,9 @@ Als Eingabegraphen werden sowohl Zufallsgraphen als auch Echtdaten verwendet.
 Zufällige Eingabegraphen werden nach zwei verschiedenen Modellen generiert.
 Das erste Modell wird Erdős-Rényi-Modell und das zweite Barabási-Albert-Modell genannt.
 Diese Modelle wurden unter anderem von Barabási und Albert~\cite{AB02} analysiert.
-Das Erdős-Rényi-Modell generiert einen Graphen $G=(V,E)$ mit $n$ Knoten für eine Wahrscheinlichkeit $p$, indem für jede Kante $\{u, v\} \in E$ mit einer Bernoulliverteilung mit Parameter $p$ entschieden wird, ob die Kante existiert.
+Das Erdős-Rényi-Modell generiert einen Graphen $G=(V,E)$ mit $n$ Knoten für eine Wahrscheinlichkeit $p$, indem für jede mögliche Kante $\{u, v\} \in E$ mit einer Bernoulliverteilung mit Parameter $p$ entschieden wird, ob die Kante existiert.
 Das Barabási-Albert-Modell erzeugt einen Graphen $G=(V,E)$ mit $n$ Knoten für ein Kantenanzahl $m$ aus einem Graphen $H$ mit $m_0$ Knoten, wobei $m \leq m_0 \leq n$ gilt.
-Um $G$ zu erhalten, werden iterativ $n - m_0$ Knoten zu $H$ hinzugefügt.
+Um $G$ zu erhalten, werden nacheinander $n - m_0$ Knoten zu $H$ hinzugefügt.
 Jeder dieser Knoten wird mit $m$ Knoten in $H$ verbunden, welche zufällig mit einer Wahrscheinlichkeit proportional zu ihrem Grad gewählt werden.
 
 Die Kantengewichte für beide Modelle werden uniform aus dem Bereich $[1, 100]$ gewählt.
@@ -234,10 +234,10 @@ Für jeden Kombination aus Knotenanzahl und Parameter des jeweiligen Modells wur
 Für die folgenden Experimente wurde $\eps=1/3$ gewählt und $k \in \{2, 4, 6\}$, wobei die Ergebnisse für die verschiedenen Werte von $k$ farblich voneinander abgesetzt sind.
 Die Abbildungen~\ref{fig:edgeprobrstnode},~\ref{fig:edgeprobmstnode} und~\ref{fig:edgeprobhdecompnode} zeigen die relativen Schnittkosten der Heuristiken METIS recursive, METIS k-way und KaFFPa in Abhängigkeit der Knotenanzahl für das Erdős-Rényi-Modell mit $p=0.1$ beziehungsweise $p=0.3$.
 Die Ergebnisse bei der Verwendung von RST und MST sind ähnlich, wobei die Performanz des MST insgesamt etwas schlechter ist.
-In beiden Fällen tritt für $k=2$ die höchste Streuung auf und zusätzlich sinken die relativen Schnittkosten für wachsendes $k$, was im Gegensatz zu den Resultaten auf Bäumen steht.
-Wenn hierarchische Dekomposition verwendet wird, dann ist die relative Lösungsqualität für $k=2$ besser, während für $k=4$ und $k=6$ die Qualität gleich ist.
+In beiden Fällen sinken die relativen Schnittkosten für wachsendes $k$, was im Gegensatz zu den Resultaten auf Bäumen steht.
+Wenn hierarchische Dekomposition verwendet wird, dann ist die relative Lösungsqualität für deutlich $k=2$ geringer, während für $k=4$ und $k=6$ die Qualität gleich ist.
 Insgesamt ist die Qualität für $p=0.3$ in allen Fällen besser als für $p=0.1$.
-Zwischen den verschiedenen Heuristiken besteht kein wesentlicher Unterschied in der Lösungsqualität.
+Zwischen den verschiedenen Graphpartitionierungsheuristiken besteht kein wesentlicher Unterschied in der relativen Lösungsqualität.
 
 \begin{figure}[H]
     \centering
@@ -259,12 +259,12 @@ Zwischen den verschiedenen Heuristiken besteht kein wesentlicher Unterschied in 
 
 
 In den Abbildungen~\ref{fig:prefattachrstnode},~\ref{fig:prefattachmstnode} und~\ref{fig:prefattachhdecompnode} ist die relative Lösungsqualität der Graphpartitionierungsheuristiken in Abhängigkeit für das Barabási-Albert-Modell mit den Parameter $m=5$ und $m=10$ zu sehen.
-Wie vorher ist die Streuung für $k=2$ am höchsten und die Lösungsqualität am schlechtesten für RST und MST, während die Lösungsqualität für hierarchische Dekomposition bei $k=2$ am besten ist.
+Wie vorher ist die relative Lösungsqualität für RST und MST im Fall $k=2$ höchsten, während sie hingegen für hierarchische Dekomposition am niedgrigsten ist.
 Für $k=2$ und $k=4$ ist der Unterschied gering.
-Weiterhin weist die Lösungsqualitat der Graphpartitionierungsheuristiken insgesamt nur geringe Unterschiede auf.
-Bemerkenswert ist, dass hierarchische Dekomposition auf Eingabegraphen des Barabási-Albert-Modells merkbar besser ist als MST und RST
+Weiterhin weist die relative Lösungsqualitat der Graphpartitionierungsheuristiken insgesamt nur geringe Unterschiede auf.
+Außerdem ist hierarchische Dekomposition auf Eingabegraphen des Barabási-Albert-Modells merkbar besser ist als MST und RST.
 Ferner gibt es Ausreißer mit einem Wert kleiner als $1$.
-Analog zum Erdős-Rényi-Modell ist die Lösungsqualität für eine höhere Anzahl von Kanten besser.
+Analog zum Erdős-Rényi-Modell ist die relative Lösungsqualität für eine höhere Anzahl von Kanten geringer, das hießt der Algorithmus dieser Arbeit liefert relativ gesehen bessere Ergebnisse.
 
 \begin{figure}[H]
     \centering
@@ -297,12 +297,12 @@ Analog zum Erdős-Rényi-Modell ist die Lösungsqualität für eine höhere Anza
 %    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und MST in Abhängikeit von $\eps$}
 %\end{figure}
 
-Zuletzt wird die Lösungsqualität in Abhängigkeit des Ungleichgewichts $\eps$ untersucht.
+Zuletzt wird die relative Lösungsqualität in Abhängigkeit des Ungleichgewichts $\eps$ untersucht.
 Dafür wird $n=80$ gewählt und $k \in \{2, 4, 6\}$, wobei die Einfärbung der Ergebnisse den unterschiedlichen Werten von $k$ entspricht.
-Dabei wurden RST und MST weggelassen, da zwischen MST, RST und hierarchischer Dekomposition beim Erdős-Rényi-Modell keine wesentlichen Unterschiede in der Lösungsqualität bestanden und hierarchische Dekomposition für das Barabási-Albert-Modell bessere Ergbnisse lieferte.
+Dabei wurden RST und MST weggelassen, da zwischen MST, RST und hierarchischer Dekomposition beim Erdős-Rényi-Modell keine wesentlichen Unterschiede in der relative Lösungsqualität bestanden und hierarchische Dekomposition für das Barabási-Albert-Modell bessere Ergbnisse lieferte.
 Die Ergebnisse sind in Abbildung~\ref{fig:edgeprobhdecompimb} und~\ref{fig:prefattachhdecompimb} zu sehen.
-Das Verhalten für $k=2$ ist wieder weitgehend wie oben, wobei zusätzlich auffällt, dass die Lösungsqualität mit fallendem $\eps$ abnimmt.
-Den Experimenten nach scheinen für $k=4$ und $k=6$ verschiedene Werte von $\eps$ keinen Einfluss auf die Lösungsqualität zu haben.
+Das Verhalten für $k=2$ ist wieder weitgehend wie oben, wobei zusätzlich auffällt, dass die relative Lösungsqualität mit fallendem $\eps$ abnimmt.
+Den Experimenten nach scheinen für $k=4$ und $k=6$ verschiedene Werte von $\eps$ keinen Einfluss auf die relative Lösungsqualität zu haben.
 
 \todo[inline]{Ergebniss zu rst und mst in den Anhang?}
 
@@ -331,14 +331,13 @@ Den Experimenten nach scheinen für $k=4$ und $k=6$ verschiedene Werte von $\eps
 \end{figure}
 
 \subsection{Graphen aus Echtdaten}
-Zum Schluss wird die Lösungsqualität des Algorithmus dieser Arbeit anhand von echten Datensätzen durch einen Vergleich mit den Heuristiken METIS recursive, METIS k-way und KaFFPa ermittelt.
-Alle verwendeten Datensätze sind der Stanford Large Network Dataset Collection entnommen.~\cite{LK14}
+Zum Schluss wird die relative Lösungsqualität des Algorithmus dieser Arbeit anhand von echten Datensätzen durch einen Vergleich mit den Heuristiken METIS recursive, METIS k-way und KaFFPa ermittelt.
+Alle verwendeten Datensätze sind in der Stanford Large Network Dataset Collection enthalten.~\cite{LK14}
 Die folgende Tabelle gibt einen Überblick über diese Datensätze.
 Mit dem Clusteringkoeffizient ist hierbei der durchschnittliche Clusteringkoeffizient gemeint.
 
 \vspace{0.5cm}
 \begin{table}[H]
-    \footnotesize
     \centering
     \begin{tabular}{lcccc}
         \toprule
@@ -354,59 +353,62 @@ Mit dem Clusteringkoeffizient ist hierbei der durchschnittliche Clusteringkoeffi
 \end{table}
 
 Wie in der Tabelle zu sehen ist, haben die Graphen in drei von vier Fällen über $1000$ Knoten.
-Des Weiteren erhöht die Umwandlung des Graphen in einen Baum mit hierarchischer Dekomposition die Anzahl der Knoten. 
+Außerdem erhöht die Umwandlung des Graphen in einen Baum mit hierarchischer Dekomposition die Anzahl der Knoten. 
 Damit liegen diese Graphen außerhalb der Möglichkeiten des Algorithmus dieser Arbeit, da die Laufzeit zu hoch ist.
 Deshalb muss der Graph zuerst verkleinert werden, bevor er in einen Baum umgewandelt wird.
 
-Dafür wurde ein Verfahren verwendet, welches Heavy Edge Matching genannt wird und bereits von Karypis und Kumar~\cite{KK98} für die Verkleinerung des Graphen für die Heuristik METIS vorgeschlagen und experimentell evaluiert wurde.
-Das Verfahren verkleinert den Graph iterativ, indem ein Matching ermittelt wird und alle Kanten des Matchings kontrahiert werden.
-Dass Matching wird folgendermaßen ermittelt:
+Dafür wurde ein Verfahren verwendet, welches Heavy Edge Matching genannt wird und bereits von Karypis und Kumar~\cite{KK98} für die Verkleinerung von Graphen für die Heuristik METIS vorgeschlagen und experimentell evaluiert wurde.
+Das Verfahren verkleinert den Graph iterativ, indem in jedem Schritt ein Matching ermittelt wird und alle Kanten des Matchings kontrahiert werden.
+Das Matching wird folgendermaßen berechnet:
 Die Knoten werden anhand einer zufälligen Reihenfolge besucht und es wird der Knoten $v$ mit dem adjazenten Knoten $u$ gematcht, falls die Kante $\{v, u\}$ die Kante mit maximalen Gewicht ist, sodass weder $v$ noch $u$ bereits gematcht sind.
 Wenn es keine solche Kante gibt, dann wird mit dem nächsten Knoten fortgefahren.
-Es gilt zu bemerken, dass mit diesem Verfahren nicht unbedingt das größtmögliche Matching gefunden wird.
+Es gilt zu bemerken, dass mit diesem Verfahren in der Regel nicht das größtmögliche Matching gefunden wird.
 Falls durch die Kontraktion parallele Kanten entstehen würden, dann werden die Kantengewichte addiert.
 Außerdem werden die Knotengewichte der kontrahierten Knoten addiert, wobei die Knoten zu Anfang uniform gewichtet sind.
 Hier kommt die Erweiterung des Algorithmus auf Bäume mit Knotengewichten aus Sektion~\ref{sec:nodeweights} zum tragen.
 Die obigen Schritte werden so lange wiederholt bis der Graph auf die gewünschte Knotenanzahl verkleinert wurde.
-Wichtig ist, dass das beschrieben Verfahren die Schnittkosten einer Partitionierung im Graphen nicht verändert, sondern nur Partitionierungen unmöglich macht.
+Wichtig ist, dass das beschrieben Verfahren die Schnittkosten der Partitionierung im Graphen nicht verändert, sondern nur Partitionierungen unmöglich macht.
 
 In unserem Fall werden die Graphen aus den drei größeren Datensätzen auf $100$ Knoten kontrahiert.
 Anschließend wird die hierarchische Dekomposition auf den Graphen angewendet.
-Dann wird der Baum partitioniert und die Partitionierung des Baums wird auf den Graph angewandt.
+Dann wird der Baum partitioniert und die Partitionierung der Blätter des Baums wird auf den Graph angewandt.
 Für jeden Datensatz wurde die relative Lösungsqualität für alle Kombinationen aus Partitionsanzahl $k \in \{2,3,4,6\}$ und Ungleichgewicht $\eps \in \{8/20, 7/20, 6/20, 5/20\}$ ermittelt, falls die Laufzeit und der Speicherbedarf des Algorithmus dies zuließ.
 Die Ergebnisse für verschieden $k$ sind unterschiedlich eingefärbt.
 
 Der erste Datensatz trägt den Namen as19990829 und ist ein Graph mit $103$ Knoten und $248$ Kanten.
 Dieser Datensatz ist das Kommunikationsnetzwerk eines autonomen Systems, wobei ein autonomes System ein Subnetzwerk von Routern im Internet ist.
 Die Abbildung~\ref{fig:as} zeigt die Resultate.
-Wie bei den Zufallsgraphen ist die Lösungsqualität für $k=2$ am besten.
-Des Weiteren sinkt die Lösungsqualität im Vergleich zu KaFFPa mit steigendem $k$.
-Bemerkenswert ist die Lösungsqualität im Vergleich zu METIS recursive.
-Auf der anderen Seite ist der Algorithmus für keine Parameterkombination besser als KaFFPa.
+Wie bei den Zufallsgraphen ist die relative Lösungsqualität für $k=2$ am kleinsten.
+Des Weiteren steigt die relative Lösungsqualität von KaFFPa mit steigendem $k$.
+Bemerkenswert ist die geringe relative Lösungsqualität von METIS recursive.
+Auf der anderen Seite ist der Algorithmus für keine Parameterkombination besser als KaFFPa, wobei es interessant ist, dass der Algorithmus und KaFFPa in drei Fällen Partitionierungen mit identischen Kosten finden.
 Das Ungleichgewicht $\eps$ scheint nur für $k=2$ einen Einfluss auf die Lösungsqualität im Vergleich zu den Methoden von METIS zu haben.
+
 
 Der zweite Datensatz heißt email-Eu-core und ist ein gerichteter Graph mit $1005$ Knoten und $25571$ Kanten.
 Dabei handelt es sich um ein eMail\hyp Kommunikationsnetzwerk einer europäischen Forschungseinrichtung.
 Das Netzwerk umfasst nur die Kommunikation von Mitgliedern der Institution und enthält eine Kante $(u, v)$, falls Person $u$ mindestens eine eMail an Person $v$ geschickt hat.
 Da der Algorithmus dieser Arbeit nur ungerichtete Bäume partitioniert, wurden die gerichteten Kanten in ungerichtete umgewandelt.
-Wie in Abbildung~\ref{fig:email} zu sehen ist, ist die Lösungsqualität im Vergleich zu METIS recursive und METIS k-way wiederum für $k=2$ maximal.
-Bei KaFFPa zeigt sich keine Unterschiede für verschieden Werte von $k$.
+Wie in Abbildung~\ref{fig:email} zu sehen ist, ist die relative Lösungsqualität von METIS recursive und METIS k-way wiederum für $k=2$ minimal.
+Bei KaFFPa zeigen sich keine Unterschiede für verschieden Werte von $k$.
 Interessanterweise verschlechtert sich die Lösungsqualität im Vergleich zum Datensatz as19990829 nur leicht, obwohl der Graph zunächst kontrahiert wird.
-Weiterhin sinkt die Lösungsqualität im Vergleich zu METIS recursive und METIS k-way für fallendes $\eps$.
+Weiterhin steigt die relative Lösungsqualität von METIS recursive und METIS k-way für fallendes $\eps$.
 
 Der dritte Datensatz ca-GrQc ist ein Graph mit $5242$ Kanten und $25571$ Kanten.
 Dieser stellt ein Kollaborationsnetzwerk von Wissenschaftlern innerhalb des Felds der Relativitätstheorie dar.
 Für diesen Graph konnten die Experimente für $k=6$ nicht durchgeführt werden, da die Laufzeit und der Speicherbedarf zu hoch sind. 
+Der Grund hierfür ist, dass dieselbe Signatur für verschiedene Gewichtssummen mehrmals vorkommen kann. 
+Wenn die mögliche Gesamtsumme an Knotengewichten höher ist, dann steigt die Anzahl an Signaturen und damit die Laufzeit sowie der Speicherbedarf.
 Die Abbildung~\ref{fig:cagrqc} zeigt die Ergebnisse der Experimente.
-Obwohl dieser Graph größer ist als der vorherige, ist die Lösungsqualität noch verhältnismäßig hoch.
+Obwohl dieser Graph deutlich größer ist als die vorherigen, ist die Lösungsqualität noch verhältnismäßig hoch.
 Des Weiteren ist KaFFPa für diesen Graph merkbar besser als beide Methoden von METIS.
 In diesem Graph verändert sich die Lösungsqualität nicht in Abhängigkeit von $\eps$.
 
 Der letzte Datensatz heißt ego-Facebook und ist ein Graph mit $4039$ Knoten und $88234$ Kanten.
-Dieser Graph bildet alle Freundschaften der Teilnehmer im sozialen Netzwerk facebook\footnote{\url{https://facebook.com}} ab.
+Dieser Graph bildet Freundeslisten im sozialen Netzwerk facebook\footnote{\url{https://facebook.com}} ab.
 Auch für diesen Graph war es nicht möglich die Schnittkosten für $k=6$ zu berechnen.
-Wie die Abbildung~\ref{fig:facebook} zeigt, sind die relativen Schnittkosten in diesem Graph deutlich schlechter als in den vorhigeren Graphen, besonders für $k=3$ und $k=4$.
-Während die Lösungsqualität für $k=2$ mit fallendem $\eps$ steigt, sinkt sie für $k=4$ auf der anderen Seite tendenziell.
+Wie die Abbildung~\ref{fig:facebook} zeigt, sind die relativen Schnittkosten in diesem Graph deutlich höher als in den vorherigeren Graphen, besonders für $k=3$ und $k=4$.
+Während die relative Lösungsqualität für $k=2$ mit fallendem $\eps$ steigt, sinkt sie für $k=4$ auf der anderen Seite tendenziell.
 
 \begin{figure}[t]
     \centering

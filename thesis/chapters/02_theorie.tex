@@ -20,7 +20,7 @@ Wie bereits im vorherigem Kapitel geschildert, ist das $(2,1)$\hyp Partitionieru
 Es ist bereits länger bekannt, dass es sich beim Minimum-Bisection-Problem um ein $NP$\hyp vollständiges Problem handelt.~\parencite{gj79}
 In jüngerer Vergangenheit wurde von Feige und Krauthgamer ein polynomieller Algorithmus präsentiert, der das Problem mit einem polylogarithmischen Approximationsfaktor löst. \parencite{fk02}
 Wie sich herausstellte, lässt sich dieses Ergebnis jedoch nicht auf auf das $(k,1)$\hyp Partitionierungsproblem übertragen.
-Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem, wobei $k$ keine Konstante ist, geben.
+Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem geben, wenn $k$ keine Konstante ist.
 Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist, gezeigt. 
 
 \begin{thm}\label{thm:np_comp}
@@ -47,10 +47,10 @@ Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist,
 
 \begin{rem}
     Das obige Ergebnis wurde durch Feldmann und Foschini~\parencite{FF15} weiter verfeinert. 
-    Diese zeigten, dass das $(k,1)$\hyp Partitionierungsproblem auch dann $NP$\hyp vollständig bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
+    Diese zeigten, dass das $(k,1)$\hyp Partitionierungsproblem auch dann $NP$\hyp schwer bleibt, wenn man sich auf Bäume als Eingabegraphen beschränkt.
     Insbesondere wurden ungewichtete Bäume mit Maximaldurchmesser $4$, das heißt, die Länge des längsten Pfades zwischen zwei beliebigen Blättern ist höchstens $4$, betrachtet.
     Schon für diese Bäume kann für das $(k,1)$\hyp Partitionierungsproblem kein Approximationsalgorithmus mit Approximationsfaktor $n^c$ für beliebige Konstanten $c < 1$ gefunden werden.
-    Auch für ungewichtete Bäume mit maximalen Knotengrad $5$ kann es keinen polynomiellen Algorithmus geben.
+    Außerdem ist das Problem ab einem maximalen Knotengrad von $5$ NP-schwer und ab $8$ APX-schwer.
 \end{rem}
 
 
@@ -238,7 +238,7 @@ Dieser Schritt kann in Zeit $\bigO(n)$ durchgeführt werden.
 Im letzten Schritt werden dann die übrigen $g_0$ Komponenten in $\calS$, deren Größe kleiner als $\eps \ceil*{n/k}$ ist, greedy mit First-Fit gepackt. 
 Es wird also jede Komponente in den erstmöglichen Behälter gepackt, sodass die Behälterkapazität $(1 + \eps) \ceil*{n/k}$ nicht überschritten wird.
 Wenn in keinem der Behälter mehr Platz ist, dann wird ein neuer Behälter hinzugefügt und die Komponente in diesen gepackt.
-Dieser Schritt kann in Zeit \todo{$\bigO(n)$ möglich?} $\bigO(n^2)$ durchgeführt werden, da $g_0 \leq n$ gilt und es höchstens $n$ Behälter geben kann.
+Dieser Schritt kann in Zeit $\bigO(n^2)$ durchgeführt werden, da $g_0 \leq n$ gilt und es höchstens $n$ Behälter geben kann.
 Zusammenfassend lässt sich sagen, dass für eine gegeben Menge von Zusammenhangskomponenten $\calS$ mit Signatur $\vec{g}$ in Zeit $\bigO({(k/\eps)}^{2t} + n^2)$ geprüft werden kann, ob $\calS$ für eine zulässige $(k, 1 + \eps)$\hyp Partitionierung verwendet werden kann.
 
 Vor der Zusammenführung der Schnittphase und der Packphase wird zunächst noch eine Beziehung zwischen den von der Schnittphase gegebenen Mengen von Zusammenhangskomponenten $\calS \in \bbS$ und der Menge von Zusammenhangskomponenten $\calS^*$ der optimalen perfekt ausgewogenen Partitionierung hergestellt.
@@ -278,8 +278,9 @@ Das folgende Lemma aus~\parencite{FF15} zeigt, dass der oben gegebene Algorithmu
         \end{equation}
 
         Lemma~\ref{lem:bincnt} zeigt für eine Menge von Zusammenhangskomponenten $\calS \in \bbS$ mit Signatur $\vec{g}^*$, dass $\varphi(\calS) \leq k$ gilt.
-        Aus der Minimierung in \eqref{eq:laststep} folgt, dass die Schnittkosten von $\tildaS$ höchstens die der Menge von Zusammenhangskomponenten $\calS \in \bbS$ mit Signature $\vec{g}^*$ ist.
-        Da $\calS \in \bbS$ mit Signatur $\vec{g}$ jeweils die Menge mit minimalen Schnittkosten unter denen mit der Signatur $\vec{g}$ ist, folgt, dass die Schnittkosten von $\tildaS$ höchstens die von $\calS^*$ sind, was den Korrektheitsbeweis erbringt.
+        Aus der Minimierung in \eqref{eq:laststep} folgt, dass die Schnittkosten von $\tildaS$ kleiner oder gleich den Schnittkosten von $\calS \in \bbS$ mit Signatur $\vec{g}^*$ sind.
+        Außerdem ist $\calS \in \bbS$ zur Signatur $\vec{g}$ jeweils die Menge mit minimalen Schnittkosten unter denen mit der Signatur $\vec{g}$.
+        Wie schließen, dass die Schnittkosten von $\tildaS$ höchstens die von $\calS^*$ sind, was den Korrektheitsbeweis erbringt.
 
         Nun wird die Laufzeit betrachtet und dazu wird ein Ergebnis aus dem Beweis von Satz~\ref{thm:cutphase} verwendet, welches besagt, dass die Anzahl der Signaturen die in der Schnittphase betrachtet werden $\gamma n$ ist, wobei $\gamma \in \bigO({(k/\sqrt{\eps})}^{1 + \ceil{1/\eps \cdot \log(1/\eps)}})$. 
         Des Weiteren zeigt Satz~\ref{thm:cutphase}, dass $\bbS$ höchstens $\gamma n$ Komponenten enthält und in Zeit $\bigO(n^4 \gamma^2)$ berechnet werden kann. 

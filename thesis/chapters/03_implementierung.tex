@@ -3,7 +3,7 @@
 \newcommand{\Cpp}{C{}\texttt{++}}
 
 \chapter{Implementierung}\label{chapter:implementierung}
-Bevor wird die Implementierung näher betrachteten, werden die verwendeten Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, vorgestellt.
+Bevor wird die Implementierung näher betrachten, werden die verwendeten Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, vorgestellt.
 Danach wird anhand von Pseudocode erläutert, wie der Algorithmus als Programm umgesetzt wurde. 
 Zuletzt werden die Datenstrukturen beschrieben, welche für die Implementierung verwendet wurden.
 
@@ -52,37 +52,36 @@ In dieser Arbeit wird METIS verwendet, um die Lösungsqualität des implementier
 \paragraph{KaHIP}
 So ähnlich wie METIS handelt es sich bei KaHIP um eine Heuristik von Sanders und Schulz~\cite{SS13}, um eine $(k, 1 + \eps)$\hyp Partitionierung zu finden.
 Auch hier werden Kanten zunächst kontrahiert und anschließend wieder expandiert.
-Allerdings verwendet KaHIP andere Heuristiken, um die Partitionierung während dem Expandieren zu verbessern.
+Allerdings verwendet KaHIP andere Heuristiken, um die Partitionierung während des Expandierens zu verbessern.
 
 \section{Algorithmus}\label{sec:algimpl}
 In Sektion~\ref{sec:treepartitioning} wurde ein Überblick gegeben, wie das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen approximiert werden kann. 
 Der Algorithmus ist zweiphasig und besteht aus einer Schnittphase und einer Packphase.
 Im Folgenden wird auf die Implementierung dieser Phasen eingegangen, welche in Sektion~\ref{sec:cutting} beziehungsweise~\ref{sec:packing} erläutert wurden.
-Zuletzt werden die Ergebnisse der Schnittphase und der Packphase zusammengeführt.
+Zum Schluss werden die Ergebnisse der Schnittphase und der Packphase zusammengeführt.
 
 \subsection{Schnittphase}\label{sec:cuttingimpl}
-\todo[inline]{Zeiten}
-Sei $T=(V,E)$ ein Baum mit Wurzel $r$ und der Gewichtsfunktion $\weight : E \rightarrow \reals_{\geq 0}$.
+Sei $T=(V,E)$ ein Baum mit Wurzel $r$ und der Gewichtsfunktion $\weight : E \rightarrow \reals_{> 0}$.
 In der Schnittphase, die in Sektion~\ref{sec:cutting} beschrieben wurde, wird eine Menge von Äquivalenzklassen berechnet, wobei jede Äquivalenzklasse eine Möglichkeit darstellt, $T$ in Komponenten bestimmter Größe zu zerschneiden.
 Jede dieser Äquivalenzklassen wird nach Definition~\ref{defn:signature} durch eine Signatur repräsentiert.
 Um diese Signaturen zu berechnen, wird dynamische Programmierung verwendet, welche durch die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} gegeben ist.
 Aus diesen Rekursionsgleichungen wird ersichtlich, dass für die Berechnungen der Signaturen an einem Knoten $v \neq r$ die Signaturen an seinem rechtestem Kind $u$ und an seinem linken Geschwisterknoten $w$ benötigt werden.
-Im Folgenden wird beschrieben, wie der Baum traversiert werden kann, sodass die Signaturen an $u$ und $w$ bereits berechnet sind, wenn $v \neq r$ betrachtet wird. 
+Im Folgenden wird beschrieben, wie der Baum traversiert werden kann, sodass die Signaturen an $u$ und $w$ bereits berechnet sind, wenn $v$ betrachtet wird. 
 Dafür wird zunächst der Begriff Level definiert.
 
 \begin{defn}[Level]\label{def:level}
     Sei $T = (V,E)$ ein Baum mit Wurzel $r$ und sei für jeden Knoten $v \in V$ eine Ordnung seiner Kindknoten gegeben.
     Ein Level $L_T(\ell)$ ist die Menge aller Knoten, die eine Distanz von $\ell$ zu $r$ haben.
-    Die Knoten in $L_T(\ell)$ erhalten eine Ordnung, die sich aus der Ordnung der Kindknoten ableitet.
+    Die Knoten in $L_T(\ell)$ erhalten eine Ordnung, die sich aus der zuvor genannten Ordnung ableitet.
 \end{defn}
 
 Beginnend mit Level $k$ werden alle Level bis Level $1$ durchlaufen.
 Danach wird noch die Wurzel $r$ betrachtet, welche der einzige Knoten im Level $0$ ist. 
 In jedem Level werden die Knoten hinsichtlich ihrer Ordnung besucht.
 Da die Ordnung der Geschwisterknoten in einem Level erhalten bleibt, wird der linke Geschisterknoten $w$ von $v$ besucht, bevor $v$ betrachtet wird.
-Weiterhin werden durch dieses Verfahren auch jedes Kind $u$ von $v$ vor $v$ besucht, da die Distanzu von $u$ zu~$r$ echt größer ist als die Distanz von $v$ zu~$r$.
+Weiterhin wird durch dieses Verfahren auch jedes Kind $u$ von $v$ vor $v$ besucht, da die Distanz von $u$ zu~$r$ echt größer ist als die Distanz von $v$ zu~$r$.
 Das oben beschriebene Iterationsschema wird durch Algorithmus~\ref{alg:iteration} formalisiert.
-Hier ist $T(C_r)[n]$ eine Tabelle, die alle Signaturen an der Wurzel mit endlichen optimalen Schnittkosten und $n$ Knoten enthält.
+Hier ist $T(C_r)[n]$ eine Tabelle, die alle Signaturen an der Wurzel $r$ mit endlichen optimalen Schnittkosten und $n$ Knoten enthält.
 Da an der Wurzel alle Knoten des Baums überdeckt sein müssen, um später eine Partitionierung berechnen zu können, werden nur Signaturen benötigt, die $n$ Knoten überdecken.
 Wie $T(C_r)[n]$ berechnet werden kann, wird im Anschluss beschrieben.
 
@@ -112,20 +111,20 @@ Zuerst wird die Implementierung der Funktion \canfun{} betrachtet, welche am Kno
 Hierbei gilt $t = \ceil{\log_{1+\eps}(1/\eps)} + 1$ nach Definition~\ref{defn:signature}.
 Die Kostenfunktion $C_v : \nats_0^t \times \nats_0 \rightarrow \reals_{\geq 0} \cup \{\infty\}$ weist dem Paar $(\vec{g}, m)$ den Wert $\infty$ zu, falls die Signatur $\vec{g}$ mit Knotenanzahl $m$ am Knoten $v$ nicht erreicht werden kann.
 Wir führen die Notation $C^m_v(\vec{g}) \coloneqq C_v(\vec{g}, m)$ ein.
-Dann können wir $C_v$ als eine Tabelle $T(C_v)$ speichern, die das Schlüssel-Wert-Paar $(m,C^m_v)$ genau dann enthält, wenn eine Signatur $\vec{g}$ existiert, sodass $C^m_v(\vec{g}) < \infty$.
+Dann können wir $C_v$ als eine Tabelle $T(C_v)$ speichern, die das Schlüssel-Wert-Paar $(m,C^m_v)$ genau dann enthält, wenn mindestens eine Signatur $\vec{g}$ existiert, die $m$ Knoten überdeckt und endliche Schnittkosten hat.
 Umgekehrt gilt $C_v(\vec{g}, m) = \infty$ für alle $\vec{g}$, falls der Schlüssel $m$ nicht in $T(C_v)$ ist.
 Ein Wert $C_v^m$ in der Tabelle $T(C_v)$ wird auch als Tabelle abgespeichert.
-Dabei enthält $T(C_v^m)$ das Schlüssel-Wert-Paar $(\vec{g}, c)$ genau dann, wenn $c < \infty$.
+Dabei enthält $T(C_v^m)$ das Schlüssel-Wert-Paar $(\vec{g}, c)$ genau dann, wenn $c$ endlich ist.
 
 Nun betrachten wir, wie die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} verwendet werden, um die Tabelle $T(C_v)$ für einen Knoten $v \neq r$ zu berechnen.
 Sei im Folgenden $w$ der linke Geschwisterknoten von $v$ und $u$ das rechteste Kind von $v$.
-Aus den Gleichungen wird ersichtlich, dass sich die Kosten $C_v$ aus den Kosten $C_w$ und $C_u$ sowie dem Gewicht $w(v, p)$ der Kante von $v$ zu seinem Elternknoten $p$ berechnen.
-Wir erinnern uns, dass $C_x((0,\ldots, 0),0) = 0$ für alle $x$ mit $x \notin V$ gilt. 
-Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $(0, T(C^0_x))$ beziehungsweise $((0,\ldots,0), 0)$, das heißt $T(C_x) = \{(0, \{(0, \ldots, 0), 0)\}\}$.
+Aus den Rekursionsgleichungen wird ersichtlich, dass sich die Kosten $C_v$ aus den Kosten $C_w$ und $C_u$ sowie dem Gewicht $w(v, p)$ der Kante von $v$ zu seinem Elternknoten $p$ berechnen.
+Wir erinnern uns, dass $C_x((0,\ldots, 0),0) = 0$ gilt, wenn der Knoten $x$ nicht existiert. 
+Alle anderen Funktionswerte von $C_x$ sind unendlich.
+Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $(0, T(C^0_x))$ beziehungsweise $((0,\ldots,0), 0)$ und dadurch haben wir $T(C_x) = \{(0, \{(0, \ldots, 0), 0)\}\}$.
 Insgesamt erhalten wir das Iterationsschema in Algorithmus~\ref{alg:canfun}.
 Dabei ist $T(C).keys$ die Menge aller Schlüssel in der Tabelle $T(C)$ und $T(C_x)[m]$ gibt die Tabelle $T(C^m_x)$ zurück, falls $T(C)$ das Schlüssel-Wert-Paar $(m, T(C^m_x))$ enthält.
 Andernfalls gibt $T(C_x)[m]$ eine leere Tabelle zurück.
-\todo[inline]{Soll \textproc{cut\_at\_node} etwas zurückgeben?}
 
 \begin{algorithm}
     \caption{Berechnung der Signaturen an einem Knoten mit \canfun{}}\label{alg:canfun}
@@ -223,14 +222,14 @@ Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
     Dadurch muss dieser Fall nicht gesondert behandelt werden.
 \end{rem}
 
-Um die Schnittphase abzuschließen, wird nun betrachtet, wie die Funktion \carfun{} die Signaturen an der Wurzel $r$ mit der Rekursionsgleichung~\eqref{eq:root} berechnet.
-In Sektion~\ref{sec:cutting} wurde festgelegt, dass die Knoten, die nicht durch die Zusammenhangskomponenten zu einer Signatur überdeckt werden, eine Zusammenhangskomponente mit der Wurzel $r$ bilden.
-Dementsprechend können wir eine Signatur $\vec{g}$ mit $n$ Knoten erhalten, wenn wir zu einer Knotenanzahl $x \leq (1+\eps)\ceil{n/k}$ eine Signatur $\vec{g}_u$ mit $m_u = n - x$ Knoten am rechtesten Kind $u$ der Wurzel $r$ finden.
+Um die Schnittphase abzuschließen, wird nun betrachtet, wie die Funktion \mbox{\carfun{}} die Signaturen an der Wurzel $r$ mit der Rekursionsgleichung~\eqref{eq:root} berechnet.
+In Sektion~\ref{sec:cutting} wurde festgelegt, dass die Knoten, die nicht durch die Zusammenhangskomponenten einer Signatur überdeckt werden, eine Zusammenhangskomponente mit der Wurzel $r$ bilden.
+Dementsprechend erhalten wir eine Signatur $\vec{g}$ mit $n$ Knoten, wenn wir zu einer Knotenanzahl $x \leq (1+\eps)\ceil{n/k}$ eine Signatur $\vec{g}_u$ mit $m_u = n - x$ Knoten am rechtesten Kind $u$ der Wurzel $r$ finden.
 Die Zusammenhangskomponenten, die mit dieser Signatur assoziiert sind, überdecken dann alle Knoten des Baums.
 Weiterhin gilt $\vec{g} = \vec{g}_u + \vec{e}(x)$ und die Kosten sind $C_u(\vec{g}_u, m_u)$, da an der Wurzel keine weiteren Kanten geschnitten werden.
 Damit erhalten wir Algorithmus~\ref{alg:carfun}.
 
-\begin{algorithm}
+\begin{algorithm}[H]
     \caption{Berechnung der Signaturen an der Wurzel mit \carfun{}}\label{alg:carfun}
     \begin{algorithmic}[1]
         \Function{cut\_at\_root}{Node $r$}
@@ -256,7 +255,7 @@ Damit erhalten wir Algorithmus~\ref{alg:carfun}.
     Mit dem Packingalgorithmus aus Sektion~\ref{sec:cutting} können wir anhand der Signatur berechnen, ob sich die dazugehörigen Komponenten, die größer als $\eps \ceil{n/k}$ sind, in $k$ Behälter der Größe $(1+\eps) \ceil{n/k}$ packen lassen.
     Nur wenn das der Fall ist, werden die Informationen über die vorherigen Signaturen benötigt.
     Deswegen werden die vorherigen Signaturen in der \Cpp{}\hyp Implementierung anfangs nicht gespeichert.
-    Erst wenn eine Signatur $\vec{g}$ betrachtet wird, deren große Komponenten sich in $k$ Behälter packen lassen, werden die Signaturen erneut mit den oben genannte Informationen berechnet
+    Erst wenn eine Signatur $\vec{g}$ betrachtet wird, deren große Komponenten sich in $k$ Behälter packen lassen, werden die Signaturen erneut mit den oben genannte Informationen berechnet.
     Dabei werden alle Signaturen herausgefiltert, die in mindestens einer Komponente größer sind als $\vec{g}$.
     Dadurch wird die Laufzeit und der Speicherbedarf verringert.
 \end{rem}
@@ -265,14 +264,14 @@ Damit erhalten wir Algorithmus~\ref{alg:carfun}.
 In der vorherigen Sektion wurde beschrieben, wie wir eine Menge von Signaturen und deren Kosten an der Wurzel $r$ berechnen, die alle eine Möglichkeit darstellen den Baum $T$ in Zusammenhangskomponenten zu zerlegen.
 Eine Zerlegung in Zusammenhangskomponenten stellt jedoch noch keine Partitionierung von $T$ dar.
 Deshalb muss in der Packphase geprüft werden, ob sich die Zusammenhangskomponenten zu einer Signatur $\vec{g}$ in $k$ Behälter der Größe $(1+\eps)\ceil{n/k}$ packen lassen.
-Wenn dies der Fall ist, dann können die Zusammenhangskomponenten zu $\vec{g}$ für eine valide Partitionierung verwendet werden.
+Wenn dies der Fall ist, dann können die Zusammenhangskomponenten zu $\vec{g}$ für eine valide $(k,1+\eps)$\hyp Partitionierung verwendet werden.
 
-In Sektion~\ref{sec:packing} wurde ein Approximationsalgorithmus beschrieben, der mit Hilfe dynamischer Programmierung Zusammenhangskomponenten des Baums mit Größe maximal $(1+\eps)\ceil{n/k}$ in Behälter der Größe $(1+\eps)\ceil{n/k}$ packt.
-Dafür wurden im ersten Schritt jede Zusammenhangskomponente, deren Größe kleiner als $\eps \ceil{n/k}$ ist, entfernt.
+In Sektion~\ref{sec:packing} wurde ein Approximationsalgorithmus beschrieben, der mit Hilfe dynamischer Programmierung Zusammenhangskomponenten ein Packing in Behälter der Größe $(1+\eps)\ceil{n/k}$.
+Dafür wird im ersten Schritt jede Zusammenhangskomponente, deren Größe kleiner als $\eps \ceil{n/k}$ ist, entfernt.
 Nach Definition~\ref{defn:signature} sind das genau die Zusammenhangskomponenten, die in einer Signatur $\vec{g} = (g_0, \ldots, g_t)$ mit dem Eintrag $g_0$ gezählt werden.
 Deshalb wird im Folgenden der Vektor $(g_1, \ldots, g_t)$ verwendet, um die Anzahl der Komponenten einer bestimmten Größe in der Bin-Packing-Instanz zu zählen.
 Da die Komponentgrößen auf die untere Intervallgrenze nach Definition~\ref{defn:signature} abgerundet werden, enthält die Bin-Packing-Instanz $g_i$ Komponenten der Größe $(1+\eps)^{i-1} \cdot \eps \ceil{n/k}$.
-Wir definieren den Vektor $\vec{s} = (s_1, \ldots, s_t)$, in dem der Eintrag $s_i$ den Wert $(1+\eps)^{i-1} \cdot \eps \ceil{n/k}$ hat.
+Wir definieren den Vektor $\vec{s} = (s_1, \ldots, s_t)$, in dem der Eintrag $s_i$ den Wert der unteren Grenze des $i$\hyp ten Intervalls hat.
 
 Im zweiten Schritt werden die Komponenten, die größer als $\eps \ceil{n/k}$ sind, mit dynamischer Programmierung optimal in Behälter der Größe $\ceil{n/k}$ gepackt.
 Um die dynamische Programmierung auszuführen, die durch die Rekursionsgleichung~\eqref{eq:packing} gegeben ist, wird die Menge $\mathcal{C} = \left\{ (c_1, \ldots, c_t) \mid Bins((c_1, \ldots, c_t)) = 1 \right\}$ benötigt.

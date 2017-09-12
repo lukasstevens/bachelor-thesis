@@ -1,10 +1,9 @@
 \RequirePackage[l2tabu,orthodox]{nag}
 
 % TODO: decide if one-sided/two-sided
-%\documentclass[headsepline,footsepline,footinclude=false,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,BCOR=12mm,DIV=12]{scrbook} % two-sided
-\documentclass[headsepline,footsepline,footinclude=false,oneside,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc]{scrbook} % one-sided
+\documentclass[headsepline,footsepline,footinclude=false,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc,BCOR=12mm,DIV=12]{scrbook} % two-sided
+%\documentclass[headsepline,footsepline,footinclude=false,oneside,fontsize=11pt,paper=a4,listof=totoc,bibliography=totoc]{scrbook} % one-sided
 
-% TODO: change citation style in settings
 \input{settings}
 
 \newcommand*{\getUniversity}{Technische Universität München}
@@ -13,9 +12,9 @@
 \newcommand*{\getTitleGer}{Eine experimentelle Evaluation von theoretisch fundierten Graphpartitionierungsalgorithmen}
 \newcommand*{\getAuthor}{Lukas Stevens}
 \newcommand*{\getDoctype}{Bachelor's Thesis in Informatics}
-\newcommand*{\getSupervisor}{Prof. Harald Räcke, PhD}
-\newcommand*{\getAdvisor}{Richard Stotz, M.Sc.}
-\newcommand*{\getSubmissionDate}{TODO}
+\newcommand*{\getSupervisor}{Prof. Dr. Harald Räcke}
+\newcommand*{\getAdvisor}{Richard Stotz}
+\newcommand*{\getSubmissionDate}{\DTMdisplaydate{2017}{9}{15}}
 \newcommand*{\getSubmissionLocation}{Munich}
 
 % Own commands
@@ -42,6 +41,9 @@
 \input{pages/disclaimer}
 \input{pages/acknowledgements}
 \input{pages/abstract}
+
+\selectlanguage{ngerman}
+
 \microtypesetup{protrusion=false}
 \tableofcontents{}
 \listoftodos[Notizen]
@@ -66,6 +68,5 @@
 \lstlistoflistings{}
 \microtypesetup{protrusion=true}
 \printbibliography{}
-\todo[inline]{Zitat FF13}
 
 \end{document}

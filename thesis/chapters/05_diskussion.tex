@@ -7,18 +7,17 @@
 % Exponentielle Laufzeitsteigerung sichtbar, Ansprechen der höheren Streuung bei niedrigem $\varepsilon$
 % Teilanzahl, warum hoch und runter, Mehr Teile -> Feinere Schritte -> mehr Signaturen, Mehr Teile -> weniger Knoten pro Signature
 % Binärbaum hohe Laufzeit, Fat Tree niedrige Laufzeit, Grad hoch -> Laufzeit runter, Verweis auf Schwierigkeitk
-In Sektion~\ref{sec:cutting} wurde bewiesen, dass die Schnittphase des Algorithmus in Zeit $\bigO(\gamma^2 n^4)$ durchgeführt werden kann, wobei $\gamma \in \bigO((k/\sqrt{\eps})^{1+\ceil{1/\eps \cdot \log(1/\eps)}})$.
-Wie in Sektion~\ref{sec:cutting} beschrieben, hat die Packphase eine Laufzeit von $\bigO(\gamma n ((k/\eps)^{2t} + n^2))$, wobei $t = \ceil{\log_{1 + \eps}(1/\eps)} + 1$ gilt.
-Damit dominiert die Schnittphase für konstantes $k$ und konstantes $\eps$ die Laufzeit.
-Dadurch ist zu erwarten, dass die Lauzeit proportional zu $n$ quartisch steigt.
-Die Werte in Tabelle~\ref{tab:highnodecnt} bestätigen diese Vermutung, da eine Verdopplung der Knotenanzahl die Laufzeit um mehr als das $16$\hyp fachen erhöht.
+In Satz~\ref{thm:cutphase} wurde bewiesen, dass die Schnittphase des Algorithmus in Zeit $\bigO(\gamma^2 n^4)$ durchgeführt werden kann, wobei $\gamma \in \bigO((k/\sqrt{\eps})^{1+\ceil{1/\eps \cdot \log(1/\eps)}})$.
+Außerdem wurde in Sektion~\ref{sec:packing} gezeigt, dass die Packphase eine Laufzeit von $\bigO(\gamma n ((k/\eps)^{2t} + n^2))$ hat, wobei $t = \ceil{\log_{1 + \eps}(1/\eps)} + 1$ gilt.
+Damit erhalten wir für konstantes $k$ und $\eps$ eine quartisch ansteigende Laufzeit proportional zu $n$.
+Die Werte in Tabelle~\ref{tab:highnodecnt} bestätigen die Analyse, da eine Verdopplung der Knotenanzahl die Laufzeit um mehr als das $16$\hyp fachen erhöht.
 Auch in Abbildung~\ref{fig:runnodes} wird ersichtlich, dass eine Erhöhung der Knotenanzahl von $70$ auf $130$ eine ähnliche Auswirkung auf die Laufzeit hat.
 Da die Laufzeit für größere Werte von $k$ und kleinere von $\eps$ auch ansteigt, kann der Algorithmus in der Praxis nicht für größere Bäume eingesetzt werden.
 Dies steht im Gegensatz zu den Heuristiken METIS und KaHIP, welche in der Lage sind Graphen mit mehr als $100000$ Knoten zu partitionieren.~\cite{KK98, SS13}
 
 Eine weitere Beobachtung, die aus Abbildung~\ref{fig:runnodes} hervorgeht, ist die geringe Streuung der Messwerte bei vollständig balancierten Binärbäumen, die durch das in Sektion~\ref{sec:exprun} beschrieben Verfahren generiert wurden.
 Da jedes Level des Binärbaums bis auf das letzte vollständig mit Knoten gefüllt ist, haben alle generierten Bäume für eine feste Knotenanzahl die gleiche Struktur.
-Wie oben beschrieben dominiert für festes $k$ und $\eps$ die Schnittphase die Laufzeit.
+Es gilt, dass für konstantes $k$ und $\eps$ die Schnittphase die Laufzeit dominiert.
 Deshalb führen alle generierten Binärbäume zur einer ähnlichen Laufzeit, da die berechneten Signaturen in der Schnittphase allein von der Struktur des Baums abhängig sind.
 Nur die Kosten der jeweiligen Signatur sind von Baum zu Baum unterschiedlich.
 In Sektion~\ref{sec:exprun} wurde weiterhin angemerkt, dass Fat Trees zu einer verhältnismäßig geringen und Binärbäume zu einer verhältnismäßig hohen Laufzeit führen.
@@ -27,7 +26,7 @@ Auf dieses Verhalten wird weiter unten genauer eingegangen.
 Nun wird die Auswirkung des maximalen Ungleichgewichts der Partitionierung $\eps$ auf die Laufzeit untersucht, der auschließlich einen negativen Einfluss auf die Laufzeit hat.
 Während bei der Knotenanzahl $n$ steigende Werte die Laufzeit erhöhen, sind es bei $\eps$ fallende.
 Die theoretische Analyse der Laufzeiten für die Schnittphase und die Packphase aus Sektion~\ref{sec:treepartitioning} zeigt, dass die Laufzeit für konstantes $n$ und $k$ mindestens exponentiell mit fallendem $\eps$ steigt.
-\todo{Kann man hier wirklich exponentielle Steigerung sehen?} Die Werte für Random Attachment, Preferential Attachment und Binärbäume in Abbildung~\ref{fig:runimb} lassen für die Parameterwahl $n = 100$ und $k = 2$ zumindest eine exponentielle Entwicklung erahnen.
+Die Werte für Random Attachment, Preferential Attachment und Binärbäume in Abbildung~\ref{fig:runimb} lassen für die Parameterwahl $n = 100$ und $k = 2$ zumindest eine exponentielle Entwicklung erahnen.
 \todo[inline]{Auf höhere Streuung bei höherem eps eingehen? Evtl Profiling?}
 
 Der letzte Parameter des Algorithmus ist die Anzahl der Partitionen $k$. 
@@ -60,10 +59,10 @@ Auf der anderen Seite zeigt die Abbildung~\ref{fig:runkparts}, dass schon für $
 \end{table}
 
 Zuletzt wird die Entwicklung der Laufzeit für steigenden Maximalgrad $\Delta$ des Baums analysiert.
-Feldmann und Foschini~\cite{FF15} zeigten, dass das $(k, 1)$\hyp Partitionierungsproblem bereits ab einem Maximalgrad von $\Delta=5$ $NP$\hyp schwer ist.
+Feldmann und Foschini~\cite{FF15} zeigten, dass das $(k, 1)$\hyp Partitionierungsproblem auf generellen Graphen ab einem Maximalgrad von $\Delta=5$ $NP$\hyp schwer und ab $\Delta=7$ APX-schwer ist.
 Für einen Maximalgrad von $\Delta=2$ ist das Problem noch in $P$, da es sich bei dem Graphen dann um einen Pfad oder einen Kreis handelt.
-Weiterhin kann der Algorithmus von MacGregor~\cite{mcg78} angepasst werden, um einen Algorithmus mit Approximationsfaktor $\bigO(\Delta \log_\Delta(n/k))$ zu erhalten.~\cite{FF15}
-Daraus folgt, dass das Problem mit wachsendem Maximalgrad $\Delta$ schwieriger wird.
+Weiterhin kann ein Algorithmus von Macgregor~\cite{mcg78} angepasst werden, um einen Algorithmus mit Approximationsfaktor $\bigO(\Delta \log_\Delta(n/k))$ zu erhalten.~\cite{FF15}
+Daraus folgt, dass das Problem wird mit wachsendem Maximalgrad $\Delta$ schwieriger wird.
 Die Experimente, welche durch Abbildung~\ref{fig:rundeg} visualisiert werden, zeigen jedoch, dass die Laufzeit mit wachsendem Maximalgrad abnimmt.
 Um eine Intuition zu geben, warum dies der Fall ist müssen wir zuerst betrachten, wodurch die Laufzeit verringert wird.
 Die Laufzeit ist dann gering, wenn wenige Signaturen berechnet werden.
@@ -75,25 +74,87 @@ Andererseits ist die Anzahl der Knoten die keine rechtes Kind dann hoch, wenn al
 Warum also sollte die Laufzeit sinken?
 
 Für ein intuitives Verständnis betrachten wir dazu nur den Spezialfall eines vollständig balancierten $d$\hyp ären Baums, der einen Maximalgrad von $\Delta = d + 1$ hat.
-Ein $d$\hyp ärer Baum $T$ der Höhe $h$ hat $d^h$ Blätter und damit haben genau $d^h$ Knoten von $T$ kein Kind.
+Die Anzahl der Knoten in einem $d$\hyp ären Baum $T$ mit Höhe $h$ ist $n = 1 + d + d^2 + \ldots + d^h = (d^{h+1} - 1)/(d - 1)$.
+Anders ausgedrückt hat ein $T$ eine Höhe von $h = \log_d((d-1)n+1))-1$.
+Außerdem wissen wir, dass die Anzahl der Blätter $d^h$ ist, was genau die Knoten ohne Kinder sind.
+Die Anzahl der Blätter kann in Bezug zu $n$ gesetzt werden, indem wir berechnen wie viele Knoten keine Blätter sind:
+\begin{equation*}
+    n - d^h = \frac{d^{h+1} - 1}{d - 1}  - d^h = \frac{d^h - 1}{d - 1}.
+\end{equation*}
+Daraus folgt, dass $T$ genau $n - (d^h - 1)/(d - 1)$ Kinder hat.
 Um die Anzahl der Knoten zu bestimmen, die kein linkes Geschwisterkind haben betrachten wir die Level des Baums.
 In jedem Level hat der erste Knoten des Levels kein linkes Geschwisterkind.
 Ferner hat auch jeder $d+1$\hyp te Knoten kein Geschwisterkind, da sonst der Elternknoten mehr als $d$ Kinder haben müsste.
 Da das Level $\ell$ genau $d^{\ell}$ Knoten enthält, ist die Anzahl der Knoten ohne linken Geschwisterknoten
 \begin{equation*}
-    \sum_{\ell=1}^{h} \frac{d^\ell}{d} = \frac{d^h - 1}{d - 1}.
+    1 + \sum_{\ell=1}^{h} \frac{d^\ell}{d} = 1 + \frac{d^h - 1}{d - 1}.
 \end{equation*}
-Hierbei wurde die Wurzel vernachlässigt, da dort die Signaturen nur anhand der Signaturen des rechten Kinds berechnet werden.
-Weiterhin ist die Anzahl der Knoten im Baum $n = 1 + d + d^2 + \ldots + d^h = (d^{h+1} - 1)/(d - 1)$ oder anders ausgedrückt, hat $T$ eine Höhe $h = \log_d((d-1)n + 1)) - 1$.
-Für die Summe der Anzahl an Knoten ohne linken Geschwisterknoten und der Knoten ohne Kind erhalten wir dadurch
-\begin{equation*}
-    \begin{aligned}
-        \frac{d^h - 1}{d - 1} + d^h & = \frac{d^{\log_d((d-1)n + 1)) - 1}}{d - 1} + d^{\log_d((d-1)n + 1)) - 1} \\
-        & = \frac{(d-1)n + 1}{d(d-1)} + \frac{(d-1)n + 1}{d} = n + \frac{1}{d-1}.
-    \end{aligned}
-\end{equation*}
-Damit müsste man $d$ minimieren?? $d$ hat dann quasi keinen Einfluss auf die Summe. Warum wird die Laufzeit mit höherem Grad geringer?
+Dabei wurde $1$ addiert, um die Wurzel zu zählen.
+Aus den obigen Gleichungen folgern wir, dass die Anzahl der Knoten ohne Kind beziehungsweise ohne linken Geschwisterknoten gleich $n + 1$ ist.
+Die Summe ist größer als $n$, weil wir Knoten, die weder ein Kind noche einen linken Geschwisterknoten haben, doppelt zählen.
+
 
 \section{Lösungsqualität}
+Der Algorithmus liefert nach Satz~\ref{thm:treealg} auf einem Baum eine Lösung, die mindestens so gut ist wie die Optimallösung des $(k, 1)$\hyp Partitionierungsproblems.
+Auf Bäumen ist damit die niedrige relative Lösungsqualität der Heuristiken nicht überraschend, da diese keinerlei Garantien im Bezug auf die Kosten der Partitionierung bieten.
+Außerdem ist die Streuung der Messergebnisse hoch. 
+Des Weiteren treten für METIS recursive und METIS k-way Ausreißer mit einer sehr niedrigen relativen Lösungsqualität auf.
+KaFFPa hingegen weist insgesamt eine höhere relative Lösungsqualität auf und es treten nur wenige Ausreißer unter $0.2$ auf.
+Da KaFFPa in der zehnten DIMACS Implementation Challenge~\cite{BMS+13} im Vergleich zu anderen Heuristiken die beste Lösungsqualität lieferte, erfüllen diese Ergebnisse die Erwartungen.
+
+Auf der anderen Seite gelang es den Heuristiken in manchen Fällen eine bessere Lösung zu finden als der Algorithmus dieser Arbeit.
+Der Algorithmus bietet zwar eine Garantie im Hinblick auf die Lösungsqualität, jedoch bezieht sich die Garantie auf die Optimallösung des $(k,1)$\hyp Partitionierungsproblems.
+Im Allgemeinen kann die Optimallösung des $(k, 1+\eps)$\hyp Partitionierungsproblems, welches der Algorithmus und die Heuristiken lösen, deutlich geringere Schnittkosten haben und deshalb ist es möglich, dass die Heuristiken ein besseres Ergebnis liefern.
+Hinzu kommt, dass die Heuristiken sich in manchen Fällen nicht an das gegebene Ungleichgewicht halten.
+Der Grund dafür sind Rundungsfehler, da der Algorithmus dieser Arbeit die Größenbeschränkungen mit Hilfe von rationalen Zahlen exakt berechnet, währendessen die Heuristiken das Ungleichgewicht $\eps$ als Fließkommazahl darstellen.
+
+Insgesamt bietet der Algorithmus dieser Arbeit für kleine Werte von $n$ und $k$ und für nicht zu kleines $\eps$ auf Bäumen eine Alternative zu den Heuristiken, wenn eine hohe Qualität der Lösung erwünscht ist und die höhere Laufzeit unproblematisch ist.
+Dabei ist Lösungsqualität recht konsistent für verschiedene Kombinationen von Parametern und Eingabebäumen.
+Allerdings ist der Algorithmus für kleinere Werte von $\eps$ aufgrund der hohen Laufzeit nicht verwendbar.
+Für geringe Werte von $k$ ist ein Algorithmus von Macgregor~\cite{mcg78} eine Alternative.
+Dieser Algorithmus berechnet auf Bäumen eine optimale Lösung des $(k,1)$\hyp Partitionierungsproblems in polynomieller Zeit, wenn $k$ konstant ist.
+
+Die Zufallsgraphen werdenvor der Partitionierung in Bäume umgewandelt. 
+Dennoch findet der Algorithmus günstige Partitionierungen, wenngleich diese nur sehr selten besser sind als die Partitionierungen der Heuristiken.
+Ausschlagebend ist dabei, dass der Algorithmus mit Graphen des Barabási-Albert-Modells besser funktioniert, welche eher realen Graphen ähneln.~\cite{AB02}
+Da die Heuristiken bei höheren Knotenanzahlen den Graph kontrahieren müssen, wäre zu erwarten, dass die relative Lösungsqualität mit wachsender Knotenanzahl sinkt.
+In den Experimenten wird das nicht sichtbar, da die Knotenanzahlen zu gering sind.
+Experimente mit höherer Knotenanzahl konnten aufgrund der hohen Laufzeit nicht durchgeführt werden.
+
+Außerdem zeigen die Experimente, dass die hierarchische Dekomposition für die zufälligen Eingabegraphen meist zur besten Performanz führt.
+Dieses Verhalten ist absehbar, weil die hierarchische Dekomposition im Gegensatz zu den Spannbäumen die Kosten der Schnitte im Eingabegraphen approximiert.
+Deshalb wurde für die nachfolgenden Experimente nur die hierarchischen Dekomposition betrachtet.
+Besonders fällt auf, dass bei Verwendung der hierarchischen Dekomposition die Performanz für $k=2$ deutlich besser ist, wobei die relativen Lösungsqualität der Heuristiken mit fallendem $\eps$ zunimmt.
+Damit ist der Algorithmus dieser Arbeit in Kombination mit der hierarchischen Dekomposition am besten zur bikriteriellen Approximation des Minimum-Bisection-Problems geeignet.
+Des Weiteren sind die relativen Schnittkosten für höhere Kantenanzahlen geringer.
+Die Heuristiken scheinen im Vergleich zur hierarchischen Dekomposition größere Probleme mit den dichteren Zufallsgraphen zu haben.
+
+Der Datensatz as199902829 ist interessant, da es sich dabei um einen Graphen mit $103$~Knoten handelt und dieser deshalb vorher nicht kontrahiert werden muss.
+Die Tatsache dass der Algorithmus im Vergleich zu METIS recursive und METIS k-way, eine gute relative Performanz liefert, zeigt, dass der Algorithmus für kleine Graphen geeignet ist.
+Außerdem ist die relative Lösungsqualität etwas besser, als es die Experimente auf Zufallsgraphen hätten vermuten lassen.
+Weiterhin liefert KaFFPa auch für diesen Eingabegraphen Partionierungen mit hoher Qualität, wobei KaFFPa und der Algorithmus dieser Arbeit in drei Fällen Partitionierungen mit identischen Schnittkosten finden.
+
+Für die Datensätze email-Eu-core und ca-GrQc mussten zunächst Kanten kontrahiert werden.
+In diesem Sinne ist die relative Lösungsqualität immer noch niedrig.
+Es muss dabei beachtet werden, dass die Heuristiken für diese Knotenanzahl eventuell auch Kanten kontrahieren.
+Während der Unterschied zwischen METIS und KaFFPa für email-Eu-core nicht hoch ist, setzt sich KaFFPa für den Datensatz ca-GrQc, der fünfmal mehr Knoten als email-Eu-core hat, deutlich von METIS recursive und k-way ab.
+Die tendenziell schlechtere Lösungsqualität für die größeren Graphen wird mitunter dadurch verstärkt, dass der Algorithmus dieser Arbeit im Gegensatz zu den Heuristiken keine lokalen Verbesserungen beim Expandieren der zuvor kontrahierten Kanten durchführt.
+
+Obwohl der Datensatz ego-Facebook weniger Knoten enthält als ca-GrQc, ist die relative Lösungsqualität besonders für $k \in \{4,6\}$ sehr hoch, das heißt, dass der Algorithmus dieser Arbeit vergleichsweise teure Partitionierungen ausgibt.
+Der Hauptunterschied zwischen den beiden Datensätzen ist, dass ego-Facebook deutlich mehr Kanten enthält und einen höheren durchschnittlichen Clusteringkoeffizient aufweist.
+Die hohe relative Lösungsqualität steht im Kontrast zu den Resultaten für Zufallsgraphen, da dort eine höhere Kantenanzahl zu einer geringen relativen Lösungsqualität führte.
+Eine mögliche Ursache ist, dass das verwendete Kontraktionsverfahren für diesen Datensatz schlecht funktioniert.
+Die Heuristiken verwenden ausgefeiltere Methoden, um den Graph zu kontrahieren.
+Deshalb wäre es interessant zu sehen in welchem Maße der Algorithmus dieser Arbeit davon profitiert, wenn die ausgefeilteren Kontraktions- und Expansionsmethoden der Heuristiken verwendet werden.
+
+In allen Experimenten ist bei der Verwendung von hierarchischer Dekomposition aufgefallen, dass die Performanz des Algorithmus dieser Arbeit für $k=2$ besser war als für $k \in \{2, 4, 6\}$.
+Damit eignet sich der Algorithmus besonders für eine bikriterielle Approximation des Minimum-Bisection-Problems.
+Eingangs wurde beschrieben, dass es zu diesem Problem bereits einige Approximationsalgorithmen gibt.
+Mitunter gibt es einen bikriteriellen Approximationsalgorithmus mit Approximationsfaktor $\bigO(\sqrt{\log n}/\eps)$.~\cite{LR99, ARV09}
+Dieser Algorithmus hat damit für alle praktikablen Werte von $\eps$ einen besseren Approximationsfaktor als der Algorithmus dieser Arbeit, der einen Approximationsfaktor von $\bigO(\log n)$ hat (siehe Sektion~\ref{sec:decomptrees}).
+Erschwerend kommt hinzu, dass in der Implementierung eine hierarchische Dekomposition von Räcke, Shah und Täubig~\cite{RST14} mit einem Approximationsfaktor von $\bigO(\log^4 n)$ wurde. 
+Zusätzlich kann für konstantes $k$ auch hierarchische Dekomposition in Kombination mit einem Algorithmus von Macgregor~\cite{mcg78} verwendet werden, der für $k=2$ nur eine Laufzeit von $\bigO(n^2)$ hat.
+Alles in Allem sind die praktischen Anwendungsmöglichkeiten des Algorithmus dieser Arbeit aufgrund der hohen Laufzeit beschränkt.
+
 \section{Mögliche Verbesserungen}
 
