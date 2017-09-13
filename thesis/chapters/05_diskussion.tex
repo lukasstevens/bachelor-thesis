@@ -74,24 +74,34 @@ Andererseits ist die Anzahl der Knoten die keine rechtes Kind dann hoch, wenn al
 Warum also sollte die Laufzeit sinken?
 
 Für ein intuitives Verständnis betrachten wir dazu nur den Spezialfall eines vollständig balancierten $d$\hyp ären Baums, der einen Maximalgrad von $\Delta = d + 1$ hat.
-Die Anzahl der Knoten in einem $d$\hyp ären Baum $T$ mit Höhe $h$ ist $n = 1 + d + d^2 + \ldots + d^h = (d^{h+1} - 1)/(d - 1)$.
-Anders ausgedrückt hat ein $T$ eine Höhe von $h = \log_d((d-1)n+1))-1$.
+Die Anzahl der Knoten in einem $d$\hyp ären Baum $T$ mit Höhe $h$ ist $n = 1 + d + d^2 + \cdots + d^h = (d^{h+1} - 1)/(d - 1)$.
+Daraus folgt, dass $T$ eine Höhe von $h = \log_d((d-1)n+1))-1$ hat.
 Außerdem wissen wir, dass die Anzahl der Blätter $d^h$ ist, was genau die Knoten ohne Kinder sind.
 Die Anzahl der Blätter kann in Bezug zu $n$ gesetzt werden, indem wir berechnen wie viele Knoten keine Blätter sind:
 \begin{equation*}
     n - d^h = \frac{d^{h+1} - 1}{d - 1}  - d^h = \frac{d^h - 1}{d - 1}.
 \end{equation*}
-Daraus folgt, dass $T$ genau $n - (d^h - 1)/(d - 1)$ Kinder hat.
+
+Anders ausgedrückt hat $T$ genau $n - (d^h - 1)/(d - 1)$ Kinder.
 Um die Anzahl der Knoten zu bestimmen, die kein linkes Geschwisterkind haben betrachten wir die Level des Baums.
 In jedem Level hat der erste Knoten des Levels kein linkes Geschwisterkind.
 Ferner hat auch jeder $d+1$\hyp te Knoten kein Geschwisterkind, da sonst der Elternknoten mehr als $d$ Kinder haben müsste.
 Da das Level $\ell$ genau $d^{\ell}$ Knoten enthält, ist die Anzahl der Knoten ohne linken Geschwisterknoten
-\begin{equation*}
+\begin{equation}\label{eq:woleftsib}
     1 + \sum_{\ell=1}^{h} \frac{d^\ell}{d} = 1 + \frac{d^h - 1}{d - 1}.
-\end{equation*}
+\end{equation}
+
 Dabei wurde $1$ addiert, um die Wurzel zu zählen.
 Aus den obigen Gleichungen folgern wir, dass die Anzahl der Knoten ohne Kind beziehungsweise ohne linken Geschwisterknoten gleich $n + 1$ ist.
-Die Summe ist größer als $n$, weil wir Knoten, die weder ein Kind noche einen linken Geschwisterknoten haben, doppelt zählen.
+Die Summe ist größer als $n$, weil wir Knoten, die weder ein Kind noch einen linken Geschwisterknoten haben, doppelt zählen.
+Aus der Gleichung~\eqref{eq:woleftsib} können wir folgern, dass die Anzahl der Blätter, die keinen linken Geschwisterknoten haben, gleich $d^h / d$ ist.
+Deshalb zählen wir genau $d^h / d$ Knoten doppelt.
+Nun können wir die Anzahl der Knoten berechnen, die sowohl einen linken Geschwisterknoten als auch ein rechtes Kind haben und erhalten
+\begin{equation*}
+    n - \left(n + 1 - \frac{d^h}{d}\right) = \frac{d^{\log_d((d-1)n + 1) - 1}}{d} = \frac{dn - n + 1}{d^2} \overset{n \geq 1}{\leq} \frac{n}{d}.
+\end{equation*}
+
+Daraus folgt, dass die Anzahl der Knoten an denen die Berechnung der Signaturen teuer ist, da sie sowohl einen linken Geschwisternknoten als auch ein rechtes Kind haben, mit steigendem Grad sinkt und damit nimmt die Laufzeit insgesamt ab.
 
 
 \section{Lösungsqualität}
@@ -114,7 +124,7 @@ Allerdings ist der Algorithmus für kleinere Werte von $\eps$ aufgrund der hohen
 Für geringe Werte von $k$ ist ein Algorithmus von Macgregor~\cite{mcg78} eine Alternative.
 Dieser Algorithmus berechnet auf Bäumen eine optimale Lösung des $(k,1)$\hyp Partitionierungsproblems in polynomieller Zeit, wenn $k$ konstant ist.
 
-Die Zufallsgraphen werdenvor der Partitionierung in Bäume umgewandelt. 
+Die Zufallsgraphen werden vor der Partitionierung in Bäume umgewandelt. 
 Dennoch findet der Algorithmus günstige Partitionierungen, wenngleich diese nur sehr selten besser sind als die Partitionierungen der Heuristiken.
 Ausschlagebend ist dabei, dass der Algorithmus mit Graphen des Barabási-Albert-Modells besser funktioniert, welche eher realen Graphen ähneln.~\cite{AB02}
 Da die Heuristiken bei höheren Knotenanzahlen den Graph kontrahieren müssen, wäre zu erwarten, dass die relative Lösungsqualität mit wachsender Knotenanzahl sinkt.
@@ -141,11 +151,10 @@ Während der Unterschied zwischen METIS und KaFFPa für email-Eu-core nicht hoch
 Die tendenziell schlechtere Lösungsqualität für die größeren Graphen wird mitunter dadurch verstärkt, dass der Algorithmus dieser Arbeit im Gegensatz zu den Heuristiken keine lokalen Verbesserungen beim Expandieren der zuvor kontrahierten Kanten durchführt.
 
 Obwohl der Datensatz ego-Facebook weniger Knoten enthält als ca-GrQc, ist die relative Lösungsqualität besonders für $k \in \{4,6\}$ sehr hoch, das heißt, dass der Algorithmus dieser Arbeit vergleichsweise teure Partitionierungen ausgibt.
-Der Hauptunterschied zwischen den beiden Datensätzen ist, dass ego-Facebook deutlich mehr Kanten enthält und einen höheren durchschnittlichen Clusteringkoeffizient aufweist.
+Der Hauptunterschied zwischen den beiden Datensätzen ist, dass ego-Facebook deutlich mehr Kanten und Dreiecke enthält.
 Die hohe relative Lösungsqualität steht im Kontrast zu den Resultaten für Zufallsgraphen, da dort eine höhere Kantenanzahl zu einer geringen relativen Lösungsqualität führte.
 Eine mögliche Ursache ist, dass das verwendete Kontraktionsverfahren für diesen Datensatz schlecht funktioniert.
 Die Heuristiken verwenden ausgefeiltere Methoden, um den Graph zu kontrahieren.
-Deshalb wäre es interessant zu sehen in welchem Maße der Algorithmus dieser Arbeit davon profitiert, wenn die ausgefeilteren Kontraktions- und Expansionsmethoden der Heuristiken verwendet werden.
 
 In allen Experimenten ist bei der Verwendung von hierarchischer Dekomposition aufgefallen, dass die Performanz des Algorithmus dieser Arbeit für $k=2$ besser war als für $k \in \{2, 4, 6\}$.
 Damit eignet sich der Algorithmus besonders für eine bikriterielle Approximation des Minimum-Bisection-Problems.
@@ -154,7 +163,31 @@ Mitunter gibt es einen bikriteriellen Approximationsalgorithmus mit Approximatio
 Dieser Algorithmus hat damit für alle praktikablen Werte von $\eps$ einen besseren Approximationsfaktor als der Algorithmus dieser Arbeit, der einen Approximationsfaktor von $\bigO(\log n)$ hat (siehe Sektion~\ref{sec:decomptrees}).
 Erschwerend kommt hinzu, dass in der Implementierung eine hierarchische Dekomposition von Räcke, Shah und Täubig~\cite{RST14} mit einem Approximationsfaktor von $\bigO(\log^4 n)$ wurde. 
 Zusätzlich kann für konstantes $k$ auch hierarchische Dekomposition in Kombination mit einem Algorithmus von Macgregor~\cite{mcg78} verwendet werden, der für $k=2$ nur eine Laufzeit von $\bigO(n^2)$ hat.
-Alles in Allem sind die praktischen Anwendungsmöglichkeiten des Algorithmus dieser Arbeit aufgrund der hohen Laufzeit beschränkt.
 
 \section{Mögliche Verbesserungen}
+In dieser Sektion werden einige Möglichkeiten beschrieben, welche zu einer Verbesserung der Laufzeit des Algorithmus dieser Arbeit führen könnten.
+Die Berechnung der Signaturen in der Schnittphase macht einen großen Anteil der Laufzeit des Algorithmus aus.
+Für jeden Knoten wird dabei eine Menge an Signaturen berechnet, die sich im Wesentlichen durch die Kombination der Signaturen an den vorherigen Knoten ergibt.
+In Sektion~\ref{sec:sigimpl} wurde beschrieben, dass eine Menge von Signaturen mit den optimalen Schnittkosten für jede Signatur als Hashtabelle gespeichert wird.
+Dadurch kann effizient geprüft werden, ob eine Signatur bereits berechnet wurde und dementsprechend ein neuer Eintrag in der Tabelle erstellt werden beziehungsweise der bestehende Eintrag aktualisiert werden.
+Wie in Listing~\ref{lst:hashing} zu sehen ist, verwendet die \Cpp{}\hyp Implementierung dieselbe Hashfunktion wie die weit verbeitete Softwarebibliothek Boost.
 
+Da die Performanz der Hashtabelle hauptsächlich von der gewählten Hashfunktion abhängt, wäre es sinnvoll, alternative Hashfunktionen zu evaluieren.
+Eine vielversprechende Alternative ist die Verwendung einer Cyclic\hyp Redundancy\hyp Checksumme (CRC), die sich in der Praxis als ein performante Hashfunktion heraustellt.~\cite{MPL09, Hua+11}
+Außerdem ist CRC in einigen Prozessorarchitekturen~\cite{SSE} nativ implementiert, wodurch sich die Laufzeit des Hashings verbessern könnte.
+Eine weitere Alternative wurde von Alcantara et al.~\cite{Alc+09} untersucht, die eine Implementierung einer Hashtabelle mit Grafikkartenbeschleunigung präsentierten.
+Des Weiteren kann die Addition und Subtraktion von Signaturen auf der Grafikkarte durchgeführt werden.
+Davon profitiert die Schnittphase und die Packphase, weil diese Operationen in beiden Phasen verwendet werden.
+
+Zusätzlich zur Parallelisierung des Algorithmus durch Grafikkarten kann der Algorithmus folgendermaßen auf dem Prozessor parallelisiert werden:
+Zur Berechnung der Signaturen an einem Knoten $v$ benötigen wir die Signaturen am linken Geschwisterknoten $w$ und am rechtesten Kind $u$ des Knotens.
+Sei $T_x$ für einen Knoten $x$ des Baums der in $x$ gewurzelte Teilbaum.
+Dann gilt, dass die Teilbäume $T_v$ und $T_w$ disjunkt sind.
+Da $v$ ein Geschwisterknoten von $w$ ist, kann kein Knoten in $T_v$ -- außer $v$ -- einen linken Geschwisterknoten haben, der auch in $T_w$ liegt.
+Deshalb können die Signaturen an den Kindern von $v$ parallel zu den Signaturen des linken Geschwisterknotens $w$ berechnet werden.
+
+Es muss allerdings angemerkt werden, dass die obigen Vorschläge zwar das Potential haben die Berechnung der Signaturen zu beschleunigen, jedoch nicht die Anzahl der Signaturen verringern.
+Da die Anzahl der Signaturen proportional zu $n$ und $k$ wächst, wird bei größeren Werten für diese Parameter nicht nur die Laufzeit, sondern auch der Speicherbedarf problematisch.
+Es besteht die Möglichkeit die Anzahl der Signaturen zu verringern, indem der Graph zunächst mit einer Heuristik partitioniert wird und bei der Berechnung der Signaturen alle Signaturen frühzeitig herausgefiltert werden, deren Kosten höher sind als die durch die Heuristik berechneten Kosten.
+Außerdem kann auf eine ähnliche Weise eine Binärsuche auf den Kosten durchgeführt werden.
+Beide Vorschläge verbessern jedoch nicht die Laufzeit im schlimmsten Fall.

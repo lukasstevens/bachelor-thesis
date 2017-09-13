@@ -38,7 +38,7 @@
                 xlabels at=edge bottom,
                 horizontal sep=1.5cm
             },
-            ylabel={Relative Schnittkosten},
+            ylabel={Relative Lösungsqualität},
             xlabel={Ungleichgewicht $\eps$},
             height=6cm,
             width=7cm,
@@ -54,7 +54,7 @@
             legend columns=-1,
             legend style={/tikz/every even column/.append style={column sep=5pt}},
             title={Kantenanzahl $5$},
-            ylabel={Relative Schnittkosten}
+            ylabel={Relative Lösungsqualität}
         ]
         \addplot+ [boxplot] table[y=8/20] {\datadir/METIS_Recursive_pref_attach5_decomp_n80k2.dat};%
         \addlegendentry{{$n=80$, $k=2$}}
@@ -76,7 +76,7 @@
         \draw (axis cs:2,1.9) node{METIS recursive};
 
         \nextgroupplot[
-            ylabel={Relative Schnittkosten}
+            ylabel={Relative Lösungsqualität}
         ]
         \pgfplotsinvokeforeach {8/20,7/20,6/20,5/20} {
             \plotdata{#1}{METIS_Kway}{pref_attach5}
@@ -92,7 +92,7 @@
 
         \nextgroupplot[
             xlabel={Knotenanzahl $n$},
-            ylabel={Relative Schnittkosten}
+            ylabel={Relative Lösungsqualität}
         ]
         \pgfplotsinvokeforeach {8/20,7/20,6/20,5/20} {
             \plotdata{#1}{KaFFPa}{pref_attach5}
