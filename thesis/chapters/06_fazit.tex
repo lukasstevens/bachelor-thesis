@@ -2,4 +2,20 @@
 % Add the above to each chapter to make compiling the PDF easier in some editors.
 
 \chapter{Fazit}\label{chapter:fazit}
+In dieser Arbeit wurde das $k$\hyp balancierte Partitionierungsproblem betrachtet und gezeigt, dass dieses NP-schwer ist.
+Anschließend wurde der die Existenz eines bikriterieller Approximationsalgorithmus für dieses Problem vorgestellt.
+Aufbauend auf das theoretische Fundament wurde eine \Cpp{}\hyp Implementierung entwickelt, deren wesentliche Aspekte präsentiert wurden.
+Anschließend wurde die Implementierung durch einen Vergleich mit den bekannten Graphpartitionierungsheuristiken METIS und KaFFPa experimentell evaluiert.
 
+Wie aufgrund der theoretischen Analyse zu erwarten war, ist die Laufzeit des Algorithmus selbst für günstige Wahl der Parameter zu hoch, um ihn für größere Graphen zu verwenden.
+Andererseits lieferte der Algorithmus auf kleinen Bäumen sehr gute Ergebnisse im Vergleich zu den Heuristiken.
+Auf Graphen konnte sich der Algorithmus noch in manchen Fällen gegen METIS behaupten, während KaFFPa in nahezu allen Fällen bessere Resultate lieferte.
+Dies untermauert den Status von KaFFPa als eine der besten Graphpartitionierungsheuristiken.
+
+Weiterhin wurden Verbesserungsvorschläge für die Implementierung vorgestellt, deren Umsetzung in der Zukunft zu einer Verbesserung der Laufzeit des Algorithmus führen könnte.
+Falls die Laufzeit ausreichend reduziert werden kann, wäre es interessant zu sehen, inwiefern der Algorithmus dieser Arbeit von den ausgefeilten Graphexpansions- und Kontraktionsmethoden der Heuristiken profitiert.
+Damit könnte der Algorithmus dieser Arbeit für geeignete Werte der Parameter eine Alternative zu den bestehenden Heuristiken darstellen.
+
+Dennoch gibt es bis jetzt noch keine Alternative für die Heuristiken, welche bei ungünstigerer Wahl der Parameter beziehungsweise für größere Graphen eine Laufzeit hat, welche in der Praxis tolerierbar ist.
+Da das $(k,1+\eps)$\hyp Partitionierungsproblem in der Praxis oft auftritt, wird es von Interesse sein, die Effizienz der Approximationsalgorithmen weiter zu verbessern.
+Effizientere Algorithmen, welche Garantien im Bezug auf die Lösungsqualität bieten und dabei eine akzeptable Laufzeit haben, würden eine attraktive Alternative zu den etablierten Heuristiken darstellen. 

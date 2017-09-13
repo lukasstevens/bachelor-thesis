@@ -39,7 +39,7 @@
                 horizontal sep=1.5cm
             },
             xticklabels={70,80,90,100},
-            ylabel={Relative Schnittkosten},
+            ylabel={Relative Lösungsqualität},
             xlabel={Knotenanzahl $n$},
             height=6cm,
             width=7cm,
@@ -54,7 +54,7 @@
             legend columns=-1,
             legend style={/tikz/every even column/.append style={column sep=5pt}},
             title={Kantenanzahl $5$},
-            ylabel={Relative Schnittkosten}
+            ylabel={Relative Lösungsqualität}
         ]
         \addplot+ [boxplot] table[y=70] {\datadir/METIS_Recursive_pref_attach5_mst_k2i1div3.dat};%
         \addlegendentry{{$k=2$, $\eps=1/3$}}
@@ -76,7 +76,7 @@
         \draw (axis cs:2,2.3) node{METIS recursive};
 
         \nextgroupplot[
-            ylabel={Relative Schnittkosten}
+            ylabel={Relative Lösungsqualität}
         ]
         \pgfplotsinvokeforeach {70,80,90,100} {
             \plotdata{#1}{METIS_Kway}{pref_attach5}
@@ -92,7 +92,7 @@
 
         \nextgroupplot[
             xlabel={Knotenanzahl $n$},
-            ylabel={Relative Schnittkosten}
+            ylabel={Relative Lösungsqualität}
         ]
         \pgfplotsinvokeforeach {70,80,90,100} {
             \plotdata{#1}{KaFFPa}{pref_attach5}

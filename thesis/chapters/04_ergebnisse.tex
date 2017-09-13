@@ -1,6 +1,5 @@
 % !TeX root = ../main.tex
 % Add the above to each chapter to make compiling the PDF easier in some editors.
-
 \chapter{Ergebnisse}\label{chapter:ergebnisse}
 Im Folgenden wird die \Cpp\hyp Implementierung experimentell evaluiert.
 Die zwei zentralen Kenngrößen des Algorithmus sind die Laufzeit und die Schnittkosten der ausgegebenen Partitionierung.
@@ -26,7 +25,6 @@ Dementsprechend kann es sein, dass das letzte Level nicht vollständig mit Knote
 Fat Trees sind eine Verallgemeinerung von fast vollständigen $d$\hyp ären Bäumen.
 Wir erhalten einen vollständig balancierten $d$\hyp ären Baum, indem wir die Menge der möglichen Kinderanzahlen des Fat Trees auf $\{d\}$ setzen.
 Für alle Heuristiken werden die Kantengewichte der Bäume mit einer uniformen Zufallsverteilung aus dem Bereich $[1, 100]$ gewählt.
-\todo[inline]{Eventuell Visualisierungen, Definition fast vollständiger Baum?}
 
 \subsection{Laufzeit}\label{sec:exprun}
 Um die Laufzeit des Algorithmus zu analysieren, wurde wiederholt ein Parameter gewählt, dessen Auswirkung auf die Laufzeit untersucht werden soll.
@@ -39,7 +37,7 @@ Alle Zeitmessungen wurden auf einem System mit $8$ GB Arbeitsspeicher und einem 
 
 In den Abbildungen~\ref{fig:runnodes},~\ref{fig:runimb},~\ref{fig:runkparts} und~\ref{fig:rundeg} werden die gemessenen Zeiten mit Boxplots dargestellt.
 Ein Boxplot besteht aus einer oberen Antenne, einer unteren Antenne, dem oberen Quartil, dem unteren Quartil und dem Median.
-\todo{Was soll mit den Ausreißern gemacht werden?, Vielleicht so lassen, aber average statt median?} Die obere Antenne und die untere Antenne stellen jeweils das Maximum beziehungsweise das Minimum der gemessenen Werte dar, falls es keine Ausreißer gibt, die weit vom Rest der Werte entfernt sind.
+Die obere Antenne und die untere Antenne stellen jeweils das Maximum beziehungsweise das Minimum der gemessenen Werte dar, falls es keine Ausreißer gibt, die weit vom Rest der Werte entfernt sind.
 In den Messergebnissen kamen in fast allen Fällen pro 20 Durchläufen höchstens drei Ausreißer nach oben vor.
 Nur für kleines $\eps$ kamen bis zu fünf Ausreißer vor.
 Weiterhin liegen $75\%$ der gemessen Werte unterhalb des oberen Quartils, während $25\%$ unterhalb des unteren Quartils liegen.
@@ -118,25 +116,30 @@ Das Survey~\cite{BMS+16} gibt einen Überblick über die verschiedenen Ansätze.
 
 In dieser Arbeit wird die Lösungsqualität mit den Heuristiken METIS~\cite{KK98} und KaHIP~\cite{SS13} ausgewählt.
 Beide Heuristiken verwenden eine Multilevel-Schema.
-Dabei wird der Graph zuerst in mehreren Schritten verkleinert, indem kontrahiert werden.
+Dabei wird der Graph zuerst in mehreren Schritten verkleinert, indem Kanten kontrahiert werden.
 Danach wird im verkleinerten Graph eine Partitionierung mit hoher Qualität berechnet.
-Zuletzt werden die kontrahierten Kanten wieder expandiert, wobei in jedem Schritt lokale Verbesserung der Partitionierung durchgeführt werden.
+Zuletzt werden die kontrahierten Kanten wieder expandiert, wobei in jedem Schritt lokale Verbesserungen der Partitionierung durchgeführt werden.
 Um die Kanten zu kontrahieren, werden Matchings verwendet.
-METIS und KaHIP behaupten Partitionierungen mit hoher Qualität im Vergleich zu anderen viel verwendeten Heuristiken zu finden.
-KaHIP gelang es bei der zehnten DIMACS Implementation Challenge~\cite{BMS+13} die beste Lösungsqualität im Vergleich zu anderen Heuristiken zu erreichen.
+METIS und KaHIP behaupten, Partitionierungen mit hoher Qualität im Vergleich zu anderen viel verwendeten Heuristiken zu finden.
+KaHIP gelang es, bei der zehnten DIMACS Implementation Challenge~\cite{BMS+13} die beste Lösungsqualität im Vergleich zu anderen Heuristiken zu erreichen.
 
 Für die folgenden Versuche wurden von METIS die Graphpartitionierungsmethoden METIS recursive und METIS k-way verwendet.
 Alle zusätzlichen Konfigurationsoptionen, die METIS bereitstellt, wurden auf den Standartwerten belassen.
 Von KaHIP wird der Karlsruhe Fast Flow Partitioner (KaFFPa) verwendet.
 KaFFPa stellt verschieden Modi bereit, die die Laufzeit und die Lösungsqualität beinflussen.
-Hier wurde der Modus STRONG gewählt.
+Hier wurde der Modus STRONG gewählt, der zu einer höheren Laufzeit führt, aber die beste Lösungsqualität bietet.
+In den Experimenten werden kleine Graphen verwendet, wodurch die erhöhte Laufzeit nicht ins Gewicht fällt.
 Alle anderen Optionen wurden nicht verändert.
 Bei der Berechnung der Partitionierung erhalten der Algorithmus dieser Arbeit sowie die Heuristiken METIS und KaHIP dieselben Parameter $k$ und $\eps$.
 Um die Eingabebäume zu generieren, werden die gleichen Methoden wie in der vorherigen Sektion~\ref{sec:exprun} verwendet.
 Hierbei wurden jeweils 20 unterschiedliche Bäume für jede Baumheuristik generiert.
 
 Die Abbildungen~\ref{fig:mrectreesnodes},~\ref{fig:mkwaytreesnodes} und~\ref{fig:kaffpatreesnodes} zeigen die relative Lösungsqualität der jeweiligen Graphpartitionierungsheuristik in Abhängigkeit der Knotenanzahl $n$.
-Dabei ist die relative Lösungsqualität als die Schnittkosten der Lösung des Algorithmus dieser Arbeit geteilt durch die Schnittkosten der Lösung der Graphpartitionierungsheuristik definiert.
+Wenn der Algorithmus dieser Arbeit auf einem Graphen eine Partitionierung mit Kosten $c_A$ berechnet und eine Heuristik eine Partitionierung mit Kosten $c_H$, dann berechnet sich die relative Lösungsqualität durch 
+\begin{equation*}
+    \frac{c_A}{c_H}. 
+\end{equation*}
+
 Das bedeutet, dass der Algorithmus dieser Arbeit eine günstigere Partitionierung als eine Graphpartitionierungsheuristik gefunden hat, wenn die relative Lösungsqualität kleiner als $1$ ist.
 Andernfalls liefert die Heuristik ein besseres Ergebnis.
 Für alle Experimente wurde $\eps=1/3$ gewählt.
@@ -151,7 +154,7 @@ Dazu muss jedoch erwähnt werden, dass einige dieser Partitionierungen das gegeb
 \begin{figure}[H]
     \centering
     \includestandalone{figures/trees/quality/node_count/metis_recursive}
-    \caption{Relative Schnittkosten von METIS recursive in Abhängigkeit der Knotenanzahl $n$\label{fig:mrectreesnodes}}
+    \caption{Relative Lösungsqualität von METIS recursive in Abhängigkeit der Knotenanzahl $n$\label{fig:mrectreesnodes}}
 \end{figure}
 
 Wie vorher ist bei METIS k-way die relative Lösungsqualität geringer für $k=2$, wie in Abbildung~\ref{fig:mkwaytreesnodes} zu sehen ist.
@@ -162,21 +165,21 @@ Damit liefert der Algorithmus dieser Arbeit im Vergleich zu METIS k-way eine gut
 \begin{figure}[H]
     \centering
     \includestandalone{figures/trees/quality/node_count/metis_kway}
-    \caption{Relative Schnittkosten von METIS k-way in Abhängigkeit der Knotenanzahl $n$\label{fig:mkwaytreesnodes}}
+    \caption{Relative Lösungsqualität von METIS k-way in Abhängigkeit der Knotenanzahl $n$\label{fig:mkwaytreesnodes}}
 \end{figure}
 
-Die Heuristik KaFFPa erreicht im Vergleich zu METIS recursive und METIS k-way höhere Lösungsqualität.
+Die Heuristik KaFFPa erreicht im Vergleich zu METIS recursive und METIS k-way eine bessere relative Lösungsqualität.
 Dabei treten auch vergleichsweise wenig Ausreißer mit eine Wert von unter $0.2$ auf.
-Die Lösungsqualität bei KaFFPa ändert sich nicht merklich mit wachsendem $k$.
+Die relative Lösungsqualität bei KaFFPa ändert sich nicht merklich mit wachsendem $k$.
 Insgesamt wird keine Abhängigkeit der relativen Lösungsqualität von der Knotenanzahl für die gewählten Parameter sichtbar.
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/trees/quality/node_count/kaffpa}
-    \caption{Relative Schnittkosten von KaFFPa in Abhängigkeit der Knotenanzahl $n$\label{fig:kaffpatreesnodes}}
+    \caption{Relative Lösungsqualität von KaFFPa in Abhängigkeit der Knotenanzahl $n$\label{fig:kaffpatreesnodes}}
 \end{figure}
 
-Die folgenden Abbildungen~\ref{fig:mrectreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
+Die folgenden Abbildungen~\ref{fig:mrectreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die relative Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
 Die verschiedenen Werte für $k \in \{2,4,6\}$ sind weiterhin entsprechend eingefärbt.
 Wiederum liefern METIS recursive und METIS k-way für $k=2$ meist eine geringe relative Lösungsqualität.
 Bemerkenswert ist, dass die Ausreißer bei METIS recursive (siehe Abbildung~\ref{fig:mrectreesimb}) hauptsächlich bei $k=3$ auftreten.
@@ -186,19 +189,19 @@ Alles in Allem ist keine klare Abhängigkeit der relativen Lösungsqualität von
 \begin{figure}[H]
     \centering
     \includestandalone{figures/trees/quality/imbalance/metis_recursive}
-    \caption{Relative Schnittkosten von METIS recursive in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mrectreesimb}}
+    \caption{Relative Lösungsqualität von METIS recursive in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mrectreesimb}}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/trees/quality/imbalance/metis_kway}
-    \caption{Relative Schnittkosten von METIS k-way in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mkwaytreesimb}}
+    \caption{Relative Lösungsqualität von METIS k-way in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mkwaytreesimb}}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/trees/quality/imbalance/kaffpa}
-    \caption{Relative Schnittkosten von KaFFPa in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:kaffpatreesimb}}
+    \caption{Relative Lösungsqualität von KaFFPa in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:kaffpatreesimb}}
 \end{figure}
 
 \section{Lösungsqualität auf Graphen}
@@ -242,19 +245,19 @@ Zwischen den verschiedenen Graphpartitionierungsheuristiken besteht kein wesentl
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/node_count/edge_prob_rst}
-    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und RST in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobrstnode}}
+    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und RST in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobrstnode}}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/node_count/edge_prob_mst}
-    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und MST in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobmstnode}}
+    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und MST in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobmstnode}}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/node_count/edge_prob_decomp}
-    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobhdecompnode}}
+    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobhdecompnode}}
 \end{figure}
 
 
@@ -269,37 +272,37 @@ Analog zum Erdős-Rényi-Modell ist die relative Lösungsqualität für eine hö
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/node_count/pref_attach_rst}
-    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und RST in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachrstnode}}
+    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und RST in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachrstnode}}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/node_count/pref_attach_mst}
-    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und MST in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachmstnode}}
+    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und MST in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachmstnode}}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/node_count/pref_attach_decomp}
-    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachhdecompnode}}
+    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachhdecompnode}}
 \end{figure}
 
 
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/edge_prob_rst}
-%    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und RST in Abhängikeit von $\eps$}
+%    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und RST in Abhängikeit von $\eps$}
 %\end{figure}
 %
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/edge_prob_mst}
-%    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und MST in Abhängikeit von $\eps$}
+%    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und MST in Abhängikeit von $\eps$}
 %\end{figure}
 
 Zuletzt wird die relative Lösungsqualität in Abhängigkeit des Ungleichgewichts $\eps$ untersucht.
 Dafür wird $n=80$ gewählt und $k \in \{2, 4, 6\}$, wobei die Einfärbung der Ergebnisse den unterschiedlichen Werten von $k$ entspricht.
-Dabei wurden RST und MST weggelassen, da zwischen MST, RST und hierarchischer Dekomposition beim Erdős-Rényi-Modell keine wesentlichen Unterschiede in der relative Lösungsqualität bestanden und hierarchische Dekomposition für das Barabási-Albert-Modell bessere Ergbnisse lieferte.
+Dabei wurden RST und MST weggelassen, da zwischen MST, RST und hierarchischer Dekomposition beim Erdős-Rényi-Modell keine wesentlichen Unterschiede in der relativen Lösungsqualität bestanden und hierarchische Dekomposition für das Barabási-Albert-Modell bessere Ergbnisse lieferte.
 Die Ergebnisse sind in Abbildung~\ref{fig:edgeprobhdecompimb} und~\ref{fig:prefattachhdecompimb} zu sehen.
 Das Verhalten für $k=2$ ist wieder weitgehend wie oben, wobei zusätzlich auffällt, dass die relative Lösungsqualität mit fallendem $\eps$ abnimmt.
 Den Experimenten nach scheinen für $k=4$ und $k=6$ verschiedene Werte von $\eps$ keinen Einfluss auf die relative Lösungsqualität zu haben.
@@ -309,44 +312,44 @@ Den Experimenten nach scheinen für $k=4$ und $k=6$ verschiedene Werte von $\eps
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/imbalance/edge_prob_decomp}
-    \caption{Relative Schnittkosten für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:edgeprobhdecompimb}}
+    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:edgeprobhdecompimb}}
 \end{figure}
 
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/pref_attach_rst}
-%    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und RST in Abhängikeit von $\eps$}
+%    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und RST in Abhängikeit von $\eps$}
 %\end{figure}
 %
 %\begin{figure}
 %    \centering
 %    \includestandalone{figures/graphs/imbalance/pref_attach_mst}
-%    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und MST in Abhängikeit von $\eps$}
+%    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und MST in Abhängikeit von $\eps$}
 %\end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/imbalance/pref_attach_decomp}
-    \caption{Relative Schnittkosten für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:prefattachhdecompimb}}
+    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:prefattachhdecompimb}}
 \end{figure}
 
-\subsection{Graphen aus Echtdaten}
-Zum Schluss wird die relative Lösungsqualität des Algorithmus dieser Arbeit anhand von echten Datensätzen durch einen Vergleich mit den Heuristiken METIS recursive, METIS k-way und KaFFPa ermittelt.
+\subsection{Graphen aus realen Daten}
+Zum Schluss wird die relative Lösungsqualität des Algorithmus dieser Arbeit anhand von realen Datensätzen durch einen Vergleich mit den Heuristiken METIS recursive, METIS k-way und KaFFPa ermittelt.
 Alle verwendeten Datensätze sind in der Stanford Large Network Dataset Collection enthalten.~\cite{LK14}
 Die folgende Tabelle gibt einen Überblick über diese Datensätze.
-Mit dem Clusteringkoeffizient ist hierbei der durchschnittliche Clusteringkoeffizient gemeint.
+Dabei ist ein Dreieck eine Menge von drei Knoten, die alle untereinander verbunden sind.
 
 \vspace{0.5cm}
 \begin{table}[H]
     \centering
     \begin{tabular}{lcccc}
         \toprule
-        Datensatz & Knoten & Kanten & Clusteringkoeffizient & Referenz \\
+        Datensatz & Knoten & Kanten & Anzahl der Dreiecke & Referenz \\
         \midrule
-        as19990829 & 103 & 248 & 0.5296 & \cite{LKF05} \\
-        email-Eu-core & 1005 & 25571 & 0.3994 & \cite{LKF07} \\
-        ca-GrQc & 5242 & 14496 & 0.5296 & \cite{LKF07} \\
-        ego-Facebook & 4039 & 88234 & 0.6055 & \cite{ML14} \\
+        as19990829 & 103 & 248 & 228 & \cite{LKF05} \\
+        email-Eu-core & 1005 & 25571 & 105461 & \cite{LKF07} \\
+        ca-GrQc & 5242 & 14496 & 48260 & \cite{LKF07} \\
+        ego-Facebook & 4039 & 88234 & 1612010 & \cite{ML14} \\
         \bottomrule
     \end{tabular}
     \caption{Überblick über die Datensätze}
@@ -382,7 +385,7 @@ Wie bei den Zufallsgraphen ist die relative Lösungsqualität für $k=2$ am klei
 Des Weiteren steigt die relative Lösungsqualität von KaFFPa mit steigendem $k$.
 Bemerkenswert ist die geringe relative Lösungsqualität von METIS recursive.
 Auf der anderen Seite ist der Algorithmus für keine Parameterkombination besser als KaFFPa, wobei es interessant ist, dass der Algorithmus und KaFFPa in drei Fällen Partitionierungen mit identischen Kosten finden.
-Das Ungleichgewicht $\eps$ scheint nur für $k=2$ einen Einfluss auf die Lösungsqualität im Vergleich zu den Methoden von METIS zu haben.
+Das Ungleichgewicht $\eps$ scheint nur bei METIS für $k=2$ einen Einfluss auf die relative Lösungsqualität zu haben.
 
 
 Der zweite Datensatz heißt email-Eu-core und ist ein gerichteter Graph mit $1005$ Knoten und $25571$ Kanten.
@@ -400,38 +403,38 @@ Für diesen Graph konnten die Experimente für $k=6$ nicht durchgeführt werden,
 Der Grund hierfür ist, dass dieselbe Signatur für verschiedene Gewichtssummen mehrmals vorkommen kann. 
 Wenn die mögliche Gesamtsumme an Knotengewichten höher ist, dann steigt die Anzahl an Signaturen und damit die Laufzeit sowie der Speicherbedarf.
 Die Abbildung~\ref{fig:cagrqc} zeigt die Ergebnisse der Experimente.
-Obwohl dieser Graph deutlich größer ist als die vorherigen, ist die Lösungsqualität noch verhältnismäßig hoch.
+Obwohl dieser Graph deutlich größer ist als die vorherigen, ist die Lösungsqualität des Algorithmus dieser Arbeit im Vergleich zu den Heuristiken hoch.
 Des Weiteren ist KaFFPa für diesen Graph merkbar besser als beide Methoden von METIS.
-In diesem Graph verändert sich die Lösungsqualität nicht in Abhängigkeit von $\eps$.
+In diesem Graph verändert sich die relative Lösungsqualität nicht in Abhängigkeit von $\eps$.
 
 Der letzte Datensatz heißt ego-Facebook und ist ein Graph mit $4039$ Knoten und $88234$ Kanten.
 Dieser Graph bildet Freundeslisten im sozialen Netzwerk facebook\footnote{\url{https://facebook.com}} ab.
 Auch für diesen Graph war es nicht möglich die Schnittkosten für $k=6$ zu berechnen.
-Wie die Abbildung~\ref{fig:facebook} zeigt, sind die relativen Schnittkosten in diesem Graph deutlich höher als in den vorherigeren Graphen, besonders für $k=3$ und $k=4$.
+Wie die Abbildung~\ref{fig:facebook} zeigt, ist die relativen Lösungsqualität in diesem Graph deutlich höher als in den vorherigeren Graphen, besonders für $k=3$ und $k=4$.
 Während die relative Lösungsqualität für $k=2$ mit fallendem $\eps$ steigt, sinkt sie für $k=4$ auf der anderen Seite tendenziell.
 
 \begin{figure}[t]
     \centering
     \includestandalone{figures/graphs/data_sets/as}
-    \caption{Relative Schnittkosten für den Datensatz as19990829\label{fig:as}}
+    \caption{Relative Lösungsqualität für den Datensatz as19990829\label{fig:as}}
 \end{figure}
 
 
 \begin{figure}
     \centering
     \includestandalone{figures/graphs/data_sets/email}
-    \caption{Relative Schnittkosten für den Datensatz email-Eu-core\label{fig:email}}
+    \caption{Relative Lösungsqualität für den Datensatz email-Eu-core\label{fig:email}}
 \end{figure}
 
 \begin{figure}
     \centering
     \includestandalone{figures/graphs/data_sets/caGrQc}
-    \caption{Relative Schnittkosten für den Datensatz ca-GrQc\label{fig:cagrqc}}
+    \caption{Relative Lösungsqualität für den Datensatz ca-GrQc\label{fig:cagrqc}}
 \end{figure}
 
 \begin{figure}
     \centering
     \includestandalone{figures/graphs/data_sets/facebook}
-    \caption{Relative Schnittkosten für den Datensatz ego-Facebook\label{fig:facebook}}
+    \caption{Relative Lösungsqualität für den Datensatz ego-Facebook\label{fig:facebook}}
 \end{figure}
 

@@ -448,7 +448,7 @@ Hierbei ist \texttt{SizeType} der Integertyp, der verwendet wird, um Knoten zu z
 Die Felder \texttt{has\_left\_sibling} und \texttt{tree\_sizes} haben diesselbe Struktur wie \texttt{levels} und dienen als Lookup-Tabellen.
 Wenn der Knoten $v$ an der Stelle \texttt{levels[i][j]} abgespeichert ist, dann gibt uns der Lookup \texttt{tree\_sizes[i][j]} die Größe des Teilbaums gewurzelt in $v$ und \texttt{has\_left\_sibling[i][j]} indiziert, ob $v$ einen linken Geschisterknoten hat.
 
-\subsection{Signaturen}
+\subsection{Signaturen}\label{sec:sigimpl}
 Um in der Schnittphase die Äquivalenzklassen zu berechnen, werden diese nach Definition~\ref{defn:signature} durch eine Signatur repräsentiert.
 Eine Signatur ist ein Vektor mit der Länge $t = \ceil{\log_{1+\eps}(1/\eps)} + 1$ und enthält ausschließlich nicht-negative Integer.
 Weiterhin folgt aus den Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut}, dass Vektoradditionen durchgeführt werden müssen.
@@ -530,7 +530,7 @@ Des Weiteren speichert \texttt{struct Tree} in der Lookup-Tabelle \texttt{tree\_
     Da wir die Knoten in maximal zwei Partitionen aufteilen dürfen, gibt es für $\eps < 1/3$ keine Lösung.
 \end{rem}
 
-\begin{figure}[b]
+\begin{figure}
     \centering
     \begin{tikzpicture}[node/.style={circle, draw}]
         \node at (-1, 0) [node] (A) {$2$};
@@ -540,4 +540,3 @@ Des Weiteren speichert \texttt{struct Tree} in der Lookup-Tabelle \texttt{tree\_
     \end{tikzpicture}
     \caption{Beispielgraph mit Knotengewichten\label{fig:graph}}
 \end{figure}
-
