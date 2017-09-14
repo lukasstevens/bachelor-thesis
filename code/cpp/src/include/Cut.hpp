@@ -55,6 +55,7 @@ namespace cut {
                 /**
                  * Constructor.
                  * @param id Id of the node.
+                 * @param weight The weight of the node.
                  * @param parent_edge_weight The weight of the edge of this node to its parent.
                  * @param parent_idx The index of the parent in the level above this nodes.
                  * @param children_idx_range The range of indices in which children of this are located
@@ -91,12 +92,25 @@ namespace cut {
             std::pair<NodeWeight, Signature> right_child_sig;
             bool was_parent_edge_cut;
 
+            /**
+             * Default constructor.
+             */
             PreviousSignatures() = default;
 
+            /**
+             * Constructor.
+             * @param left_sibling_sig The signature of the left sibling
+             *  which was used to arrive at the current signature.
+             * @param right_child_sig The signature of the right child
+             *  used to arrive at the current signature.
+             * @param was_parent_edge_cut Indicates whether the edge from
+             *  the node to its parent was cut.
+             */
             PreviousSignatures(
                     std::pair<NodeWeight, Signature> left_sibling_sig,
                     std::pair<NodeWeight, Signature> right_child_sig,
-                    bool was_parent_edge_cut) :
+                    bool was_parent_edge_cut
+                    ) :
                 left_sibling_sig(left_sibling_sig), right_child_sig(right_child_sig), 
                 was_parent_edge_cut(was_parent_edge_cut) {}
         };
@@ -209,8 +223,8 @@ namespace cut {
                  * If the left sibling or right child does not exist one just has to pass a Tree::SignatureMap
                  * which only contains one signature, namely the 0-vector, and which has cut cost 0.
                  * @param node The current node.
-                 * @param node_subtree_size The size of the subtree rooted at the current node.
-                 * @param left_siblings_size The combined size of the trees rooted at the siblings of \p node.
+                 * @param node_subtree_weight The combined weight of the subree weighted at the current node.
+                 * @param left_siblings_weight The combined weight of the trees rooted at the siblings of \p node.
                  * @param left_sibling_sigs The signatures at the left sibling.
                  * @param right_child_sigs The signatures at the right child.
                  * @param comp_weight_bounds The upper component size bounds(exclusive) for the signature.
@@ -229,11 +243,11 @@ namespace cut {
                  * This works analogous to Tree::cut_at_node(), only that the previous signatures are calculated
                  * and no signatures greater than \p signature are allowed.
                  * @param node The current node.
-                 * @param subtree_size The size of the subtree rooted at the current node.
+                 * @param node_subtree_weight The combined weight of subtree rooted at the current node.
                  * @param left_sibling_sigs The signatures at the left sibling.
                  * @param right_child_sigs The signatures at the right child.
                  * @param comp_weight_bounds The upper component size bounds(exclusive) for the signature.
-                 * @param The maximum allowed signature.
+                 * @param signature The maximum allowed signature.
                  */
                 static SignatureMapWithPrev cut_at_node_with_prev(
                         Node const& node, 
@@ -273,7 +287,7 @@ namespace cut {
     /**
      * Calculates the upper (exclusive) bounds on the component sizes for each index of a signature.
      * @param eps The approximation factor.
-     * @param node_cnt The number of nodes in the tree.
+     * @param tree_weight The combined weight of all nodes in the tree.
      * @param part_cnt The number of parts in which the tree should be partitioned.
      * @returns The component size bounds as a vector.
      *
@@ -286,7 +300,7 @@ namespace cut {
     /**
      * Calculates the lower (inclusive) bounds on the component sizes for each index of a signature.
      * @param eps The approximation factor.
-     * @param node_cnt The number of nodes in the tree.
+     * @param tree_weight The combined weight of all nodes in the tree.
      * @param part_cnt The number of parts in which the tree should be partitioned.
      * @returns The component size bounds as a vector.
      *

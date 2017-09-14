@@ -27,13 +27,18 @@
 namespace graph {
 
     /**
-     * A structure to store the result of a partitioning
+     * A structure to store the result of a partitioning.
+     * This stores the cost and the actual partitioning.
+     * A partitioning is a vector with a length equal to the number of
+     * nodes in the graph. The i-th entry of the vector indicates in which
+     * partition the node with id i is.
      */
     template<typename Id=int32_t, typename EdgeWeight=int32_t>
         using PartitionResult = std::pair<EdgeWeight, std::vector<Id>>;
 
     /**
      * Typedef for the rational type.
+     * @see cut::Rational
      */
     using Rational = cut::Rational;
 
@@ -69,8 +74,19 @@ namespace graph {
                     adjwgt(adjwgt) {}
         };
 
+    /**
+     * CsrGraph for METIS.
+     * @see CsrGraph
+     */
     struct MetisCsrGraph : CsrGraph<idx_t> {
         private:
+
+            /**
+             * Partition the graph using the \p part_method METIS method.
+             * @param part_methode The METIS method to use.
+             * @param kparts The number of parts to partition into.
+             * @param imbalance The maximum imbalance of the partitions.
+             */
             PartitionResult<idx_t, idx_t> part_graph(decltype(METIS_PartGraphRecursive) part_method, idx_t kparts, real_t imbalance) {
                 idx_t cut_cost;
                 // Number of node constraints is always one.
@@ -88,6 +104,7 @@ namespace graph {
                 }
                 return std::make_pair(cut_cost, partition);
             }
+
         public:
             /**
              * Cast constructor for ease of use
@@ -131,6 +148,10 @@ namespace graph {
             }
     };
 
+    /**
+     * CsrGraph for KaFFPa.
+     * @see CsrGraph
+     */
     struct KahipCsrGraph : CsrGraph<int> {
         public:
             /**
@@ -172,12 +193,33 @@ namespace graph {
             }
     };
 
+    /**
+     * Structure to store an undirected graph.
+     * All template parameters are assumed to be integer.
+     * Floats for EdgeWeight might work, but is not tested.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct Graph {
             public :
+
+                /**
+                 * A set of node ids.
+                 */
                 using NodeSet = std::set<Id>;
+
+                /**
+                 * A matching is a vector of edges.
+                 */
                 using Matching = std::vector<std::pair<Id, Id>>;
+
+                /**
+                 * Type for storing the result from a partitioning.
+                 */
                 using PartitionResult = PartitionResult<Id, EdgeWeight>;
+
+                /**
+                 * Stores an edge with its associated cost.
+                 */
                 using Edge = std::tuple<Id, Id, EdgeWeight>;
 
             private:
@@ -279,7 +321,7 @@ namespace graph {
                  * Checks if the given edge exists in the graph.
                  * Keep in mind that the graph is undirected.
                  * @param from_node The first node.
-                 * @param to_ndoe The second node.
+                 * @param to_node The second node.
                  * @returns A boolean indicating whether the edge exists.
                  */
                 bool exists_edge(Id from_node, Id to_node) const {
@@ -310,7 +352,7 @@ namespace graph {
 
                 /**
                  * An additive setter for the weight of an edge.
-                 * Constructs the edge initial weight 0 if necessary.
+                 * Constructs the edge with initial weight 0 if necessary.
                  * @param from_node One node of the edge.
                  * @param to_node Other node of the edge.
                  * @param weight The weight of the edge.
