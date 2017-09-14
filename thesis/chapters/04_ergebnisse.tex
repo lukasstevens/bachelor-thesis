@@ -52,13 +52,13 @@ Des Weiteren wurde eine Messreihe erstellt, welche die Abhängigkeit der Laufzei
 Dabei wurde $k=2$ und $\eps=1/2$ gesetzt und für jede Knotenanzahl ein Baum jeder Heuristik generiert und die Laufzeit gemessen.
 Die Ergebnisse dieser Messreihe sind in Tabelle~\ref{tab:highnodecnt} zu sehen.
 
-\begin{figure}[t]
+\begin{figure}
     \centering
     \includestandalone{figures/trees/runtime/node_count}
     \caption{Laufzeit in Abhängigkeit der Knotenanzahl\label{fig:runnodes}}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}
     \centering
     \begin{tabular}{l*{4}{c}}
         \toprule
@@ -73,7 +73,7 @@ Die Ergebnisse dieser Messreihe sind in Tabelle~\ref{tab:highnodecnt} zu sehen.
     \caption{Die Laufzeit in Millisekunden in Abhängigkeit der Knotenanzahl und Baumheuristik mit $k=2$ und $\eps=1/2$\label{tab:highnodecnt}}
 \end{table}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includestandalone{figures/trees/runtime/imbalance}
     \caption{Laufzeit in Abhängigkeit des Ungleichgewichts\label{fig:runimb}}
@@ -85,7 +85,7 @@ Ein Ungleichgewicht von $\eps$ bedeutet, dass jede Partition der ermittelten Par
 In Abbildung~\ref{fig:runkparts} ist die Laufzeit in Abhängigkeit der Anzahl an Partitionen $k$ zu sehen.
 Weiterhin gilt zu bemerken, dass die Laufzeit für steigendes $k$ zunächst zunimmt und dann wieder abnimmt.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includestandalone{figures/trees/runtime/kparts}
     \caption{Laufzeit in Abhängigkeit der Teilanzahl\label{fig:runkparts}}
@@ -97,7 +97,7 @@ Beim Fat Tree wurde weiterhin zwei für die Mindestanzahl an Kindern gewählt, w
 Anstatt eines Binärbaums wurde ein $d$\hyp ärer Baum betrachtet und die Entwicklung der Laufzeit mit wachsendem $d$ untersucht.
 Wie zu sehen ist nimmt die Laufzeit mit wachsendem Maximalgrad ab.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includestandalone{figures/trees/runtime/max_degree}
     \caption{Laufzeit in Abhängigkeit des Maximalgrads\label{fig:rundeg}}
@@ -149,18 +149,20 @@ Außerdem treten Ausreißer nach unten hautpsächlich für $k=2$ auf.
 Für $k=6$ kommen auch Ausreißer vor, deren Wert über $1$ liegt, das heißt, in diesem Fall hat METIS recursive eine bessere Partitionierung gefunden als der Algorithmus dieser Arbeit.
 Dazu muss jedoch erwähnt werden, dass einige dieser Partitionierungen das gegebene Ungleichgewicht $\eps=1/3$ verletzen, da diese Partitionierungen Partitionen enthalten, die größer als $(1+\eps) \ceil{n/k}$ sind.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includestandalone{figures/trees/quality/node_count/metis_recursive}
     \caption{Relative Lösungsqualität von METIS recursive in Abhängigkeit der Knotenanzahl $n$\label{fig:mrectreesnodes}}
 \end{figure}
+
+\pagebreak
 
 Wie vorher ist bei METIS k-way die relative Lösungsqualität geringer für $k=2$, wie in Abbildung~\ref{fig:mkwaytreesnodes} zu sehen ist.
 Zwischen $k=4$ und $k=6$ ist jedoch kein klarer Unterschied zu sehen.
 Außerdem weist METIS k-way für $k=2$ einige Ausreißer mit sehr niedrigen relativen Lösungsqualität auf, während hingegen nur ein Ausreißer mit einem Wert von mehr als $1$ auftritt.
 Damit liefert der Algorithmus dieser Arbeit im Vergleich zu METIS k-way eine gute Lösungsqualität.
 
-\begin{figure}[H]
+\begin{figure}[t]
     \centering
     \includestandalone{figures/trees/quality/node_count/metis_kway}
     \caption{Relative Lösungsqualität von METIS k-way in Abhängigkeit der Knotenanzahl $n$\label{fig:mkwaytreesnodes}}
@@ -171,35 +173,38 @@ Dabei treten auch vergleichsweise wenig Ausreißer mit eine Wert von unter $0.2$
 Die relative Lösungsqualität bei KaFFPa ändert sich nicht merklich mit wachsendem $k$.
 Insgesamt wird keine Abhängigkeit der relativen Lösungsqualität von der Knotenanzahl für die gewählten Parameter sichtbar.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includestandalone{figures/trees/quality/node_count/kaffpa}
     \caption{Relative Lösungsqualität von KaFFPa in Abhängigkeit der Knotenanzahl $n$\label{fig:kaffpatreesnodes}}
 \end{figure}
 
+\pagebreak
 Die folgenden Abbildungen~\ref{fig:mrectreesimb},~\ref{fig:mkwaytreesimb} und~\ref{fig:kaffpatreesimb} zeigen die relative Lösungsqualität in Abhängigkeit von $\eps$ für $n=80$.
 Die verschiedenen Werte für $k \in \{2,4,6\}$ sind weiterhin entsprechend eingefärbt.
 Wiederum liefern METIS recursive und METIS k-way für $k=2$ meist eine geringe relative Lösungsqualität.
 Wie vorher liefert KaFFPa die besten Ergebnisse.
 Alles in Allem ist keine klare Abhängigkeit der relativen Lösungsqualität von $\eps$ für die gegebenen Parameter zu sehen.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includestandalone{figures/trees/quality/imbalance/metis_recursive}
     \caption{Relative Lösungsqualität von METIS recursive in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mrectreesimb}}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includestandalone{figures/trees/quality/imbalance/metis_kway}
     \caption{Relative Lösungsqualität von METIS k-way in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:mkwaytreesimb}}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includestandalone{figures/trees/quality/imbalance/kaffpa}
     \caption{Relative Lösungsqualität von KaFFPa in Abhängigkeit des Ungleichgewichts $\eps$\label{fig:kaffpatreesimb}}
 \end{figure}
+
+\pagebreak
 
 \section{Lösungsqualität auf Graphen}
 Nachdem in der vorherigen Sektion die relative Lösungsqualität der Heuristiken auf Bäumen behandelt wurde, werden nun Graphen untersucht.
@@ -239,6 +244,8 @@ Wenn hierarchische Dekomposition verwendet wird, dann ist die relative Lösungsq
 Insgesamt ist die Qualität für $p=0.3$ in allen Fällen besser als für $p=0.1$.
 Zwischen den verschiedenen Graphpartitionierungsheuristiken besteht kein wesentlicher Unterschied in der relativen Lösungsqualität.
 
+\vfill\clearpage
+
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/node_count/edge_prob_rst}
@@ -257,6 +264,7 @@ Zwischen den verschiedenen Graphpartitionierungsheuristiken besteht kein wesentl
     \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:edgeprobhdecompnode}}
 \end{figure}
 
+\vfill\clearpage
 
 In den Abbildungen~\ref{fig:prefattachrstnode},~\ref{fig:prefattachmstnode} und~\ref{fig:prefattachhdecompnode} ist die relative Lösungsqualität der Graphpartitionierungsheuristiken in Abhängigkeit für das Barabási-Albert-Modell mit den Parameter $m=5$ und $m=10$ zu sehen.
 Wie vorher ist die relative Lösungsqualität für RST und MST im Fall $k=2$ höchsten, während sie hingegen für hierarchische Dekomposition am niedgrigsten ist.
@@ -284,6 +292,7 @@ Analog zum Erdős-Rényi-Modell ist die relative Lösungsqualität für eine hö
     \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängigkeit der Knotenanzahl $n$\label{fig:prefattachhdecompnode}}
 \end{figure}
 
+\vfill\clearpage
 
 Zuletzt wird die relative Lösungsqualität in Abhängigkeit des Ungleichgewichts $\eps$ untersucht.
 Dafür wird $n=80$ gewählt und $k \in \{2, 4, 6\}$, wobei die Einfärbung der Ergebnisse den unterschiedlichen Werten von $k$ entspricht.

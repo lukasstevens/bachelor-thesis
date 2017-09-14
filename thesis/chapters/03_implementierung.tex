@@ -290,11 +290,10 @@ Mit diesen Ergebnissen erhalten wir Algorithmus~\ref{alg:cabisi}.
     \caption{Ermitteln der Behältersignaturen mit \textproc{calculate\_bin\_signatures}}
     \label{alg:cabisi}
     \begin{algorithmic}[1]
-        \LineComment{Namensgebung Signatur gut?}
         \Function{calculate\_bin\_signatures}{Signatur $(g_1, \ldots, g_t)$, Vektor $(s_1, \ldots, s_t)$}
             \Let{$C_0$}{$\{(\vec{0}, 0)\}$}
             \For{$i = 1, \ldots, t$}
-                \Let{$C_i$}{$\emptyset$} \Comment{Ist das notwendig?}
+                \Let{$C_i$}{$\emptyset$}
                 \ForAll{$(\vec{a}, m_a) \in C_{i-1}$}
                     \For{$k = 0, \ldots, g_i$}
                        \Let{$\vec{b}$}{$\vec{a} + k \cdot \vec{e}(s_i)$} 
@@ -331,7 +330,7 @@ Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
             \Let{$\mathcal{C}$}{\Call{calculate\_bin\_signatures}{$(g_1, \ldots, g_t)$, $\vec{s}$}}
             \Let{$P_0$}{$\{(g_1, \ldots, g_t)\}$}
             \For{$i = 1, 2, \ldots$}
-                \Let{$P_i$}{$\emptyset$} \Comment{Ist das notwendig?}
+                \Let{$P_i$}{$\emptyset$}
                 \ForAll{$\vec{p} \in P_{i-1}$}
                 \ForAll{$\vec{c} \in \mathcal{C}$}
                     \Let{$\vec{q}$}{$(\max\{0, p_1 - c_1\}, \ldots, \max\{0, p_t - c_t\})$}
