@@ -22,6 +22,8 @@
  * Almost all structs and functions in this namespace use the template parameters Id and EdgeWeight.
  * Id is the type for node ids and EdgeWeight is the type with which edge weights of the Tree are stored.
  * NodeWeight is the type for storing node weights.
+ * All types are assumed to be integer, while NodeWeight must be integer. Non-integer EdgeWeight might work,
+ * but is not tested.
  * @see Node
  * @see Tree
  */

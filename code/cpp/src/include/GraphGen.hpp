@@ -1,3 +1,8 @@
+/**
+ * @file GraphGen.hpp
+ */
+#pragma once
+
 #include<cstdint>
 #include<fstream>
 #include<iostream>
@@ -10,15 +15,37 @@
 #include "GraphIo.hpp"
 #include "GraphUtils.hpp"
 
+/**
+ * This namespace contains a number of different graph generators.
+ * Every graph generator inherits from the abstract class graphgen::IGraphGen.
+ */
 namespace graphgen {
 
+    /**
+     * The interface of a graph generator as an abstract class.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct IGraphGen {
             public:
+                /**
+                 * Virtual deconstructor to prevent memory leaks.
+                 */
                 virtual ~IGraphGen() {}
+
+                /**
+                 * Generate a graph with the graph generator using \p seed.
+                 * @param seed The seed to use (default 0)
+                 * @returns The generated graph.
+                 */
                 virtual graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const=0;
         };
 
+    /**
+     * Generate a random number in the given right exclusive range.
+     * @param rand_gen The random generator to use.
+     * @param range The right exclusive range.
+     * @returns A random number in the specified range.
+     */
     template<typename T, typename RandGen>
         T gen_rand_in_range(
                 RandGen& rand_gen, std::pair<T, T> range) {
@@ -26,6 +53,9 @@ namespace graphgen {
             return dist(rand_gen);
         }
 
+    /**
+     * Use the TreeRandAttach heuristic to construct a graph.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct TreeRandAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -35,6 +65,17 @@ namespace graphgen {
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
 
+                /**
+                 * Constructor
+                 * TreeRandAttach starts with one node and attaches new nodes
+                 * randomly as leafs until the desired node count is reached.
+                 * @param node_cnt The desired node count.
+                 * @param max_degree The maximum degree of any node in the tree.
+                 * @param node_weight_range The right exclusive range from which
+                 *  the node weights should be chosen (default [1,2)).
+                 * @param edge_weight_range The right exclusive range from which
+                 *  the edge weights should be chosen (default [1,101)).
+                 */
                 TreeRandAttach(
                         Id node_cnt,
                         Id max_degree = std::numeric_limits<Id>::max(),
@@ -69,6 +110,9 @@ namespace graphgen {
                 }
             };
 
+    /**
+     * Use the TreePrefAttach heuristic to construct a graph.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct TreePrefAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -78,6 +122,19 @@ namespace graphgen {
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
 
+                /**
+                 * Constructor
+                 * TreePrefAttach starts with one node and attaches new nodes
+                 * randomly to an existing node with probility proportional to 
+                 * the degree of the existing node.
+                 *
+                 * @param node_cnt The desired node count.
+                 * @param max_degree The maximum degree of any node in the tree.
+                 * @param node_weight_range The right exclusive range from which
+                 *  the node weights should be chosen (default [1,2)).
+                 * @param edge_weight_range The right exclusive range from which
+                 *  the edge weights should be chosen (default [1,101)).
+                 */
                 TreePrefAttach(
                         Id node_cnt,
                         Id max_degree = std::numeric_limits<Id>::max(),
@@ -129,6 +186,9 @@ namespace graphgen {
 
             };
 
+    /**
+     * Use the fat tree heuristic to construct a graph.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct TreeFat : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -138,6 +198,21 @@ namespace graphgen {
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
 
+                /**
+                 * Constructor
+                 * TreeFet starts with one node and chooses a random number \p x from
+                 * the right exclusive range \p child_cnt_range.
+                 * Then \p x nodes are attached to all nodes in the previous level.
+                 * This is done until \p node_cnt is reached.
+                 *
+                 * @param node_cnt The desired node count.
+                 * @param child_cnt_range The right exclusive range from which the
+                 *  child counts should be chosen.
+                 * @param node_weight_range The right exclusive range from which
+                 *  the node weights should be chosen (default [1,2)).
+                 * @param edge_weight_range The right exclusive range from which
+                 *  the edge weights should be chosen (default [1,101)).
+                 */
                     TreeFat(
                             Id node_cnt,
                             std::pair<Id, Id> child_cnt_range={1, std::numeric_limits<Id>::max()},
@@ -178,6 +253,11 @@ namespace graphgen {
                     }
             };
 
+    /**
+     * Use the Barabasi-Albert model to construct a graph.
+     * <a href="https://en.wikipedia.org/wiki/Barab%C3%A1si%E2%80%93Albert_model">
+     * Barabasi-Albert model on Wikipedia</a> 
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct GraphPrefAttach : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -188,75 +268,94 @@ namespace graphgen {
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
 
-                GraphPrefAttach(
-                        Id node_cnt,
-                        Id edge_cnt_p_node,
-                        Id max_degree = std::numeric_limits<Id>::max(),
-                        std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
-                        std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
-                        ) :
-                    node_cnt(node_cnt),
-                    edge_cnt_p_node(edge_cnt_p_node),
-                    max_degree(max_degree),
-                    node_weight_range(node_weight_range),
-                    edge_weight_range(edge_weight_range) {}
+                    /**
+                     * Constructor
+                     * This constructs a graph with \p node_cnt nodes using Barabasi-Albert model.
+                     * <a href="https://en.wikipedia.org/wiki/Barab%C3%A1si%E2%80%93Albert_model">
+                     * Barabasi-Albert model on Wikipedia</a> 
+                     *
+                     * @param node_cnt The desired node count.
+                     * @param edge_cnt_p_node The number of edges which are created for each node.
+                     * @param max_degree The maximum degree of a node.
+                     * @param node_weight_range The right exclusive range from which
+                     *  the node weights should be chosen (default [1,2)).
+                     * @param edge_weight_range The right exclusive range from which
+                     *  the edge weights should be chosen (default [1,101)).
+                     */
+                    GraphPrefAttach(
+                            Id node_cnt,
+                            Id edge_cnt_p_node,
+                            Id max_degree = std::numeric_limits<Id>::max(),
+                            std::pair<NodeWeight, NodeWeight> node_weight_range = {1, 2},
+                            std::pair<EdgeWeight, EdgeWeight> edge_weight_range = {1, 101}
+                            ) :
+                        node_cnt(node_cnt),
+                        edge_cnt_p_node(edge_cnt_p_node),
+                        max_degree(max_degree),
+                        node_weight_range(node_weight_range),
+                        edge_weight_range(edge_weight_range) {}
 
-                graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
-                    RandGen rand_gen(seed);
+                    graph::Graph<Id, NodeWeight, EdgeWeight> operator()(size_t seed=0) const override {
+                        RandGen rand_gen(seed);
 
-                    graph::Graph<Id, NodeWeight, EdgeWeight> graph(this->node_cnt);
-                    for (Id node = 0; node < graph.node_cnt(); ++node) {
-                        graph.node_weight(node, 
-                            gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
-                    }
-
-                    std::vector<Id> degree(graph.node_cnt(), 0);
-                    Id degree_sum = 0;
-                    for (Id node = 0; node < edge_cnt_p_node; ++node) {
-                        graph.edge_weight(node, (node + 1) % edge_cnt_p_node, 
-                                gen_rand_in_range<EdgeWeight, RandGen>(rand_gen, this->edge_weight_range));
-                        degree.at(node) += 1;
-                        degree.at((node + 1) % edge_cnt_p_node) += 1;
-                        degree_sum += 2;
-                    }
-
-                    for (Id from_node = this->edge_cnt_p_node; from_node < graph.node_cnt(); ++from_node) {
-                        for (Id edge_idx = 0; edge_idx < this->edge_cnt_p_node;) {
-
-                            std::uniform_int_distribution<Id> to_node_deg_dist(0, degree_sum);
-                            Id to_node_deg = to_node_deg_dist(rand_gen);
-                            Id to_node;
-                            for (to_node = 0;; ++to_node) {
-                                if (to_node_deg <= degree[to_node]) {
-                                    break;
-                                }
-                                to_node_deg -= degree[to_node];
-                            }
-
-                            bool const node_degs_l_max = degree.at(from_node) < this->max_degree &&
-                                degree.at(to_node) < this->max_degree;
-                            bool const exists_edge = graph.exists_edge(from_node, to_node);
-                            if (node_degs_l_max) {
-
-                                EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
-                                        rand_gen, this->edge_weight_range);
-                                graph.add_edge_weight(from_node, to_node, edge_weight);
-
-                                if (!exists_edge) {
-                                    degree.at(from_node) += 1;
-                                    degree.at(to_node) += 1;
-                                    degree_sum += 1;
-                                }
-
-                                ++edge_idx;
-                            }
+                        graph::Graph<Id, NodeWeight, EdgeWeight> graph(this->node_cnt);
+                        for (Id node = 0; node < graph.node_cnt(); ++node) {
+                            graph.node_weight(node, 
+                                    gen_rand_in_range<NodeWeight, RandGen>(rand_gen, this->node_weight_range));
                         }
-                        degree_sum += degree[from_node];
+
+                        std::vector<Id> degree(graph.node_cnt(), 0);
+                        Id degree_sum = 0;
+                        for (Id node = 0; node < edge_cnt_p_node; ++node) {
+                            graph.edge_weight(node, (node + 1) % edge_cnt_p_node, 
+                                    gen_rand_in_range<EdgeWeight, RandGen>(rand_gen, this->edge_weight_range));
+                            degree.at(node) += 1;
+                            degree.at((node + 1) % edge_cnt_p_node) += 1;
+                            degree_sum += 2;
+                        }
+
+                        for (Id from_node = this->edge_cnt_p_node; from_node < graph.node_cnt(); ++from_node) {
+                            for (Id edge_idx = 0; edge_idx < this->edge_cnt_p_node;) {
+
+                                std::uniform_int_distribution<Id> to_node_deg_dist(0, degree_sum);
+                                Id to_node_deg = to_node_deg_dist(rand_gen);
+                                Id to_node;
+                                for (to_node = 0;; ++to_node) {
+                                    if (to_node_deg <= degree[to_node]) {
+                                        break;
+                                    }
+                                    to_node_deg -= degree[to_node];
+                                }
+
+                                bool const node_degs_l_max = degree.at(from_node) < this->max_degree &&
+                                    degree.at(to_node) < this->max_degree;
+                                bool const exists_edge = graph.exists_edge(from_node, to_node);
+                                if (node_degs_l_max) {
+
+                                    EdgeWeight edge_weight = gen_rand_in_range<EdgeWeight, RandGen>(
+                                            rand_gen, this->edge_weight_range);
+                                    graph.add_edge_weight(from_node, to_node, edge_weight);
+
+                                    if (!exists_edge) {
+                                        degree.at(from_node) += 1;
+                                        degree.at(to_node) += 1;
+                                        degree_sum += 1;
+                                    }
+
+                                    ++edge_idx;
+                                }
+                            }
+                            degree_sum += degree[from_node];
+                        }
+                        return graph;
                     }
-                    return graph;
-                }
             };
 
+    /**
+     * Use the Erdos-Renyi model to construct a graph.
+     * <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model">
+     * Erdos-Renyi model on Wikipedia</a> 
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct GraphEdgeProb : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -267,6 +366,20 @@ namespace graphgen {
                     std::pair<NodeWeight, NodeWeight> node_weight_range;
                     std::pair<EdgeWeight, EdgeWeight> edge_weight_range;
 
+                    /**
+                     * Constructor
+                     * This constructs a graph with \p node_cnt nodes using Erdos-Renyi model.
+                     * <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model">
+                     * Erdos-Renyi model on Wikipedia</a> 
+                     *
+                     * @param node_cnt The desired node count.
+                     * @param edge_prob The probability that an edge exists.
+                     * @param max_degree The maximum degree of a node.
+                     * @param node_weight_range The right exclusive range from which
+                     *  the node weights should be chosen (default [1,2)).
+                     * @param edge_weight_range The right exclusive range from which
+                     *  the edge weights should be chosen (default [1,101)).
+                     */
                     GraphEdgeProb(
                             Id node_cnt,
                             double edge_prob,
@@ -304,12 +417,23 @@ namespace graphgen {
                     }
             };
 
+    /**
+     * Use MST to convert a graph into a tree.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t>
             struct Mst : public IGraphGen<Id, NodeWeight, EdgeWeight> {
                 public:
                     std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
 
+                    /**
+                     * Compute the MST for a graph.
+                     * When the graph generator is called then the MST is computed for the 
+                     * graph returned by \p graph_gen.
+                     * @param graph_gen The graph generator to use.
+                     *
+                     * @see graph::mst()
+                     */
                     Mst(std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen) :
                         graph_gen(graph_gen) {}
 
@@ -318,6 +442,9 @@ namespace graphgen {
                     }
             };
 
+    /**
+     * Use RST to convert a graph into a tree.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct Rst : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -325,6 +452,15 @@ namespace graphgen {
                     std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
                     size_t rst_seed;
 
+                    /**
+                     * Compute the RST for a graph.
+                     * When the graph generator is called then the RST is computed for the 
+                     * graph returned by \p graph_gen.
+                     * @param graph_gen The graph generator to use.
+                     * @param rst_seed The seed for generating the rst (default 0).
+                     *
+                     * @see graph::rst()
+                     */
                     Rst(std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
                             size_t rst_seed=0) :
                         graph_gen(graph_gen), rst_seed(rst_seed) {}
@@ -335,6 +471,11 @@ namespace graphgen {
                     }
             };
 
+    /**
+     * Uses heavy edge matching to contract a graph to n nodes.
+     * @see graph::heavy_edge_matching()
+     * @see graph::contract_to_n_nodes()
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t,
         typename EdgeWeight=int32_t, typename RandGen=std::mt19937_64>
             struct ContractToN : public IGraphGen<Id, NodeWeight, EdgeWeight> {
@@ -343,6 +484,15 @@ namespace graphgen {
                     Id node_count;
                     size_t matching_seed;
 
+                    /**
+                     * Construct a graph to \p node_count nodes using Heavy Edge Matching.
+                     *
+                     * @param graph_gen The graph generator to use.
+                     * @param node_count The number of nodes after contraction.
+                     * @param matching_seed The seed to generate the matching (default 0).
+                     * @see graph::heavy_edge_matching()
+                     * @see graph::contract_to_n_nodes()
+                     */
                     ContractToN(
                             std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
                             Id node_count,
@@ -356,14 +506,26 @@ namespace graphgen {
                     }
             };
 
+    /**
+     * This just returns the graphs itself.
+     * Returns the i-th graph for seed i.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct GraphId : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             public:
                 std::vector<graph::Graph<Id, NodeWeight, EdgeWeight>> graphs;
 
+                /**
+                 * Constructor from a single graph.
+                 * @param graph The graph.
+                 */
                 GraphId(graph::Graph<Id, NodeWeight, EdgeWeight> const& graph) : 
                     graphs({graph}) {}
 
+                /**
+                 * Constructor from multiple graph.
+                 * @param graphs The graphs.
+                 */
                 GraphId(std::vector<graph::Graph<Id, NodeWeight, EdgeWeight>> graphs) :
                     graphs(graphs) {}
 
@@ -372,6 +534,10 @@ namespace graphgen {
                 }
         };
 
+    /**
+     * Read in graphs from file or stdin.
+     * Returns the i-th graph from the file for seed i.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct FromFile : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             private:
@@ -380,6 +546,13 @@ namespace graphgen {
                 bool do_read_on_demand;
 
             public:
+                /**
+                 * Read in \p graph_cnt graphs from file \p filename.
+                 * @param filename The file to use "-" for stdin.
+                 * @param graph_cnt The number of graphs to read from the file.
+                 * @param do_read_on_demand Indicates whether the graphs should be read only when 
+                 *  needed to save memory. This only works for files. Default: false.
+                 */
                 FromFile(std::string filename, size_t graph_cnt=1, bool do_read_on_demand=false) :
                     filename(filename), do_read_on_demand(do_read_on_demand) {
                         if (!do_read_on_demand) {
@@ -418,12 +591,24 @@ namespace graphgen {
                 }
         };
 
+    /**
+     * Contract infinite edges of a given graph.
+     * The maximum value of \p EdgeWeight is treated as infinity.
+     * This is used to contract to deal with the infinity edges of the hierarchical 
+     * decomposition.
+     */
     template<typename Id=int32_t, typename NodeWeight=int32_t, typename EdgeWeight=int32_t>
         struct ContractInfEdges : public IGraphGen<Id, NodeWeight, EdgeWeight> {
             public:
                 std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> graph_gen;
                 EdgeWeight infty;
 
+                /** 
+                 * Constructor.
+                 * @param graph_gen The graph generator.
+                 * @param infty The value to treat as infinity. 
+                 *  Default: <code>std::numeric_limits<EdgeWeight>::max()</code>.
+                 */
                 ContractInfEdges(
                         std::shared_ptr<IGraphGen<Id, NodeWeight, EdgeWeight>> const& graph_gen,
                         EdgeWeight infty = std::numeric_limits<EdgeWeight>::max()

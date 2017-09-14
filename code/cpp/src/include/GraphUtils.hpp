@@ -1,3 +1,9 @@
+/**
+ * @file GraphUtils.hpp
+ *
+ * This file contains some utility functions for dealing with graph.
+ * All theses utility functions are also in the namespace graph.
+ */
 #pragma once 
 
 #include<algorithm>
@@ -10,19 +16,32 @@
 
 namespace graph {
 
+    /**
+     * A union-find structure.
+     */
     template<typename Id>
         struct UnionFind {
             private:
-                std::vector<Id> parent;
-                std::vector<Id> size;
+                std::vector<Id> parent; /**< Saves the parent of each node*/
+                std::vector<Id> size; /**< Stores the size of the subtree of a node */
 
             public:
+                /**
+                 * Construct a union-find instance with \p node_count nodes.
+                 * In the beginning all nodes are singletons.
+                 * @param node_count The number of nodes.
+                 */
                 UnionFind(Id node_count) : parent(node_count), size(node_count, 1) {
                     for (Id node = 0; node < node_count; ++node) {
                         this->parent[node] = node;
                     }
                 }
 
+                /**
+                 * Finds the representative of the set in which \p node lies.
+                 * @param node The node.
+                 * @returns The id of the representative.
+                 */
                 Id find(Id node) {
                     if(this->parent[node] == node) {
                         return node;
@@ -33,6 +52,11 @@ namespace graph {
                     }
                 }
 
+                /**
+                 * Union two sets.
+                 * @param one_node Node in one set.
+                 * @param other_node Node in the other set.
+                 */
                 void union_(Id one_node, Id other_node) {
                     Id one_root = this->find(one_node);
                     Id other_root = this->find(other_node);
@@ -48,6 +72,10 @@ namespace graph {
                     }
                 }
 
+                /**
+                 * Return all representatives.
+                 * @returns The vector of representatives.
+                 */
                 std::vector<Id> roots() {
                     std::vector<Id> roots;
                     for (Id node = 0; node < parent.size(); ++node) {
@@ -59,6 +87,14 @@ namespace graph {
                 }
         };
 
+    /**
+     * Do a heavy edge matching on the graph.
+     * This visits all nodes in a random order and greedily matches each node with the adjacent node
+     * to which the edge weight is the highest.
+     * @param graph The graph to perform to search the matching in.
+     * @param seed The seed to use to traverse the nodes randomly (default 0).
+     * @returns The matching.
+     */
     template<typename Id, typename NodeWeight, typename EdgeWeight, typename RandGen=std::mt19937_64>
         typename Graph<Id, NodeWeight, EdgeWeight>::Matching heavy_edge_matching(
                 Graph<Id, NodeWeight, EdgeWeight> const& graph,
@@ -110,6 +146,15 @@ namespace graph {
             return matching;
         }
 
+    /**
+     * Contract \p graph to \p node_cnt nodes by iteratively contracting edges.
+     * The edges to contract are found using heavy edge matching.
+     * @param graph The graph to contract. This graph is NOT changed.
+     * @param node_cnt The number of nodes of the contracted graph.
+     * @param matching_seed The seed to use for the matching (default 0).
+     * @returns The resulting contracted graph.
+     * @see graph::heavy_edge_matching()
+     */
     template<typename Id, typename NodeWeight, typename EdgeWeight,
         typename RandGen=std::mt19937_64>
             Graph<Id, NodeWeight, EdgeWeight> contract_to_n_nodes(
@@ -134,6 +179,11 @@ namespace graph {
                 return contracted;
             }
 
+    /**
+     * Find the MST of a graph using Kruskals algorithm.
+     * @param graph The graph.
+     * @returns The MST.
+     */
     template<typename Id, typename NodeWeight, typename EdgeWeight>
         Graph<Id, NodeWeight, EdgeWeight> mst(
                 Graph<Id, NodeWeight, EdgeWeight> const& graph) {
@@ -168,6 +218,12 @@ namespace graph {
             return mst_graph;
         }
 
+    /**
+     * Calculates a Random Spanning Tree (RST) on \p graph.
+     * @param graph The graph to use.
+     * @param seed The seed for the random generator (default 0).
+     * @returns The RST
+     */
     template<typename Id, typename NodeWeight, typename EdgeWeight,
         typename RandGen=std::mt19937_64>
             Graph<Id, NodeWeight, EdgeWeight> rst(
