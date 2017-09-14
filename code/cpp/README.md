@@ -50,7 +50,7 @@ If you want read the tree from a file, but want the program to read `k` and `e_n
 The command line interface can be accessed by running `craftr build cli`.
 You can pass arguments to the command line with `craftr build cli[args...]`.
 Use `craftr build cli[--help]` to get an overview over the available options.
-Note the CLI reads graphs in the CSR file format.
+Note that the CLI reads graphs in the CSR file format.
 The format is described in the metis manual which lies in `deps/metis/manual`.
 
 ## Documentation
