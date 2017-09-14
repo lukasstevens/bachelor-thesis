@@ -59,3 +59,6 @@ You can generate the doxygen documentation by running `craftr build docs`. The d
 ## Note about Github
 I recommend that you use the latest version of this repository located on Github at https://github.com/lukasstevens/bachelor-thesis if you did not obtain the code from Github.
 Furthermore, do not hesistate to open an issue if something is not working.
+
+## License
+The code is licensed under the GPLv2. For the license see the LICENSE file.
