@@ -47,5 +47,15 @@ After you entered the tree, the program expects three additional space-seperated
 `k` is the number of parts into which the algorithm should partition the tree and `e_n/e_d` specifies the approximation parameter epsilon.
 If you want read the tree from a file, but want the program to read `k` and `e_n/e_d` from stdin you can execute `cat your_tree_file - | craftr build run`.
 
+The command line interface can be accessed by running `craftr build cli`.
+You can pass arguments to the command line with `craftr build cli[args...]`.
+Use `craftr build cli[--help]` to get an overview over the available options.
+Note the CLI reads graphs in the CSR file format.
+The format is described in the metis manual which lies in `deps/metis/manual`.
+
 ## Documentation
 You can generate the doxygen documentation by running `craftr build docs`. The documentation is located in `build/docs`.
+
+## Note about Github
+I recommend that you use the latest version of this repository located on Github at https://github.com/lukasstevens/bachelor-thesis if you did not obtain the code from Github.
+Furthermore, do not hesistate to open an issue if something is not working.
