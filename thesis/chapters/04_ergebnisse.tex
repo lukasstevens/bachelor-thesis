@@ -34,7 +34,7 @@ Um Schwankungen auszugleichen, wurden für jede Kombination der Parameter 20 ver
 Dabei wurde die Anzahl der Kinder des Fat Trees aus der Menge $\{2, \ldots, 10\}$ gewählt und als $d$\hyp ärer Baum wurde ein Binärbaum gewählt.
 Des Weiteren wurden für die übrigen Parameter jeweils drei verschieden Konfigurationen gewählt.
 Alle Zeitmessungen wurden auf einem System mit $8$ GB Arbeitsspeicher und einem Intel i7-4790k Prozessor mit einer Taktrate von $4.0$ GHz durchgeführt.
-Das Program wurde mit Clang der Version \texttt{3.8.1} unter der Verwendung von Optimierungsstufe O3 kompiliert.
+Das Programm wurde mit Clang der Version \texttt{3.8.1} unter der Verwendung von Optimierungsstufe O3 kompiliert.
 
 In den Abbildungen~\ref{fig:runnodes},~\ref{fig:runimb},~\ref{fig:runkparts} und~\ref{fig:rundeg} werden die gemessenen Zeiten mit Boxplots dargestellt.
 Ein Boxplot besteht aus einer oberen Antenne, einer unteren Antenne, dem oberen Quartil, dem unteren Quartil und dem Median.
@@ -106,14 +106,14 @@ Wie zu sehen ist nimmt die Laufzeit mit wachsendem Maximalgrad ab.
 Insgesamt ist die geringe Streuung der Werte beim Binärbaum bemerkenswert.
 Des Weiteren zeichnet sich der Binärbaum durch eine höhere Laufzeit und der Fat Tree durch eine geringere Laufzeit aus.
 
-\subsection{Lösungsqualitat}
+\subsection{Lösungsqualität}
 In dieser Sektion wird die Lösungsqualität des Algorithmus auf Bäumen evaluiert.
 Nach bestem Wissen des Autors gibt es keine Implementierung eines vergleichbaren Approximationsalgorithmus und deshalb wird die Lösungsqualität durch einen Vergleich mit Heuristiken beurteilt.
 Da es sich bei dem $(k,1+\eps)$\hyp Partitionierungsproblem um ein Problem handelt, dass viele Praxisanwendungen hat, wurden bereits einige heuristische Ansätze entwickelt. 
 Das Survey~\cite{BMS+16} gibt einen Überblick über die verschiedenen Ansätze.
 
 In dieser Arbeit wird die Lösungsqualität mit den Heuristiken METIS~\cite{KK98} und KaHIP~\cite{SS13} verglichen.
-Beide Heuristiken verwenden eine Multilevel-Schema.
+Beide Heuristiken verwenden ein Multilevel-Schema.
 Dabei wird der Graph zuerst in mehreren Schritten verkleinert, indem Kanten kontrahiert werden.
 Danach wird im verkleinerten Graph eine Partitionierung mit hoher Qualität berechnet.
 Zuletzt werden die kontrahierten Kanten wieder expandiert, wobei in jedem Schritt lokale Verbesserungen der Partitionierung durchgeführt werden.
@@ -122,7 +122,7 @@ METIS und KaHIP behaupten, Partitionierungen mit hoher Qualität im Vergleich zu
 KaHIP gelang es, bei der zehnten DIMACS Implementation Challenge~\cite{BMS+13} die beste Lösungsqualität im Vergleich zu anderen Heuristiken zu erreichen.
 
 Für die folgenden Versuche wurden von METIS die Graphpartitionierungsmethoden METIS recursive und METIS k-way verwendet.
-Alle zusätzlichen Konfigurationsoptionen, die METIS bereitstellt, wurden auf den Standartwerten belassen.
+Alle zusätzlichen Konfigurationsoptionen, die METIS bereitstellt, wurden auf den Standardwerten belassen.
 Von KaHIP wird der Karlsruhe Fast Flow Partitioner (KaFFPa) verwendet.
 KaFFPa stellt verschieden Modi bereit, die die Laufzeit und die Lösungsqualität beeinflussen.
 Hier wurde der Modus STRONG gewählt, der zu einer höheren Laufzeit führt, aber die beste Lösungsqualität bietet.
@@ -145,7 +145,7 @@ Außerdem wurden für jeden Baum Durchläufe mit $k \in \{2, 4, 6\}$ durchgefüh
 
 Für METIS recursive in Abbildung~\ref{fig:mrectreesnodes} fällt auf, dass die relative Lösungsqualität mit wachsendem $k$ steigt.
 Relativ zu METIS recursive ist die Performanz des Algorithmus dieser Arbeit damit für höheres $k$ schlechter.
-Außerdem treten Ausreißer nach unten hautpsächlich für $k=2$ auf.
+Außerdem treten Ausreißer nach unten hauptsächlich für $k=2$ auf.
 Für $k=6$ kommen auch Ausreißer vor, deren Wert über $1$ liegt, das heißt, in diesem Fall hat METIS recursive eine bessere Partitionierung gefunden als der Algorithmus dieser Arbeit.
 Dazu muss jedoch erwähnt werden, dass einige dieser Partitionierungen das gegebene Ungleichgewicht $\eps=1/3$ verletzen, da diese Partitionierungen Partitionen enthalten, die größer als $(1+\eps) \ceil{n/k}$ sind.
 
@@ -212,7 +212,7 @@ Da der Algorithmus dieser Arbeit jedoch nur auf Bäume angewandt werden kann, mu
 Die Partitionierung der Knoten, die der Algorithmus dieser Arbeit auf dem Baum findet, wird dann auf eine des Graphen übertragen.
 Dafür kann eine hierarchische Dekomposition verwendet werden, wie sie in Sektion~\ref{sec:decomptrees} vorgestellt wurde.
 Der genannte Algorithmus kann jedoch nicht verwendet werden, da es keine Implementierung gibt.
-Anstattdessen wird ein ähnlicher Algorithmus benutzt, der von Räcke, Shah und Täubig~\cite{RST14} entwickelt wurde.
+Anstatt dessen wird ein ähnlicher Algorithmus benutzt, der von Räcke, Shah und Täubig~\cite{RST14} entwickelt wurde.
 Im Gegensatz zum Algorithmus aus Sektion~\ref{sec:decomptrees} gibt dieser Algorithmus nur einen einzigen Baum aus.
 Allerdings ist der Approximationsfaktor mit $\bigO(\log^4 n)$ schlechter.
 Der Algorithmus wurde von Moritz Fuchs implementiert und ist auf Github verfügbar.\footnote{Repositorium auf Github: \url{https://github.com/moritzFuchs/hierarchical-decomposition}}
@@ -267,9 +267,9 @@ Zwischen den verschiedenen Graphpartitionierungsheuristiken besteht kein wesentl
 \vfill\clearpage
 
 In den Abbildungen~\ref{fig:prefattachrstnode},~\ref{fig:prefattachmstnode} und~\ref{fig:prefattachhdecompnode} ist die relative Lösungsqualität der Graphpartitionierungsheuristiken in Abhängigkeit für das Barabási-Albert-Modell mit den Parameter $m=5$ und $m=10$ zu sehen.
-Wie vorher ist die relative Lösungsqualität für RST und MST im Fall $k=2$ höchsten, während sie hingegen für hierarchische Dekomposition am niedgrigsten ist.
+Wie vorher ist die relative Lösungsqualität für RST und MST im Fall $k=2$ höchsten, während sie hingegen für hierarchische Dekomposition am niedrigsten ist.
 Für $k=2$ und $k=4$ ist der Unterschied gering.
-Weiterhin weist die relative Lösungsqualitat der Graphpartitionierungsheuristiken insgesamt nur geringe Unterschiede auf.
+Weiterhin weist die relative Lösungsqualität der Graphpartitionierungsheuristiken insgesamt nur geringe Unterschiede auf.
 Außerdem ist hierarchische Dekomposition auf Eingabegraphen des Barabási-Albert-Modells merkbar besser als MST und RST.
 Ferner gibt es Ausreißer mit einem Wert kleiner als $1$.
 Analog zum Erdős-Rényi-Modell ist die relative Lösungsqualität für eine höhere Anzahl von Kanten geringer, das hießt der Algorithmus dieser Arbeit liefert relativ gesehen bessere Ergebnisse.
@@ -296,7 +296,7 @@ Analog zum Erdős-Rényi-Modell ist die relative Lösungsqualität für eine hö
 
 Zuletzt wird die relative Lösungsqualität in Abhängigkeit des Ungleichgewichts $\eps$ untersucht.
 Dafür wird $n=80$ gewählt und $k \in \{2, 4, 6\}$, wobei die Einfärbung der Ergebnisse den unterschiedlichen Werten von $k$ entspricht.
-Dabei wurden RST und MST weggelassen, da zwischen MST, RST und hierarchischer Dekomposition beim Erdős-Rényi-Modell keine wesentlichen Unterschiede in der relativen Lösungsqualität bestanden und hierarchische Dekomposition für das Barabási-Albert-Modell bessere Ergbnisse lieferte.
+Dabei wurden RST und MST weggelassen, da zwischen MST, RST und hierarchischer Dekomposition beim Erdős-Rényi-Modell keine wesentlichen Unterschiede in der relativen Lösungsqualität bestanden und hierarchische Dekomposition für das Barabási-Albert-Modell bessere Ergebnisse lieferte.
 Die ausgelassenen Resultate sind in Anhang~\ref{chapter:rapp} zu finden.
 Die übrigen Ergebnisse sind in Abbildung~\ref{fig:edgeprobhdecompimb} und~\ref{fig:prefattachhdecompimb} zu sehen.
 Das Verhalten für $k=2$ ist weitgehend wie oben, wobei zusätzlich auffällt, dass die relative Lösungsqualität mit fallendem $\eps$ abnimmt.
@@ -305,13 +305,13 @@ Den Experimenten nach scheinen für $k=4$ und $k=6$ verschiedene Werte von $\eps
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/imbalance/edge_prob_decomp}
-    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:edgeprobhdecompimb}}
+    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und Hierarchical Decomposition in Abhängigkeit von $\eps$\label{fig:edgeprobhdecompimb}}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includestandalone{figures/graphs/imbalance/pref_attach_decomp}
-    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängikeit von $\eps$\label{fig:prefattachhdecompimb}}
+    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und Hierarchical Decomposition in Abhängigkeit von $\eps$\label{fig:prefattachhdecompimb}}
 \end{figure}
 
 \subsection{Graphen aus realen Daten}
@@ -390,7 +390,7 @@ In diesem Graph verändert sich die relative Lösungsqualität nicht in Abhängi
 Der letzte Datensatz heißt ego-Facebook und ist ein Graph mit $4039$ Knoten und $88234$ Kanten.
 Dieser Graph bildet Freundeslisten im sozialen Netzwerk facebook\footnote{\url{https://facebook.com}} ab.
 Auch für diesen Graph war es nicht möglich, die Schnittkosten für $k=6$ zu berechnen.
-Wie die Abbildung~\ref{fig:facebook} zeigt, ist die relativen Lösungsqualität in diesem Graph deutlich höher als in den vorherigeren Graphen, besonders für $k=3$ und $k=4$.
+Wie die Abbildung~\ref{fig:facebook} zeigt, ist die relativen Lösungsqualität in diesem Graph deutlich höher als in den vorherigen Graphen, besonders für $k=3$ und $k=4$.
 Während die relative Lösungsqualität für $k=2$ mit fallendem $\eps$ steigt, sinkt sie für $k=4$ auf der anderen Seite tendenziell.
 
 \begin{figure}[t]

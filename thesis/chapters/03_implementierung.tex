@@ -14,7 +14,7 @@ Weiterhin ist \Cpp{} eine der beliebtesten Programmiersprachen~\parencite{TIO17}
 
 \paragraph{Craftr}
 Um den Quellcode zu kompilieren, wird das Meta-Build-System Craftr verwendet.
-Craftr ist auf Github\footnote{URL des Repositoriums: \url{https://github.com/craftr-build/craftr}} verfügbar und unter den Bedingungen der GPLv3 lizensiert.
+Craftr ist auf Github\footnote{URL des Repositoriums: \url{https://github.com/craftr-build/craftr}} verfügbar und unter den Bedingungen der GPLv3 lizenziert.
 Craftr wird in Python3 entwickelt und baut auf das Build-System Ninja\footnote{Internetseite des Build-Systems Ninja: \url{https://ninja-build.org/}} auf. 
 Zur Kompilierung des \Cpp\hyp Quellcodes wird die Toolchain Clang\footnote{Webpräsenz der Toolchain Clang: \url{http://clang.llvm.org/}} verwendet.
 
@@ -27,14 +27,14 @@ Weiterhin wird Google Test von Craftr unterstützt und wurde mit Hilfe von Craft
 Die Bibliothek GMP\footnote{Internetseite der Bibliothek GMP: \url{https://gmplib.org/}} stellt eine effiziente Implementierung von beliebig großen Integern und rationalen Zahlen zur Verfügung.
 Rationale Zahlen wurden in dieser Arbeit verwendet, um die Intervallgrenzen der Signaturen zu berechnen, ohne dass numerische Instabilitäten auftreten. 
 Die Bibliothek ist mit den Lizenzen LGPLv3 oder GPLv2 verfügbar.
-Die \Cpp\hyp Schnitstelle der Bibiliothek machte eine problemlose Einbindung der Bibliothek möglich.
+Die \Cpp\hyp Schnittstelle der Bibliothek machte eine problemlose Einbindung der Bibliothek möglich.
 
 \paragraph{args}
 Die Bibliothek args\footnote{URL zum Repositorium: https://github.com/Taywee/args} wurde in dieser Arbeit verwendet, um die Kommandozeilenschnittstelle des Programms zu implementieren.
-Es handelt sich dabei um eine Header-Only-Bibliothek, die unter den Bedingungen der MIT lizensiert ist.
+Es handelt sich dabei um eine Header-Only-Bibliothek, die unter den Bedingungen der MIT lizenziert ist.
 
 \paragraph{Doxygen}
-Doxygen\footnote{Internetpräsenz von Doxygen: \url{http://www.stack.nl/~dimitri/doxygen/}} ist unter der GPLv2 lizensiert und ermöglicht, aus annotierten Quelltextdateien eine HTML\hyp Dokumentation zu generieren.
+Doxygen\footnote{Internetpräsenz von Doxygen: \url{http://www.stack.nl/~dimitri/doxygen/}} ist unter der GPLv2 lizenziert und ermöglicht, aus annotierten Quelltextdateien eine HTML\hyp Dokumentation zu generieren.
 Auch andere Formate wie Latex oder Postscript werden unterstützt.
 Die Dokumentation beschreibt die externen und internen Schnittstellen des Programms, das den Graphpartitionierungsalgorithmus aus dem vorherigem Kapitel implementiert.
 
@@ -79,7 +79,7 @@ Dafür wird zunächst der Begriff Level definiert.
 Beginnend mit Level $k$ werden alle Level bis Level $1$ durchlaufen.
 Danach wird noch die Wurzel $r$ betrachtet, welche der einzige Knoten im Level $0$ ist. 
 In jedem Level werden die Knoten hinsichtlich ihrer Ordnung besucht.
-Da die Ordnung der Geschwisterknoten in einem Level erhalten bleibt, wird der linke Geschisterknoten $w$ von $v$ besucht, bevor $v$ betrachtet wird.
+Da die Ordnung der Geschwisterknoten in einem Level erhalten bleibt, wird der linke Geschwisterknoten $w$ von $v$ besucht, bevor $v$ betrachtet wird.
 Weiterhin wird durch dieses Verfahren auch jedes Kind $u$ von $v$ vor $v$ besucht, da die Distanz von $u$ zu~$r$ echt größer ist als die Distanz von $v$ zu~$r$.
 Das oben beschriebene Iterationsschema wird durch Algorithmus~\ref{alg:iteration} formalisiert.
 Hier ist $T(C_r)[n]$ eine Tabelle, die alle Signaturen an der Wurzel $r$ mit endlichen optimalen Schnittkosten und $n$ Knoten enthält.
@@ -190,7 +190,7 @@ Für diesen Fall wurde in Sektion~\ref{sec:cutting} eine zweite Rekursionsgleich
 \end{equation*}
 
 Da die Kante von $v$ zu seinem Elternknoten geschnitten wird, ist $v$ nicht in der Zusammenhangskomponente, die auch die Wurzel $r$ enthält.
-Deswegen besteht die Zusammhangskomponente, in der $v$ erhalten ist, ausschließlich aus Knoten des in $v$ gewurzelten Teilbaums und überdeckt zusammen mit den Zusammenhangskomponenten, die durch $\vec{g}_u$ repräsentiert werden, den gesamten Teilbaum.
+Deswegen besteht die Zusammenhangskomponente, in der $v$ erhalten ist, ausschließlich aus Knoten des in $v$ gewurzelten Teilbaums und überdeckt zusammen mit den Zusammenhangskomponenten, die durch $\vec{g}_u$ repräsentiert werden, den gesamten Teilbaum.
 Deshalb erhalten wir eine Signatur $\vec{g}$ mit $m$ Knoten, indem wir $m = m_w + m_u + (n_v - m_u) = m_w + n_v$ und $\vec{g} = \vec{g}_w + \vec{g}_u + \vec{e}(n_v - m_u)$ setzen, wobei $n_v$ die Anzahl der Knoten des in $v$ gewurzelten Teilbaums ist und $\vec{e}(x)$ die Signatur mit genau einer Zusammenhangskomponente der Größe $x$ beschreibt.
 Die Kosten der berechneten Signatur sind dann die addierten Kosten $C_w(\vec{g}_w, m_w)$ und $C_u(\vec{g}_u, m_u)$ plus die Kosten der geschnittenen Kante $e$. 
 Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
@@ -271,7 +271,7 @@ In Sektion~\ref{sec:packing} wurde ein Approximationsalgorithmus beschrieben, de
 Dafür wird im ersten Schritt jede Zusammenhangskomponente, deren Größe kleiner als $\eps \ceil{n/k}$ ist, entfernt.
 Nach Definition~\ref{defn:signature} sind das genau die Zusammenhangskomponenten, die in einer Signatur $\vec{g} = (g_0, \ldots, g_t)$ mit dem Eintrag $g_0$ gezählt werden.
 Deshalb wird im Folgenden der Vektor $(g_1, \ldots, g_t)$ verwendet, um die Anzahl der Komponenten einer bestimmten Größe in der Bin-Packing-Instanz zu zählen.
-Da die Komponentgrößen auf die untere Intervallgrenze nach Definition~\ref{defn:signature} abgerundet werden, enthält die Bin-Packing-Instanz $g_i$ Komponenten der Größe $(1+\eps)^{i-1} \cdot \eps \ceil{n/k}$.
+Da die Komponentengrößen auf die untere Intervallgrenze nach Definition~\ref{defn:signature} abgerundet werden, enthält die Bin-Packing-Instanz $g_i$ Komponenten der Größe $(1+\eps)^{i-1} \cdot \eps \ceil{n/k}$.
 Wir definieren den Vektor $\vec{s} = (s_1, \ldots, s_t)$, in dem der Eintrag $s_i$ den Wert der unteren Grenze des $i$\hyp ten Intervalls hat.
 
 Im zweiten Schritt werden die Komponenten, die größer als $\eps \ceil{n/k}$ sind, mit dynamischer Programmierung optimal in Behälter der Größe $\ceil{n/k}$ gepackt.
@@ -423,7 +423,7 @@ struct Node {
 Hierbei sind die Typen \texttt{IdType} und \texttt{EdgeWeightType} Integer.
 Ein Knoten $v$ wird durch den Integer \texttt{id} identifiziert. 
 Weiterhin speichert $v$ das Gewicht der Kante, die zu seinem Elternknoten führt, im Feld \texttt{parent\_edge\_weight}.
-Die Felder \texttt{parent\_idx} und \texttt{children\_idx\_range} werden verwendet, um die Struktur des Baums abbzubilden.
+Die Felder \texttt{parent\_idx} und \texttt{children\_idx\_range} werden verwendet, um die Struktur des Baums abzubilden.
 Wenn $v$ nach Definition~\ref{def:level} im Level $\ell$ liegt, dann speichert das Feld \texttt{parent\_idx} den Index des Elternknotens im Level $\ell-1$, während das Feld \texttt{children\_idx\_range} die Indices der Kinder von $v$ im Level $\ell+1$ speichert.
 Das Feld \texttt{children\_idx\_range} stellt einen rechtsexklusiven Bereich dar, das heißt, $v$ hat genau dann keine Kinder, wenn die beiden Indices des Bereichs gleich sind.
 Weiterhin kann mit dem Feld \texttt{children\_idx\_range} des Elternknotens von $v$, welcher mit \texttt{parent\_idx} ermittelt wird, der linke Geschwisterknoten von $v$ gefunden werden, falls er existiert.
@@ -444,8 +444,8 @@ struct Tree {
     }
 \end{lstlisting}
 Hierbei ist \texttt{SizeType} der Integertyp, der verwendet wird, um Knoten zu zählen.
-Die Felder \texttt{has\_left\_sibling} und \texttt{tree\_sizes} haben diesselbe Struktur wie \texttt{levels} und dienen als Lookup-Tabellen.
-Wenn der Knoten $v$ an der Stelle \texttt{levels[i][j]} abgespeichert ist, dann gibt uns der Lookup \texttt{tree\_sizes[i][j]} die Größe des Teilbaums gewurzelt in $v$ und \texttt{has\_left\_sibling[i][j]} indiziert, ob $v$ einen linken Geschisterknoten hat.
+Die Felder \texttt{has\_left\_sibling} und \texttt{tree\_sizes} haben dieselbe Struktur wie \texttt{levels} und dienen als Lookup-Tabellen.
+Wenn der Knoten $v$ an der Stelle \texttt{levels[i][j]} abgespeichert ist, dann gibt uns der Lookup \texttt{tree\_sizes[i][j]} die Größe des Teilbaums gewurzelt in $v$ und \texttt{has\_left\_sibling[i][j]} indiziert, ob $v$ einen linken Geschwisterknoten hat.
 
 \subsection{Signaturen}\label{sec:sigimpl}
 Um in der Schnittphase die Äquivalenzklassen zu berechnen, werden diese nach Definition~\ref{defn:signature} durch eine Signatur repräsentiert.
@@ -461,9 +461,9 @@ Die Signaturen an einem Knoten $v$ werden mit der Tabelle $T(C_v)$ gespeichert, 
 Die Tabelle $T(C_v^m)$ bildet wiederum eine Signatur auf ihre optimalen Schnittkosten ab.
 Um die Tabelle $T(C_v)$ zu speichern, wurde ein Array in Form eines \texttt{std::vector} verwendet.
 Es wurde ein Array verwendet, weil die Tabelle $T(C_v)$ immer alle Schlüssel von $0$ bis $n_v$ enthält, wobei $n_v$ die Größe des in $v$ gewurzelten Teilbaums ist.
-Dies ist der Fall, da jede Kante im Teilbaum und die Kante von $v$ zu seinem Elternknoten geschnitten werden kann und somit all diese Knotanzahlen möglich sind.
+Dies ist der Fall, da jede Kante im Teilbaum und die Kante von $v$ zu seinem Elternknoten geschnitten werden kann und somit all diese Knotenanzahlen möglich sind.
 Für die Tabelle $T(C_v^m)$ wurde hingegen eine Hashtabelle verwendet.
-Damit könnnen wir eine neu berechnete Signaturen in erwartungsgemäß konstanter Zeit in die Tabelle einfügen beziehungsweise überprüfen, ob diese Signatur bereits berechnet wurde und dementsprechend die Kosten setzen.
+Damit können wir eine neu berechnete Signaturen in erwartungsgemäß konstanter Zeit in die Tabelle einfügen beziehungsweise überprüfen, ob diese Signatur bereits berechnet wurde und dementsprechend die Kosten setzen.
 Hashtabellen werden in der \Cpp\hyp Standardbibliothek durch den Datentyp \texttt{std::unordered\_map} zur Verfügung gestellt.
 Die Tabelle $T(C_v)$ wird in Listing~\ref{lst:signaturemap} durch \texttt{SignatureMap} implementiert.
 
@@ -474,10 +474,10 @@ Die Tabelle $T(C_v)$ wird in Listing~\ref{lst:signaturemap} durch \texttt{Signat
 
 In Listing~\ref{lst:signaturemap} wurde ein Teil der Typendeklaration ausgelassen.
 Der ausgelassene Teil spezifiziert die Hashfunktion und den Gleichheitstest für die Signaturen.
-Die Hashfunktion und der Gleichheitstest müssen manuell spezifiziert werden, da die \Cpp{}\hyp Standardbibliothek keine Hashfunktion für \texttt{std::valarray} bereitstellt und der Gleicheitsoperator von \texttt{std::valarray} nicht geeignet definiert ist.
+Die Hashfunktion und der Gleichheitstest müssen manuell spezifiziert werden, da die \Cpp{}\hyp Standardbibliothek keine Hashfunktion für \texttt{std::valarray} bereitstellt und der Gleichheitsoperator von \texttt{std::valarray} nicht geeignet definiert ist.
 Der Vergleich erfolgt komponentenweise.
 Die Implementierung der Hashfunktion ist in Listing~\ref{lst:hashing} zu sehen.
-Mit dieser Implementierung kann die Hashfunktion in konstanter Zeit ausgewertet werden, da eine Signatur für konstantens $\eps$ eine konstante Länge hat.
+Mit dieser Implementierung kann die Hashfunktion in konstanter Zeit ausgewertet werden, da eine Signatur für konstantes $\eps$ eine konstante Länge hat.
 Es handelt sich dabei um dasselbe Hashverfahren, welches von der weit verbreiteten Softwarebibliothek Boost~\cite{BOOST} verwendet wird.\footnote{Obwohl Boost viel verwendet wird, scheint es keine wissenschaftliche Aufarbeitung dieser Hashfunktion zu geben.}
 Dennoch ist die Wahl der Hashfunktion etwas willkürlich.
 In Sektion~\ref{sec:improv} werden weitere Alternative diskutiert.

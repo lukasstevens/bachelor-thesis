@@ -21,7 +21,7 @@ Es ist bereits länger bekannt, dass es sich beim Minimum-Bisection-Problem um e
 In jüngerer Vergangenheit wurde von Feige und Krauthgamer~\parencite{fk02} ein polynomieller Algorithmus präsentiert, der das Problem mit einem polylogarithmischen Approximationsfaktor löst. 
 Wie sich herausstellte, lässt sich dieses Ergebnis jedoch nicht auf auf das $(k,1)$\hyp Partitionierungsproblem übertragen.
 Es kann nämlich keinen polynomiellen Approximationsalgorithmus für das $(k,1)$\hyp Partitionierungsproblem geben, wenn $k$ keine Konstante ist.
-Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist, gezeigt. 
+Diese Behauptung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist, gezeigt. 
 
 \begin{thm}\label{thm:np_comp}
     Angenommen es gilt $P \neq NP$, dann gibt es für das $(k,1)$\hyp Partitionierungsproblem keinen polynomiellen Approximationsalgorithmus mit endlichem Approximationsfaktor.
@@ -55,7 +55,7 @@ Diese Behautpung wird im folgenden Satz, der aus \parencite{ar06} entnommen ist,
 \end{rem}
 
 
-\section{Ein bikriterieller Graphpartitionerungsalgorithmus}
+\section{Ein bikriterieller Graphpartitionierungsalgorithmus}
 Wie im vorherigem Abschnitt gezeigt wurde, ist es nicht möglich, das $(k,1)$\hyp Partitionierungsproblem in polynomieller Zeit zu approximieren. 
 Deshalb ist ein bikriterieller Ansatz sinnvoll, der das Problem in Hinsicht auf die Ausgeglichenheit der Partitionierung und in Hinsicht auf die Schnittkosten approximiert.
 In diesem Abschnitt wird ein polynomieller bikriterieller Approximationsalgorithmus, wie in \parencite{FF15} beschrieben, vorgestellt.
@@ -200,7 +200,7 @@ Der folgende Satz von Feldmann und Foschini~\parencite{FF15} zeigt, dass die obe
     Schlussendlich steht fest, dass die Anzahl der Signaturen an einem Knoten $v$ gleich $\gamma \card{L_v}$ ist, wobei $\gamma \in \bigO \left({(k/\sqrt{\eps})}^{1 + \ceil{1/\eps \cdot \log(1/\eps)}}\right)$.
 
     Um die Laufzeit zu ermitteln, wird für jeden Knoten $v \neq r$ die benötigte Anzahl der Schritte $T_v$ betrachtet, um alle Einträge $C_{v^\prime}(\vec{g}, m)$ für alle $v^\prime \in L_v$ zu bestimmen. 
-    Wir stellen die Behautpung auf, dass $T_v \leq \frac{3}{2} \gamma^2 \card{L_v}^4$ für jeden Knoten $v$ gilt.
+    Wir stellen die Behauptung auf, dass $T_v \leq \frac{3}{2} \gamma^2 \card{L_v}^4$ für jeden Knoten $v$ gilt.
     Zur Berechnung der Signaturen am Knoten $v$ werden die Signaturen von $u$ und $w$ benötigt, welche in Zeit $T_u$ beziehungsweise $T_w$ berechnet werden können.
     Aus den Gleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} wird erkenntlich, dass wir für die Berechnung der optimalen Kosten $C_v(\vec{g}, m)$ für alle $m$ und $\vec{g}$ alle Kombinationen von $x$, $\vec{g}_u$ und $\vec{g}_w$ betrachtet müssen.
     Für ein festes $x$ gibt es höchstens $\gamma \card{L_u} \cdot \gamma \card{L_w}$ Möglichkeiten um die Signaturen $\vec{g}_u$ und $\vec{g}_w$ zur Signatur $\vec{g}$ zu kombinieren.
@@ -230,7 +230,7 @@ Es wird gezeigt, wie eine Menge von Zusammenhangskomponenten $\calS \in \bbS$ mi
 Im ersten Schritt werden alle Komponenten mit Größe kleiner als $\eps \ceil*{n/k}$ entfernt, was genau die Komponenten sind, die durch den Eintrag $g_0$ gezählt werden.
 Die übrigen Komponenten in $\calS$ werden anhand ihrer Größe nach Definition~\ref{defn:signature} in Intervalle gruppiert und die Größe jeder Komponente wird auf die untere Intervallgrenze des Intervalls gerundet, in dem sich die Komponente befindet.
 Dadurch gibt es dann genau $g_i$ Komponenten der Größe ${(1 + \eps)}^{i-1} \cdot \eps \ceil*{n/k}$ und es wird der Vektor $(g_1, \ldots, g_t)$ verwendet, um die Bin-Packing-Instanz mit gerundeten Komponentengrößen zu beschreiben. 
-Außerdem reduziert dieser Rundungschritt die Anzahl der verschiedenen Komponentengrößen auf $t = \ceil*{\log_{1+\eps}(1/\eps)} + 1$, was ein Konstante für konstantes $\eps$ ist.
+Außerdem reduziert dieser Rundungsschritt die Anzahl der verschiedenen Komponentengrößen auf $t = \ceil*{\log_{1+\eps}(1/\eps)} + 1$, was ein Konstante für konstantes $\eps$ ist.
 Im zweiten Schritt werden die größeren Komponenten in $\calS$ folgendermaßen in Behälter der Größe $\ceil{n/k}$ gepackt:
 Für eine Bin-Packing-Instanz $\vec{i} = (i_1, \ldots, i_t)$ definiere $Bins(\vec{i})$ als die minimale Anzahl an Behältern, die für das Packen der Komponenten in $\vec{i}$ benötigt werden.
 Weiterhin wird für die gegebene Instanz $(g_1, \ldots, g_t)$ die Menge $\mathcal{C} = \left\{ \vec{c} \mid Bins(\vec{c}) = 1 \right\}$ definiert, also die Menge aller Möglichkeiten einen einzigen Behälter zu füllen.
@@ -332,7 +332,7 @@ Räcke~\parencite{rc08} zeigte die folgenden Eigenschaften von Dekompositionsbä
 Da $\sum_i \lambda_i = 1$ gilt, kann mit dem oben genannten Satz direkt gefolgert werden, dass ein Baum $T_i$ mit $C(K_i) \leq \bigO(\log n) \cdot C(W)$ existiert.
 Deswegen kann mit einer leicht veränderten Version des durch Satz~\ref{thm:treealg} gegebenen Algorithmus eine $(k,1 + \eps)$\hyp Partitionierung berechnet werden, deren Schnittkosten nur um einen Faktor $\bigO(\log n)$ von den optimalen Schnittkosten der $(k, 1)$\hyp Partitionierung entfernt ist.
 Dafür wird der Algorithmus dahingehend angepasst, dass er auf dem Dekompositionsbaum $T$ keine Partitionierung berechnet, sondern eine Blattpartitionierung, das heißt eine Partitionierung $\calL = \{L_1, \ldots, L_k\}$ der $l$ Blätter $L$ von $T$ in $k$ Mengen mit Größe maximal $(1 + \eps) \ceil*{l/k}$.
-Die Schnittkosten $C(\calL)$ einer Partitionierung $\calL$ ist dann das minimale Gewicht der Kanten, die entfernt werden müssen, um die Mengen $L_1, \ldots, L_k$ voneinder zu trennen.
+Die Schnittkosten $C(\calL)$ einer Partitionierung $\calL$ ist dann das minimale Gewicht der Kanten, die entfernt werden müssen, um die Mengen $L_1, \ldots, L_k$ voneinander zu trennen.
 Um diese Anpassungen umzusetzen, müssen zwei Änderung am Algorithmus der vorherigen Sektionen gemacht werden. 
 Zuerst müssen die Signaturen, die durch Definition~\ref{defn:signature} gegeben sind, nicht Knoten sondern Blätter zählen.
 Zweitens muss an einem Knoten $v$ nicht die Anzahl der Knoten $n_v$ im Teilbaum gewurzelt in $v$ gezählt werden, sondern die Anzahl der Blätter $l_v$ in diesem Teilbaum, um das Ergebnis der Gleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} zu berechnen. 
