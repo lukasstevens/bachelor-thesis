@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 command -v pdfcrop >/dev/null 2>&1 || {
   echo >&2 "pdfcrop executable not found in PATH:"
