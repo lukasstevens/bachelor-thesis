@@ -19,7 +19,7 @@ namespace valarrutils {
         struct ValarrayHasher {
             /**
              * Hash a valarray.
-             * @param s the valarray to hash.
+             * @param arr the valarray to hash.
              * @returns The hash.
              */
             size_t operator()(const std::valarray<T>& arr) const {

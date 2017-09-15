@@ -1,15 +1,12 @@
 % !TeX root = ../main.tex
 % Add the above to each chapter to make compiling the PDF easier in some editors.
-\newcommand{\Cpp}{C{}\texttt{++}}
 
 \chapter{Implementierung}\label{chapter:implementierung}
-Bevor wird die Implementierung näher betrachten, werden die verwendeten Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, vorgestellt.
+Bevor wir die Implementierung näher betrachten, werden die verwendeten Drittmaterialien, also Programmiersprache, Build-System und Softwarebibliotheken, vorgestellt.
 Danach wird anhand von Pseudocode erläutert, wie der Algorithmus als Programm umgesetzt wurde. 
 Zuletzt werden die Datenstrukturen beschrieben, welche für die Implementierung verwendet wurden.
 
 \section{Drittmaterialien}
-\todo[inline]{Taywee/args als Drittmaterialien} 
-
 \paragraph{\Cpp}
 Der Quellcode der Implementierung wurde in der Programmiersprache \Cpp{} verfasst.
 Diese Programmiersprache wurde ausgewählt, da sie maschinennahe Programmierung zulässt und eine umfangreiche Standardbibliothek anbietet.
@@ -17,7 +14,7 @@ Weiterhin ist \Cpp{} eine der beliebtesten Programmiersprachen~\parencite{TIO17}
 
 \paragraph{Craftr}
 Um den Quellcode zu kompilieren, wird das Meta-Build-System Craftr verwendet.
-Craftr ist auf Github\footnote{URL des Repositoriums: \url{https://github.com/craftr-build/craftr}} verfügbar und unter den Bedingungen der GPLv3 lizensiert.
+Craftr ist auf Github\footnote{URL des Repositoriums: \url{https://github.com/craftr-build/craftr}} verfügbar und unter den Bedingungen der GPLv3 lizenziert.
 Craftr wird in Python3 entwickelt und baut auf das Build-System Ninja\footnote{Internetseite des Build-Systems Ninja: \url{https://ninja-build.org/}} auf. 
 Zur Kompilierung des \Cpp\hyp Quellcodes wird die Toolchain Clang\footnote{Webpräsenz der Toolchain Clang: \url{http://clang.llvm.org/}} verwendet.
 
@@ -30,10 +27,14 @@ Weiterhin wird Google Test von Craftr unterstützt und wurde mit Hilfe von Craft
 Die Bibliothek GMP\footnote{Internetseite der Bibliothek GMP: \url{https://gmplib.org/}} stellt eine effiziente Implementierung von beliebig großen Integern und rationalen Zahlen zur Verfügung.
 Rationale Zahlen wurden in dieser Arbeit verwendet, um die Intervallgrenzen der Signaturen zu berechnen, ohne dass numerische Instabilitäten auftreten. 
 Die Bibliothek ist mit den Lizenzen LGPLv3 oder GPLv2 verfügbar.
-Die \Cpp\hyp Schnitstelle der Bibiliothek machte eine problemlose Einbindung der Bibliothek möglich.
+Die \Cpp\hyp Schnittstelle der Bibliothek machte eine problemlose Einbindung der Bibliothek möglich.
+
+\paragraph{args}
+Die Bibliothek args\footnote{URL zum Repositorium: https://github.com/Taywee/args} wurde in dieser Arbeit verwendet, um die Kommandozeilenschnittstelle des Programms zu implementieren.
+Es handelt sich dabei um eine Header-Only-Bibliothek, die unter den Bedingungen der MIT lizenziert ist.
 
 \paragraph{Doxygen}
-Doxygen\footnote{Internetpräsenz von Doxygen: \url{http://www.stack.nl/~dimitri/doxygen/}} ist unter der GPLv2 lizensiert und ermöglicht, aus annotierten Quelltextdateien eine HTML\hyp Dokumentation zu generieren.
+Doxygen\footnote{Internetpräsenz von Doxygen: \url{http://www.stack.nl/~dimitri/doxygen/}} ist unter der GPLv2 lizenziert und ermöglicht, aus annotierten Quelltextdateien eine HTML\hyp Dokumentation zu generieren.
 Auch andere Formate wie Latex oder Postscript werden unterstützt.
 Die Dokumentation beschreibt die externen und internen Schnittstellen des Programms, das den Graphpartitionierungsalgorithmus aus dem vorherigem Kapitel implementiert.
 
@@ -78,7 +79,7 @@ Dafür wird zunächst der Begriff Level definiert.
 Beginnend mit Level $k$ werden alle Level bis Level $1$ durchlaufen.
 Danach wird noch die Wurzel $r$ betrachtet, welche der einzige Knoten im Level $0$ ist. 
 In jedem Level werden die Knoten hinsichtlich ihrer Ordnung besucht.
-Da die Ordnung der Geschwisterknoten in einem Level erhalten bleibt, wird der linke Geschisterknoten $w$ von $v$ besucht, bevor $v$ betrachtet wird.
+Da die Ordnung der Geschwisterknoten in einem Level erhalten bleibt, wird der linke Geschwisterknoten $w$ von $v$ besucht, bevor $v$ betrachtet wird.
 Weiterhin wird durch dieses Verfahren auch jedes Kind $u$ von $v$ vor $v$ besucht, da die Distanz von $u$ zu~$r$ echt größer ist als die Distanz von $v$ zu~$r$.
 Das oben beschriebene Iterationsschema wird durch Algorithmus~\ref{alg:iteration} formalisiert.
 Hier ist $T(C_r)[n]$ eine Tabelle, die alle Signaturen an der Wurzel $r$ mit endlichen optimalen Schnittkosten und $n$ Knoten enthält.
@@ -89,7 +90,7 @@ Wie $T(C_r)[n]$ berechnet werden kann, wird im Anschluss beschrieben.
     \caption{Iterationsschema der Schnittphase}\label{alg:iteration}
     \begin{algorithmic}[1]
         \Function{cut}{Baum $T$}
-            \Let{$k$}{$\max_{L_T(l) \neq \emptyset} l$} \Comment{Wie wird das Maximum korrekt geschrieben?}
+            \Let{$k$}{$\max\{l \in \mathbb{N}_0 \mid L_T(l) \neq \emptyset\}$}
             \For{$l = k, k - 1, \ldots, 1$}
                 \ForAll{$v \in L_T(l)$} \Comment{Die Knoten werden der Ordnung nach durchlaufen.}
                     \State \Call{cut\_at\_node}{$v$}
@@ -119,9 +120,9 @@ Dabei enthält $T(C_v^m)$ das Schlüssel-Wert-Paar $(\vec{g}, c)$ genau dann, we
 Nun betrachten wir, wie die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} verwendet werden, um die Tabelle $T(C_v)$ für einen Knoten $v \neq r$ zu berechnen.
 Sei im Folgenden $w$ der linke Geschwisterknoten von $v$ und $u$ das rechteste Kind von $v$.
 Aus den Rekursionsgleichungen wird ersichtlich, dass sich die Kosten $C_v$ aus den Kosten $C_w$ und $C_u$ sowie dem Gewicht $w(v, p)$ der Kante von $v$ zu seinem Elternknoten $p$ berechnen.
-Wir erinnern uns, dass $C_x((0,\ldots, 0),0) = 0$ gilt, wenn der Knoten $x$ nicht existiert. 
+Wir erinnern uns, dass $C_x\big((0,\ldots, 0),0\big) = 0$ gilt, wenn der Knoten $x$ nicht existiert. 
 Alle anderen Funktionswerte von $C_x$ sind unendlich.
-Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $(0, T(C^0_x))$ beziehungsweise $((0,\ldots,0), 0)$ und dadurch haben wir $T(C_x) = \{(0, \{(0, \ldots, 0), 0)\}\}$.
+Daraus folgt, dass die Tabelle $T(C_x)$ und die Tabelle $T(C^0_x)$ für einen nicht existenten Knoten $x$ jeweils genau einen Eintrag haben, nämlich $\big(0, T(C^0_x)\big)$ beziehungsweise $((0,\ldots,0), 0)$ und dadurch haben wir $T(C_x) = \big\{(0, \{((0, \ldots, 0), 0)\}\big\}$.
 Insgesamt erhalten wir das Iterationsschema in Algorithmus~\ref{alg:canfun}.
 Dabei ist $T(C).keys$ die Menge aller Schlüssel in der Tabelle $T(C)$ und $T(C_x)[m]$ gibt die Tabelle $T(C^m_x)$ zurück, falls $T(C)$ das Schlüssel-Wert-Paar $(m, T(C^m_x))$ enthält.
 Andernfalls gibt $T(C_x)[m]$ eine leere Tabelle zurück.
@@ -150,7 +151,7 @@ Andernfalls gibt $T(C_x)[m]$ eine leere Tabelle zurück.
 \newcommand{\ecfun}{\textproc{edge\_cut}}
 
 Da sowohl die Rekursionsgleichung~\eqref{eq:e_not_cut} als auch~\eqref{eq:e_cut} angewendet werden kann, um eine neue Kombination aus Signatur und Knotenanzahl zu erhalten, werden diese beiden Fälle separat durch \encfun{} beziehungsweise \ecfun{} implementiert.
-Im ersteren Fall wird die Kante $e$, welche von $v$ zu seinem Elternknoten $p$ geht, nicht geschnitten.
+Im ersteren Fall wird die Kante $e$, welche $v$ mit seinem Elternknoten $p$ verbindet, nicht geschnitten.
 Wie in Sektion~\ref{sec:cutting} erklärt wurde, erhalten wir für diesen Fall die Rekursionsgleichung
 \begin{equation*}
     \begin{aligned}
@@ -189,7 +190,7 @@ Für diesen Fall wurde in Sektion~\ref{sec:cutting} eine zweite Rekursionsgleich
 \end{equation*}
 
 Da die Kante von $v$ zu seinem Elternknoten geschnitten wird, ist $v$ nicht in der Zusammenhangskomponente, die auch die Wurzel $r$ enthält.
-Deswegen besteht die Zusammhangskomponente, in der $v$ erhalten ist, ausschließlich aus Knoten des in $v$ gewurzelten Teilbaums und überdeckt zusammen mit den Zusammenhangskomponenten, die durch $\vec{g}_u$ repräsentiert werden, den gesamten Teilbaum.
+Deswegen besteht die Zusammenhangskomponente, in der $v$ erhalten ist, ausschließlich aus Knoten des in $v$ gewurzelten Teilbaums und überdeckt zusammen mit den Zusammenhangskomponenten, die durch $\vec{g}_u$ repräsentiert werden, den gesamten Teilbaum.
 Deshalb erhalten wir eine Signatur $\vec{g}$ mit $m$ Knoten, indem wir $m = m_w + m_u + (n_v - m_u) = m_w + n_v$ und $\vec{g} = \vec{g}_w + \vec{g}_u + \vec{e}(n_v - m_u)$ setzen, wobei $n_v$ die Anzahl der Knoten des in $v$ gewurzelten Teilbaums ist und $\vec{e}(x)$ die Signatur mit genau einer Zusammenhangskomponente der Größe $x$ beschreibt.
 Die Kosten der berechneten Signatur sind dann die addierten Kosten $C_w(\vec{g}_w, m_w)$ und $C_u(\vec{g}_u, m_u)$ plus die Kosten der geschnittenen Kante $e$. 
 Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
@@ -200,7 +201,7 @@ Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
         \Function{edge\_cut}{Integer $m_w$, Signatur $\vec{g}_w$, Integer $m_u$, Signatur $\vec{g}_u$}
             \Let{$x$}{$n_v - m_u$} \Comment{$n_v$ ist die Größe des in $v$ gewurzelten Teilbaums.}
             \If{$x > (1+\eps)\ceil{n/k}$}
-                \Return
+                \Return \Comment{Die Komponente ist größer als erlaubt.}
             \Else
                 \Let{$m$}{$x + m_w + m_u$}
                 \Let{$p$}{$parent(v)$}
@@ -215,9 +216,9 @@ Insgesamt erhalten wir den Algorithmus~\ref{alg:ecfun}.
 
 \begin{rem}
     In Sektion~\ref{sec:cutting} haben wir den Fall, dass $v$ weder einen linken Geschwisterknoten $w$ noch ein rechtestes Kind $u$ hat, speziell behandelt.
-    Für diesen Fall gilt $C_v((0,\ldots,0), 0) = 0)$ und $C_v(\vec{e}(1), 1) = \weight(e)$. 
+    Für diesen Fall gilt $C_v\big((0,\ldots,0), 0\big) = 0)$ und $C_v\big(\vec{e}(1), 1\big) = \weight(e)$. 
     Alle anderen Funktionswerte sind unendlich.
-    In den oben genannten Algorithmen haben wir $T(C_w) = T(C_u) = \{(0, \{((0, \ldots, 0), 0)\} \}$, falls $w$ und $u$ nicht existieren.
+    In den oben genannten Algorithmen haben wir $T(C_w) = T(C_u) = \big\{(0, \{((0, \ldots, 0), 0)\} \big\}$, falls $w$ und $u$ nicht existieren.
     Mit diesen Tabellen setzt Algorithmus~\ref{alg:encfun} den Eintrag $T(C_v)[0][(0,\ldots, 0)]$ auf den Wert $0$ und Algorithmus~\ref{alg:ecfun} den Eintrag $T(C_v)[1][\vec{e}(1)]$ auf $\weight(v,p)$, wobei $p$ der Elternknoten von $v$ ist.
     Dadurch muss dieser Fall nicht gesondert behandelt werden.
 \end{rem}
@@ -236,7 +237,7 @@ Damit erhalten wir Algorithmus~\ref{alg:carfun}.
            \For{$x = 1, \ldots, (1+\eps)\ceil{n/k}$} 
                 \ForAll{$(\vec{g}_u, c) \in T(C_u)[n - x]$}
                     \Let{$\vec{g}$}{$\vec{g}_u + \vec{e}(x)$}
-                    \Let{$T(C_r)[n][\vec{g}]$}{$\min\{c, T(C_r)[n][\vec{g}]$}\}
+                    \Let{$T(C_r)[n][\vec{g}]$}{$\min\big\{c, T(C_r)[n][\vec{g}]$\big\}}
                 \EndFor
            \EndFor
         \EndFunction
@@ -246,7 +247,7 @@ Damit erhalten wir Algorithmus~\ref{alg:carfun}.
 \begin{rem}\label{rem:components}
     In den oben genannten Algorithmen werden nur die Signaturen berechnet.
     Um anschließend die Packphase durchführen zu können, müssen wir allerdings wissen, welche Zusammenhangskomponenten eine Signatur repräsentiert.
-    Dies kann erreicht werden, indem zu einer Signatur $\vec{g}$ mit Kosten $c$ die Signaturen $\vec{g}_w$ und $\vec{g}_u$ mit den Knotenanzahlen $m_w$ beziehungsweise $m_u$ speichern, welche verwendet wurden, um $\vec{g}$ zu erreichen.
+    Dies kann erreicht werden, indem wir zu einer Signatur $\vec{g}$ mit Kosten $c$ die Signaturen $\vec{g}_w$ und $\vec{g}_u$ mit den Knotenanzahlen $m_w$ beziehungsweise $m_u$ speichern, welche verwendet wurden, um $\vec{g}$ zu erreichen.
     Wenn $\vec{g} = \vec{g}_w + \vec{g}_u$ gilt, dann wurde die Kante von $v$ zu seinem Elternknoten nicht geschnitten.
     Andernfalls wurde die Kante geschnitten.
     Damit können alle Kanten gefunden werden, die geschnitten wurden, um die Kosten $c$ mit der Signatur $\vec{g}$ zu erreichen.
@@ -266,11 +267,11 @@ Eine Zerlegung in Zusammenhangskomponenten stellt jedoch noch keine Partitionier
 Deshalb muss in der Packphase geprüft werden, ob sich die Zusammenhangskomponenten zu einer Signatur $\vec{g}$ in $k$ Behälter der Größe $(1+\eps)\ceil{n/k}$ packen lassen.
 Wenn dies der Fall ist, dann können die Zusammenhangskomponenten zu $\vec{g}$ für eine valide $(k,1+\eps)$\hyp Partitionierung verwendet werden.
 
-In Sektion~\ref{sec:packing} wurde ein Approximationsalgorithmus beschrieben, der mit Hilfe dynamischer Programmierung Zusammenhangskomponenten ein Packing in Behälter der Größe $(1+\eps)\ceil{n/k}$.
+In Sektion~\ref{sec:packing} wurde ein Approximationsalgorithmus beschrieben, der mit Hilfe dynamischer Programmierung ein Packing der Zusammenhangskomponenten in Behälter der Größe $(1+\eps)\ceil{n/k}$ berechnet.
 Dafür wird im ersten Schritt jede Zusammenhangskomponente, deren Größe kleiner als $\eps \ceil{n/k}$ ist, entfernt.
 Nach Definition~\ref{defn:signature} sind das genau die Zusammenhangskomponenten, die in einer Signatur $\vec{g} = (g_0, \ldots, g_t)$ mit dem Eintrag $g_0$ gezählt werden.
 Deshalb wird im Folgenden der Vektor $(g_1, \ldots, g_t)$ verwendet, um die Anzahl der Komponenten einer bestimmten Größe in der Bin-Packing-Instanz zu zählen.
-Da die Komponentgrößen auf die untere Intervallgrenze nach Definition~\ref{defn:signature} abgerundet werden, enthält die Bin-Packing-Instanz $g_i$ Komponenten der Größe $(1+\eps)^{i-1} \cdot \eps \ceil{n/k}$.
+Da die Komponentengrößen auf die untere Intervallgrenze nach Definition~\ref{defn:signature} abgerundet werden, enthält die Bin-Packing-Instanz $g_i$ Komponenten der Größe $(1+\eps)^{i-1} \cdot \eps \ceil{n/k}$.
 Wir definieren den Vektor $\vec{s} = (s_1, \ldots, s_t)$, in dem der Eintrag $s_i$ den Wert der unteren Grenze des $i$\hyp ten Intervalls hat.
 
 Im zweiten Schritt werden die Komponenten, die größer als $\eps \ceil{n/k}$ sind, mit dynamischer Programmierung optimal in Behälter der Größe $\ceil{n/k}$ gepackt.
@@ -279,7 +280,7 @@ Dies ist die Menge aller Möglichkeiten einen einzigen Behälter zu füllen, ohn
 Wir bezeichnen im Folgenden einen Vektor $\vec{c} \in \mathcal{C}$ als Behältersignatur.
 Wir berechnen die Menge der Behältersignaturen $\mathcal{C}$ schrittweise durch die Mengen $C_i$.
 Dabei ist $C_i$ die Menge aller Behältersignaturen, die nur Komponenten der Einträge $1$ bis $i$ verwenden.
-Mit der Behältersignatur $\vec{c_i}$ wird der Füllstand $m_c$ abgespeichert, wobei $c_i$ die Anzahl der Komponenten der Größe $s_i$ im Behälter zählt.
+Zusammen mit der Behältersignatur $\vec{c}$ wird der Füllstand $m_c$ abgespeichert, wobei $c_i$ die Anzahl der Komponenten der Größe $s_i$ im Behälter zählt.
 Daraus folgt, dass $C_i$ das Tupel $(\vec{c}, m_c)$ mit $m_c \leq \ceil{n/k}$ genau dann enthält, wenn ein Tupel $(\vec{d}, m_d) \in C_{i-1}$ existiert, sodass $\vec{c} = \vec{d} + k \cdot \vec{e}(s_i)$ und $m_c = m_d + k \cdot s_i$ für ein $k \in \{0, \ldots, g_i\}$.
 Hierbei ist $\vec{e}(x)$ die Signatur, die nur eine Komponente der Größe $x$ enthält und deren erste Komponente weggelassen wird.
 Für $\mathcal{C}$ gilt dann $\mathcal{C} = \{ \vec{c} \mid (\vec{c}, m_c) \in C_t)\}$.
@@ -289,11 +290,10 @@ Mit diesen Ergebnissen erhalten wir Algorithmus~\ref{alg:cabisi}.
     \caption{Ermitteln der Behältersignaturen mit \textproc{calculate\_bin\_signatures}}
     \label{alg:cabisi}
     \begin{algorithmic}[1]
-        \LineComment{Namensgebung Signatur gut?}
         \Function{calculate\_bin\_signatures}{Signatur $(g_1, \ldots, g_t)$, Vektor $(s_1, \ldots, s_t)$}
             \Let{$C_0$}{$\{(\vec{0}, 0)\}$}
             \For{$i = 1, \ldots, t$}
-                \Let{$C_i$}{$\emptyset$} \Comment{Ist das notwendig?}
+                \Let{$C_i$}{$\emptyset$}
                 \ForAll{$(\vec{a}, m_a) \in C_{i-1}$}
                     \For{$k = 0, \ldots, g_i$}
                        \Let{$\vec{b}$}{$\vec{a} + k \cdot \vec{e}(s_i)$} 
@@ -316,12 +316,11 @@ Mit diesen Ergebnissen erhalten wir Algorithmus~\ref{alg:cabisi}.
 \end{rem}
 
 Nun können wir die Rekursionsgleichung~\eqref{eq:packing} verwenden, um eine optimale Lösung der Bin-Packing-Instanz zu berechnen, die durch $(g_1, \ldots, g_t)$ und $(s_1, \ldots, s_t)$ gegeben ist.
-Dafür bezeichnen wir den aktuellen Zustand eines Packings mit dem Vektor $\vec{p}$, der anfangs nur den Wert $(g_1, \ldots, g_t)$ annehmen kann.
+Dafür bezeichnen wir den aktuellen Zustand eines Packings mit dem Vektor $\vec{p}$, der anfangs den Wert $(g_1, \ldots, g_t)$ hat.
 Dann wird iterativ $(\max\{0, p_1 - c_1\}, \ldots, \max\{0, p_t - c_t\})$ für alle Behältersignaturen $\vec{c} \in \mathcal{C}$ berechnet, um neue mögliche Zustände zu erhalten.
 Sobald wir das erste Mal bei $\vec{p} = \vec{0}$ ankommen, haben wir alle Komponenten der Signatur $(g_1, \ldots, g_t)$ gepackt und wir wissen die minimale Anzahl an Behältern, die dafür benötigt wird.
 Indem jeweils der Zustand des vorherigen Schritts zum momentanen Zustand $\vec{p}$ gespeichert wird, kann am Schluss zurückverfolgt werden, welche Behältersignaturen im jeweiligen Schritt verwendet wurden, um die Komponenten in $(g_1, \ldots, g_t)$ zu packen.
 Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
-\todo[inline]{Ist das ausführlich genug?}
 
 \begin{algorithm}
     \caption{Finden eines optimalen Packings mit \textproc{pack\_perfect}}
@@ -331,7 +330,7 @@ Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
             \Let{$\mathcal{C}$}{\Call{calculate\_bin\_signatures}{$(g_1, \ldots, g_t)$, $\vec{s}$}}
             \Let{$P_0$}{$\{(g_1, \ldots, g_t)\}$}
             \For{$i = 1, 2, \ldots$}
-                \Let{$P_i$}{$\emptyset$} \Comment{Ist das notwendig?}
+                \Let{$P_i$}{$\emptyset$}
                 \ForAll{$\vec{p} \in P_{i-1}$}
                 \ForAll{$\vec{c} \in \mathcal{C}$}
                     \Let{$\vec{q}$}{$(\max\{0, p_1 - c_1\}, \ldots, \max\{0, p_t - c_t\})$}
@@ -363,18 +362,18 @@ Die Algorithmen~\ref{alg:pape} und~\ref{alg:bapa} formalisieren diese Ideen.
     \end{algorithmic}
 \end{algorithm}
 
-\todo{Ausführlicher?} Im dritten Schritt werden im Packing, welches wir mit der Funktion \textproc{pack\_perfect} berechnen können, die ursprünglichen Größen der Zusammenhangskomponenten, die von der Signatur $(g_1, \ldots, g_t)$ repräsentiert werden, wiederhergestellt. 
+Im dritten Schritt werden im Packing, welches wir mit der Funktion \textproc{pack\_perfect} berechnen können, die ursprünglichen Größen der Zusammenhangskomponenten, die von der Signatur $(g_1, \ldots, g_t)$ repräsentiert werden, wiederhergestellt. 
 Die Zusammenhangskomponenten zu einer einer Signatur können mit den Ideen aus Bemerkung~\ref{rem:components} gefunden werden.
 Gleichzeitig wird die Kapazität der Behälter auf $(1+\eps)\ceil{n/k}$ erhöht.
 Zuletzt werden noch die restlichen Komponenten $g_0$ mit einer Größe kleiner als $\eps \ceil{n/k}$ greedy mit First-Fit gepackt.
-\todo{Begründung für diese Implementierung?} Dieses Verfahren wurde naiv implementiert, das heißt es wird für jede dieser Komponenten über alle Behälter iteriert, bis ein Behälter gefunden wird, in dem noch Platz ist.
+Dieses Verfahren wurde naiv implementiert, das heißt es wird für jede dieser Komponenten über alle Behälter iteriert, bis ein Behälter gefunden wird, in dem noch Platz ist.
 Existiert kein solcher Behälter wird ein neuer erstellt.
 
 \subsection{Partitionierung}
 Mit den Algorithmen aus der Sektion~\ref{sec:cuttingimpl} können wir eine Tabelle $T(C_v)$ berechnen, die uns für jede mögliche Signatur an der Wurzel $r$ die optimalen Schnittkosten liefert.
 Jede dieser Signaturen ist mit einer Menge von Zusammenhangskomponenten assoziiert.
 Die Algorithmen aus Sektion~\ref{sec:packingimpl} können folgendermaßen verwendet werden, um zu prüfen, ob die Zusammenhangskomponenten zu einer Signatur $\vec{g} = (g_0, \ldots, g_t)$ für eine valide Partitionierung des Baums verwendet werden können.
-Wir verwenden die Funktion \textproc{pack\_perfect}, um ein optimales Packing der Komponenten, die größer als $\eps \ceil{n/k}$ sind, mit ihren abgerundeten Komponentengrößen in Behälter der Größe $\ceil{n/k}$ zu erhalten.
+Wir verwenden die Funktion \mbox{\textproc{pack\_perfect}}, um ein optimales Packing der Komponenten, die größer als $\eps \ceil{n/k}$ sind, mit ihren abgerundeten Komponentengrößen in Behälter der Größe $\ceil{n/k}$ zu erhalten.
 Anhand der Anzahl der Behältersignaturen, die von \textproc{pack\_perfect} zurückgegeben werden, wissen wir, wie viele Behälter das optimale Packing verwendet.
 Werden bereits mehr als $k$ Behälter benutzt, dann ist $\vec{g}$ nicht für eine $(k, 1+\eps)$\hyp Partitionierung geeignet.
 Danach verwenden wir die Behältersignaturen, um mit der Funktion \textproc{expand\_packing} die ursprünglichen Größen der Komponenten zu $\vec{g}$ wiederherzustellen und erhöhen gleichzeitig die Behälterkapazitäten auf $(1+\eps) \ceil{n/k}$.
@@ -424,7 +423,7 @@ struct Node {
 Hierbei sind die Typen \texttt{IdType} und \texttt{EdgeWeightType} Integer.
 Ein Knoten $v$ wird durch den Integer \texttt{id} identifiziert. 
 Weiterhin speichert $v$ das Gewicht der Kante, die zu seinem Elternknoten führt, im Feld \texttt{parent\_edge\_weight}.
-Die Felder \texttt{parent\_idx} und \texttt{children\_idx\_range} werden verwendet, um die Struktur des Baums abbzubilden.
+Die Felder \texttt{parent\_idx} und \texttt{children\_idx\_range} werden verwendet, um die Struktur des Baums abzubilden.
 Wenn $v$ nach Definition~\ref{def:level} im Level $\ell$ liegt, dann speichert das Feld \texttt{parent\_idx} den Index des Elternknotens im Level $\ell-1$, während das Feld \texttt{children\_idx\_range} die Indices der Kinder von $v$ im Level $\ell+1$ speichert.
 Das Feld \texttt{children\_idx\_range} stellt einen rechtsexklusiven Bereich dar, das heißt, $v$ hat genau dann keine Kinder, wenn die beiden Indices des Bereichs gleich sind.
 Weiterhin kann mit dem Feld \texttt{children\_idx\_range} des Elternknotens von $v$, welcher mit \texttt{parent\_idx} ermittelt wird, der linke Geschwisterknoten von $v$ gefunden werden, falls er existiert.
@@ -445,8 +444,8 @@ struct Tree {
     }
 \end{lstlisting}
 Hierbei ist \texttt{SizeType} der Integertyp, der verwendet wird, um Knoten zu zählen.
-Die Felder \texttt{has\_left\_sibling} und \texttt{tree\_sizes} haben diesselbe Struktur wie \texttt{levels} und dienen als Lookup-Tabellen.
-Wenn der Knoten $v$ an der Stelle \texttt{levels[i][j]} abgespeichert ist, dann gibt uns der Lookup \texttt{tree\_sizes[i][j]} die Größe des Teilbaums gewurzelt in $v$ und \texttt{has\_left\_sibling[i][j]} indiziert, ob $v$ einen linken Geschisterknoten hat.
+Die Felder \texttt{has\_left\_sibling} und \texttt{tree\_sizes} haben dieselbe Struktur wie \texttt{levels} und dienen als Lookup-Tabellen.
+Wenn der Knoten $v$ an der Stelle \texttt{levels[i][j]} abgespeichert ist, dann gibt uns der Lookup \texttt{tree\_sizes[i][j]} die Größe des Teilbaums gewurzelt in $v$ und \texttt{has\_left\_sibling[i][j]} indiziert, ob $v$ einen linken Geschwisterknoten hat.
 
 \subsection{Signaturen}\label{sec:sigimpl}
 Um in der Schnittphase die Äquivalenzklassen zu berechnen, werden diese nach Definition~\ref{defn:signature} durch eine Signatur repräsentiert.
@@ -462,9 +461,9 @@ Die Signaturen an einem Knoten $v$ werden mit der Tabelle $T(C_v)$ gespeichert, 
 Die Tabelle $T(C_v^m)$ bildet wiederum eine Signatur auf ihre optimalen Schnittkosten ab.
 Um die Tabelle $T(C_v)$ zu speichern, wurde ein Array in Form eines \texttt{std::vector} verwendet.
 Es wurde ein Array verwendet, weil die Tabelle $T(C_v)$ immer alle Schlüssel von $0$ bis $n_v$ enthält, wobei $n_v$ die Größe des in $v$ gewurzelten Teilbaums ist.
-Dies ist der Fall, da jede Kante im Teilbaum und die Kante von $v$ zu seinem Elternknoten geschnitten werden kann und somit all diese Knotanzahlen möglich sind.
+Dies ist der Fall, da jede Kante im Teilbaum und die Kante von $v$ zu seinem Elternknoten geschnitten werden kann und somit all diese Knotenanzahlen möglich sind.
 Für die Tabelle $T(C_v^m)$ wurde hingegen eine Hashtabelle verwendet.
-\todo{Zitat? Cpp Standard?} Damit könnnen wir eine neu berechnete Signaturen in erwartungsgemäß konstanter Zeit in die Tabelle einfügen beziehungsweise überprüfen, ob diese Signatur bereits berechnet wurde und dementsprechend die Kosten setzen, falls die Hashfunktion in konstanter Zeit ausgewertet werden kann.
+Damit können wir eine neu berechnete Signaturen in erwartungsgemäß konstanter Zeit in die Tabelle einfügen beziehungsweise überprüfen, ob diese Signatur bereits berechnet wurde und dementsprechend die Kosten setzen.
 Hashtabellen werden in der \Cpp\hyp Standardbibliothek durch den Datentyp \texttt{std::unordered\_map} zur Verfügung gestellt.
 Die Tabelle $T(C_v)$ wird in Listing~\ref{lst:signaturemap} durch \texttt{SignatureMap} implementiert.
 
@@ -475,11 +474,13 @@ Die Tabelle $T(C_v)$ wird in Listing~\ref{lst:signaturemap} durch \texttt{Signat
 
 In Listing~\ref{lst:signaturemap} wurde ein Teil der Typendeklaration ausgelassen.
 Der ausgelassene Teil spezifiziert die Hashfunktion und den Gleichheitstest für die Signaturen.
-Die Hashfunktion und der Gleichheitstest müssen manuell spezifiziert werden, da die \Cpp{}\hyp Standardbibliothek keine Hashfunktion für \texttt{std::valarray} bereitstellt und der Gleicheitsoperator von \texttt{std::valarray} nicht geeignet definiert ist.
+Die Hashfunktion und der Gleichheitstest müssen manuell spezifiziert werden, da die \Cpp{}\hyp Standardbibliothek keine Hashfunktion für \texttt{std::valarray} bereitstellt und der Gleichheitsoperator von \texttt{std::valarray} nicht geeignet definiert ist.
 Der Vergleich erfolgt komponentenweise.
 Die Implementierung der Hashfunktion ist in Listing~\ref{lst:hashing} zu sehen.
-Mit dieser Implementierung kann die Hashfunktion in konstanter Zeit ausgewertet werden, da eine Signatur für konstantens $\eps$ eine konstante Länge hat.
-\todo[inline]{Boost referenzieren}
+Mit dieser Implementierung kann die Hashfunktion in konstanter Zeit ausgewertet werden, da eine Signatur für konstantes $\eps$ eine konstante Länge hat.
+Es handelt sich dabei um dasselbe Hashverfahren, welches von der weit verbreiteten Softwarebibliothek Boost~\cite{BOOST} verwendet wird.\footnote{Obwohl Boost viel verwendet wird, scheint es keine wissenschaftliche Aufarbeitung dieser Hashfunktion zu geben.}
+Dennoch ist die Wahl der Hashfunktion etwas willkürlich.
+In Sektion~\ref{sec:improv} werden weitere Alternative diskutiert.
 
 \begin{lstlisting}[float, floatplacement=h, caption={Hashing mit \texttt{ValarrayHasher}}, label={lst:hashing}]
 template<typename T> struct ValarrayHasher {
@@ -494,18 +495,18 @@ template<typename T> struct ValarrayHasher {
 \end{lstlisting}
 
 Die Datenstruktur \texttt{std::valarray} kann in der Packphase weiterverwendet werden.
-Sowohl die Behältersignaturen als auch der Zustand eines Packings kann mit dieser Datenstruktur gespeicher werden.
+Sowohl die Behältersignaturen als auch der Zustand eines Packings kann mit dieser Datenstruktur gespeichert werden.
 Für ein Packing, in dem die ursprünglichen Komponentengrößen wiederhergestellt wurden, wird eine Liste von Listen von Knotenmengen verwendet.
 
 \section{Erweiterung des Algorithmus auf Bäume mit Knotengewichten}\label{sec:nodeweights}
 Der oben beschriebene Algorithmus arbeitet auf Bäumen mit Kantengewichten, er erlaubt jedoch keine Knotengewichte.
 Es ist leicht zu sehen, dass Knotengewichte in der Praxis Anwendungen finden können.
-Zu Anfang wurde das Beispielproblem genannt, welches verlangt, Prozesse auf Prozessorkerne zu verteilen, und dabei die Kommunikationslast zwischen verschiedenen Prozessorkernen zu minimieren.
+Zu Anfang wurde das Beispielproblem genannt, welches verlangt, Prozesse auf Prozessorkerne zu verteilen und dabei die Kommunikationslast zwischen verschiedenen Prozessorkernen zu minimieren.
 Dabei wurden die Prozesse als Knoten und die Kommunikation zwischen den Prozessen als Kanten eines Graphen interpretiert.
 Durch eine Partitionierung der Knoten können die Prozesse dann auf Kerne verteilt werden, sodass jeder Kern eine ähnliche Arbeitslast erhält.
 Es ist hingegen nicht realistisch, dass alle Prozesse gleich viele Prozessorressourcen in Anspruch nehmen.
 Der Ressourcenanspruch kann mit Knotengewichten dargestellt werden. 
-Durch eine Partitionierung, die Knotengewichte miteinbezieht, ist es möglich allen Kernen eine ähnliche Last zuzuweisen.
+Durch eine Partitionierung, die Knotengewichte miteinbezieht, ist es möglich, allen Kernen eine ähnliche Last zuzuweisen.
 Ferner sind Knotengewichte direkt für das Verfahren aus Sektion~\ref{sec:decomptrees} relevant. 
 Dort muss eine Partitionierung der Blätter des Baums berechnet werden.
 Dies kann realisiert werden, indem die Knotengewichte der inneren Knoten auf $0$ gesetzt werden, während die Gewichte der Blätter weiterhin $1$ sind.
@@ -513,7 +514,7 @@ Dies kann realisiert werden, indem die Knotengewichte der inneren Knoten auf $0$
 Die Implementierung von Knotengewichten kann durch wenige Änderungen umgesetzt werden.
 In dieser Arbeit werden nur integrale Knotengewichte behandelt.
 Für einen Baum $T=(V,E)$ mit $n$ Knoten stellen wir das Gewicht eines Knotens mit der Gewichtsfunktion $\pi : V \rightarrow \mathbb{N}_0$ dar.
-Nun wird nicht mehr eine Partitionierung der Knoten in Teile mit maximaler Größe $(1+\eps) \ceil{n/k}$ berechnet, sondern in $k$ Partitionen mit maximalen Gesamtgewicht $(1+\eps) \ceil{\pi(V)/k}$, wobei $\pi(V) = \sum_{v \in V} \pi(v)$ gilt.
+Nun wird nicht mehr eine Partitionierung der Knoten in $k$ Teile mit maximaler Größe $(1+\eps) \ceil{n/k}$ berechnet, sondern in Partitionen mit maximalen Gesamtgewicht $(1+\eps) \ceil{\pi(V)/k}$, wobei $\pi(V) = \sum_{v \in V} \pi(v)$ gilt.
 Die Rekursionsgleichungen~\eqref{eq:e_not_cut} und~\eqref{eq:e_cut} müssen dahingehend angepasst werden, dass $m$ in der Funktion $C_v(\vec{g}, m)$ am Knoten $v$ nicht eine Anzahl von Knoten darstellt, sondern das Gesamtgewicht der Zusammenhangskomponenten, die durch $\vec{g}$ gezählt werden.
 Weiterhin ist $x$ in Gleichung~\eqref{eq:e_cut} das Gesamtgewicht der Zusammenhangskomponente, in der $v$ liegt, anstatt die Größe der Komponente.
 Außerdem wird die Knotenanzahl $n_v$ des in $v$ gewurzelten Teilbaums in Gleichung~\eqref{eq:e_cut} durch die Summe der Knotengewichte des in $v$ gewurzelten Teilbaums ersetzt.
@@ -524,7 +525,7 @@ Bei den Datenstrukturen muss dem \texttt{struct Node} ein weiteres Feld \texttt{
 Des Weiteren speichert \texttt{struct Tree} in der Lookup-Tabelle \texttt{tree\_sizes} nun nicht mehr die Größe des Teilbaums, sondern das Gesamtgewicht der Knoten im Teilbaum.
 
 \begin{rem}
-    Falls der Graph uniform gewichtet ist, kann immer eine Lösung für das $(k,1+\eps)$\hyp Partitionierungsproblem gefunden werden, da man alle Kanten schneiden kann und die Knoten greedy packen kann.
+    Falls der Graph uniforme Knotengewichte hat, kann immer eine Lösung für das $(k,1+\eps)$\hyp Partitionierungsproblem gefunden werden, da man alle Kanten schneiden kann und die Knoten greedy packen kann.
     Sind die Knoten gewichtet, ist dies nicht mehr der Fall.
     Wenn wir den Graphen aus Abbildung~\ref{fig:graph} verwenden, in dem alle Knoten ein Gewicht von $2$ haben und wir eine $(2, 1 + \eps)$\hyp Partitionierung verlangen, dann kann jede Partition ein Gesamtgewicht von maximal $(1 + \eps) \ceil{6/2} = (1 + \eps) \cdot 3$ haben.
     Da wir die Knoten in maximal zwei Partitionen aufteilen dürfen, gibt es für $\eps < 1/3$ keine Lösung.

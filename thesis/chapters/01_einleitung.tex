@@ -1,16 +1,15 @@
 % !TeX root = ../main.tex
 % Add the above to each chapter to make compiling the PDF easier in some editors.
-
 \chapter{Einleitung}\label{chapter:introduction}
-Die fortschreitende Verbesserung der Fertigungtechnologien von Transistoren ermöglicht einen ständigen Anstieg der Rechenleistung.
-Während sich die Fertigungtechnologien immer mehr den physikalischen Grenzen nähern, werden neue Möglichkeiten erforscht die Rechenleistung zu steigern.
+Die fortschreitende Verbesserung der Fertigungstechnologien von Transistoren ermöglicht einen ständigen Anstieg der Rechenleistung.
+Während sich die Fertigungstechnologien immer mehr den physikalischen Grenzen nähern, werden neue Möglichkeiten erforscht die Rechenleistung zu steigern.
 Um die Leistung zu erhöhen, können zum Beispiel weitere Prozessorkerne hinzugefügt werden, welche die durch die Verkleinerung der Transistoren gewonnene Fläche ausfüllen.
 Heutzutage werden Mehrkernarchitekturen von Servern bis zu Mobiltelefonen überall verwendet.
 Um mehrere Kerne effektiv nutzen zu können, muss die Software im Hinblick auf Parallelismus entwickelt werden.
-In vielen Fällen ist es schwer die gegebene Anwendung zu parallelisieren.
-Aber auch wenn eine Parallelisierung möglich ist, wie zum Beispiel beim Videoencoding, entstehen mitunter signifikante Kosten, wenn Prozesse auf verschieden Kernen miteinander kommunizieren, wodurch die Effektivität der Mehrkernarchitektur vermindert wird.~\cite{LTS09}
+In vielen Fällen ist es schwer eine gegebene Anwendung zu parallelisieren.
+Aber auch wenn eine Parallelisierung möglich ist, wie zum Beispiel beim Videoencoding, entstehen mitunter signifikante Kosten, wenn Prozesse auf verschiedenen Kernen miteinander kommunizieren, wodurch die Effektivität der Mehrkernarchitektur vermindert wird.~\cite{LTS09}
 
-Merkernarchitekturen können also besser genutzt werden, indem die Prozesse so auf Kerne verteilt werden, dass die Interprozesskommunikation möglichst innerhalb der Kerne stattfindet.
+Mehrkernarchitekturen können besser genutzt werden, indem die Prozesse so auf Kerne verteilt werden, dass die Interprozesskommunikation möglichst innerhalb der Kerne stattfindet.
 Dieses Problem kann als Graphproblem interpretiert werden, indem ein Kommunikationsnetzwerk von Prozessen als ein ungerichteter Graph $G = (V, E)$ modelliert wird.
 Hierbei repräsentiert jeder Knoten $v \in V$ einen Prozess.
 Eine Kante $\{u, v\} \in E$ mit $u, v \in V$ sagt aus, dass der Prozess $u$ mit dem Prozess $v$ kommuniziert.
@@ -31,20 +30,20 @@ Auch in anderen Domänen tritt dieses Problem auf, wobei ein Beispiel der Entwur
 Dort müssen größere Schaltkreise auf mehrere Komponenten mit etwa gleicher Größe verteilt werden, wobei jede Komponente einen separaten Chip darstellt.
 Da Leitungen zwischen den Chips unter anderem zu einer höheren Latenz führen und mehr Energie verbrauchen, soll die Anzahl der Verbindungen zwischen den Chips minimiert werden.
 
-Allerdings ist es nicht praktikabel das $k$\hyp balancierte Partitionierungsproblem optimal zu lösen, da schon der Fall $k=2$, der als das Minimum-Bisection-Problem bekannt ist, NP-schwer ist.~\cite{gj79}
-Deswegen werden Approximationsalgorithmen verwendet, um an das Problem heranzugehen.
-Während diese Algorithmen nicht die optimale Lösung ausgeben, haben sie hingegen einen Approximationsfaktor $\alpha$, das heißt, die durch den Algorithmus gefundene Lösung ist höchstens um einen Faktor $\alpha$ von der Optimallösung entfernt.
+Allerdings ist es nicht praktikabel das $k$\hyp balancierte Partitionierungsproblem optimal zu lösen, da schon der Fall $k=2$, der als das Minimum-Bisection-Problem bekannt ist, $NP$\hyp schwer ist.~\cite{gj79}
+Um derartige Probleme dennoch zufriedenstellend zu lösen, werden Approximationsalgorithmen verwendet.
+Approximationsalgorithmen berechnen nicht die optimale Lösung einer Probleminstanz, sondern haben einen Approximationsfaktor $\alpha$, das heißt, die durch den Algorithmus berechnete Lösung ist höchstens um einen Faktor $\alpha$ von der Optimallösung entfernt.
 Allerdings ist für nicht-konstantes $k$ eine Approximation der Optimallösung des $(k, 1)$\hyp Partitionierungsproblems für keinen Wert von $\eps$ in polynomieller Zeit möglich, außer es gilt $P=NP$.
 Der Beweis von Andreev und Räcke~\cite{ar06} dazu wird in Sektion~\ref{sec:complex} präsentiert.
 
 Aufgrund dessen liegt ein bikriterieller Ansatz nahe, das heißt, der Algorithmus approximiert die Schnittkosten der Optimallösung des $k$\hyp balancierten Partitionierungsproblems und erlaubt sich dabei eine Partitionierung auszugeben, die nicht perfekt balanciert ist.
-Konkret bedeutet das: Ein bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\alpha$ gibt eine Lösung des $(k, 1 + \eps)$\hyp Partitionierungsproblems aus, deren Schnittkosten höchstens um einen Faktor $\alpha$ von den Kosten der Optimallösung des $k$\hyp balancierten Partitionierungsproblems entfernt sind.
-In dieser Arbeit wird ein Algorithmus von Feldmann und Foschini~\cite{FF15} vorgestellt der diese Anforderungen erfüllt.
-Bevor der Algoritmus näher behandelt wird, werden zunächst einige vorherige Resultate aus dem Bereich der Graphpartitionierung präsentiert.
+Genauer bedeutet das: Ein bikriterieller Approximationsalgorithmus mit Approximationsfaktor $\alpha$ gibt eine Lösung des $(k, 1 + \eps)$\hyp Partitionierungsproblems aus, deren Schnittkosten höchstens um einen Faktor $\alpha$ von den Kosten der Optimallösung des $k$\hyp balancierten Partitionierungsproblems entfernt sind.
+In dieser Arbeit wird ein Algorithmus von Feldmann und Foschini~\cite{FF15} vorgestellt der diese Anforderungen für $\alpha \in \bigO(\log n)$ erfüllt.
+Bevor der Algorithmus näher behandelt wird, werden zunächst einige vorherige Resultate aus dem Bereich der Graphpartitionierung präsentiert.
 
 \section{Vorherige Ergebnisse}
 Zunächst betrachten wir den Spezialfall des $(2, 1 + \eps)$\hyp Partitionierungsproblems, welches in der Literatur als das Minimum-Bisection-Problem bekannt ist und bereits ausgiebig erforscht wurde.
-Wie bereits erwähnt ist das Problem auch für diesen Fall schon $NP$\hyp schwer.~\cite{gj79}
+Wie bereits erwähnt ist das Problem schon für diesen Fall $NP$\hyp schwer.~\cite{gj79}
 Für den Fall $\eps = 0$ wurde der erste nicht-triviale Approximationsalgorithmus von Saran und Vazirani~\cite{SV91} vorgestellt und erreicht einen Approximationsfaktor von $\alpha = n/2$.
 Für konstantes $k$ kann dieses Ergebnis innerhalb eines Approximationsfaktors $\left(\frac{k-1}{k}\right)n$ auf das $(k, 1)$\hyp Partitionierungsproblem erweitert werden.
 
@@ -52,16 +51,16 @@ Leighton und Rao~\cite{LR99} präsentierten einen Approximationsalgorithmus für
 Der Sparsest Cut ist der Schnitt $(S, \bar{S})$, welcher den Quotient $c/(\card{S} \cdot  \card{\bar{S}})$ minimiert, wobei $c$ die Kosten des Schnitts $(S, \bar{S})$ sind.
 Der genannte Algorithmus kann auch verwendet werden, um das $(2, 1 + \eps)$\hyp Partitionierungsproblem mit einem Approximationsfaktor $\bigO(\log(n)/\eps)$ bikriteriell zu approximieren.
 Später verbesserten Arora, Rao und Vazirani~\cite{ARV09} den Approximationsfaktor auf $\bigO(\sqrt{\log n}/\eps)$.
-Unter Verwendung der Ergebnisse von Leighton und Rao entwickelten Feige, Krauthgamer und Nissim~\cite{FKN00} einen echten, also nicht-bikriteriellen, Algorithmus mit Approximationsfator $\bigO(\sqrt{n} \log n)$.
-Kurze Zeit später stellten Feige und Krauthgamer einen Algorithmus mit einem verbesserten Approximationsfaktor von $\bigO(\log^{1.5} n)$ vor.
+Unter Verwendung der Ergebnisse von Leighton und Rao entwickelten Feige, Krauthgamer und Nissim~\cite{FKN00} einen echten, also nicht-bikriteriellen, Algorithmus mit Approximationsfaktor $\bigO(\sqrt{n} \log n)$.
+Kurze Zeit später stellten Feige und Krauthgamer einen Algorithmus mit einem verbesserten Approximationsfaktor von $\bigO(\log^{1,5} n)$ vor.
 Zuletzt gab Räcke~\cite{rc08} einen echten Approximationsalgorithmus mit Approximationsfaktor $\bigO(\log n)$ an.
-Dabei wurde eine hierarchische Dekomposition verwendet, was informell ausgedrückt eine Wahrscheinlichkeitsverteilung von Bäumen ist, wobei die Schnittkosten in den Bäumen die Schnittkosten des Eingabegraphen erwartungsgemäß gut approximimieren.
+Dabei wurde eine hierarchische Dekomposition verwendet, was informell ausgedrückt eine Wahrscheinlichkeitsverteilung von Bäumen ist, wobei die Schnittkosten in den Bäumen die Schnittkosten des Eingabegraphen erwartungsgemäß gut approximieren.
 Die Blätter der Bäume korrespondieren mit den Knoten des Eingabegraphen.
 Indem eine minimale Bisektion der Blätter berechnet wird, kann die optimale Bisektion im Eingabegraphen approximiert werden.
 Diese Bisektion kann zum Beispiel mit einem Algorithmus~\cite{mcg78, ws11} berechnet werden, dessen Laufzeit $\bigO(n^3)$ ist.
 Derselbe Algorithmus kann verallgemeinert werden, um einen Algorithmus für das $(k, 1)$\hyp Partitionierungsproblem auf Bäumen zu erhalten, der für konstantes $k$ eine polynomielle Laufzeit hat.
 
-Trotz dieser positiven Ergebniss für $k=2$ ist eine Approximation des $(k, 1)$\hyp Partionierungsproblems auf generellen Graphen für nicht-konstantes $k$ unmöglich, wie bereits oben erwähnt wurde (siehe auch Sektion~\ref{sec:complex}).
+Trotz dieser positiven Ergebnisse für $k=2$ ist eine Approximation des $(k, 1)$\hyp Partitionierungsproblems auf generellen Graphen für nicht-konstantes $k$ unmöglich, wie bereits oben erwähnt wurde (siehe auch Sektion~\ref{sec:complex}).
 Deshalb wird ein bikriterieller Ansatz verfolgt, der stattdessen das $(k,1+\eps)$\hyp Partitionierungsproblem löst und die Lösung mit der Optimallösung des $(k, 1)$\hyp Partitionierungsproblems vergleicht.
 Für den Fall $\eps = 1$ sind bereits seit längerem Approximationsalgorithmen bekannt.
 Even et al.~\cite{ENR+97} benutzten Spreading Metriken, um einen Algorithmus mit Approximationsfaktor $\bigO(\log n)$ zu erhalten.
@@ -69,21 +68,30 @@ Simon und Teng~\cite{ST97} verwendeten die bereits erwähnten Algorithmen~\cite{
 Dabei sind die Schnittkosten höchstens um einen Faktor $\bigO(\log k \sqrt{\log n})$ von der Optimallösung entfernt.
 Krauthgamer, Naor und Schwartz~\cite{KNS09} konnten mit Hilfe einer semidefiniter Relaxierung den Approximationsfaktor weiter auf $\bigO(\sqrt{\log n \log k})$ verringern.
 
-Einige der obigen Algorithmen teilen den Graphen zuerst in Partitionen, die kleiner als $\ceil{n/k}$ sind, und packen diese Teile anschließend in Behälter der Größe $2 \ceil{n/k}$, um die Größenbeschränkung von $2 \ceil{n/k}$ einzuhalten.
-In diese Fall können die Teile greedy gepackt werden.
+Einige der obigen Algorithmen teilen den Graphen zuerst in Partitionen, die kleiner oder gleich $\ceil{n/k}$ sind, und packen diese Teile anschließend in Behälter der Größe $2 \ceil{n/k}$, um die Größenbeschränkung von $2 \ceil{n/k}$ einzuhalten.
+In diesem Fall können die Teile greedy gepackt werden.
 Allerdings muss für den Fall $\eps < 1$ ein komplexeres Verfahren verwendet werden, um die Behälter zu packen. 
 Damit wird das Problem deutlich schwerer.
 Erst später konnten Andreev und Räcke~\cite{ar06} für den Fall $\eps < 1$ einen Algorithmus finden.
-Dieser hat einen Approximationsfaktor von $\bigO(\log^{1.5}(n)/\eps^2)$.
+Dieser hat einen Approximationsfaktor von $\bigO(\log^{1,5}(n)/\eps^2)$.
 Zuletzt präsentierten Feldmann und Foschini~\cite{FF15} einen Algorithmus, der den Faktor auf $\bigO(\log n)$ verbessert und damit die Abhängigkeit von $\eps$ entfernt.
-Dies wurde erreicht, indem zunächst ein bikiterieller Approximationsalgorithmus mit Approximationsfaktor $1$ für das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen entwickelt wurde.
+Dies wurde erreicht, indem zunächst ein bikriterieller Approximationsalgorithmus mit Approximationsfaktor $1$ für das $(k,1+\eps)$\hyp Partitionierungsproblem auf Bäumen entwickelt wurde.
 Der Algorithmus kann mit den bereits erwähnten Ergebnissen von Räcke~\cite{rc08} auf allgemeine Graphen erweitert werden.
 Da das Verfahren von Räcke den asymptotisch optimalen Approximationsfaktor von $\bigO(\log n)$ erreicht, ist eine Verbesserung des Approximationsfaktors unter Verwendung dieses Schemas nicht möglich.
-In dieser Arbeit wird eine Implementierung für den Algorithmus von Feldmann und Foschini entwickelt, welche anschließend experimentell evaluiert wird.
 
 Zum Schluss wird ein verwandtes Problem des $(k, 1+\eps)$\hyp Partitionierungsproblems erwähnt, nämlich das min-max $(k, 1+\eps)$\hyp Partitionierungsproblem.
-Anstatt das Gesamtgewicht der geschnittenen Kanten zu minmieren, wird bei diese Problem das kumulative Maximalgewicht der Kanten, die eine Partition verlassen, über alle Partitionen minimiert.
+Anstatt das Gesamtgewicht der geschnittenen Kanten zu minimieren, wird bei diesem Problem das kumulative Maximalgewicht der Kanten, die eine Partition verlassen, über alle Partitionen minimiert.
 Bansal et al.~\cite{BFK+11} fanden einen bikriteriellen Approximationsalgorithmus, der das min-max $(k, 2 + \eps)$\hyp Partitionierungsproblem mit einem von Approximationsfaktor $\bigO(\sqrt{\log n \log k})$ löst.
-Anschließend gelang es Räcke und Stotz~\cite{RS16}, die Relaxierung der Partitionsgrößen von $2 + \eps$ auf $1 + \eps$ für $0 < \eps < 1$ zu verringern und dabei einen Approximationsfaktor von $\bigO(\log^{1.5} n \cdot \log \log n)$ zu erreichen.
+Anschließend gelang es Räcke und Stotz~\cite{RS16}, die Relaxierung der Partitionsgrößen von $2 + \eps$ auf $1 + \eps$ für $0 < \eps < 1$ zu verringern und dabei einen Approximationsfaktor von $\bigO(\log^{1,5} n \cdot \log \log n)$ zu erreichen.
 
 \section{Ziel dieser Arbeit}
+Das Ziel dieser Arbeit ist, den bikriteriellen Algorithmus für das $k$\hyp balancierte Partitionierungsproblem von Feldmann und Foschini~\cite{FF15} zu implementieren und die Implementierung anschließend experimentell zu evaluieren.
+Zunächst wird ein Beweis von Andreev und Räcke~\cite{ar06} präsentiert, der zeigt, dass es keinen polynomiellen Approximationsalgorithmus mit endlichem Approximationsfaktor für das $k$\hyp balancierte Partitionierungsproblem geben kann, außer es gilt $P=NP$.
+Danach wird der Algorithmus von Feldmann und Foschini vorgestellt, der das $k$\hyp balancierte Partitionierungsproblem auf Bäumen mit einem Approximationsfaktor $1$ bikriteriell approximiert. 
+Dabei wird eine dynamische Programmierung angegeben, mit der ein Baum in Zusammenhangskomponenten zerlegt werden kann.
+Diese Zerlegung wird in einem zweiten Schritt verwendet, um eine Partitionierung des Baums zu berechnen.
+Mit Hilfe eines Verfahrens von Räcke~\cite{rc08} kann der Algorithmus auf generelle Graphen erweitert werden.
+Aufbauend auf das theoretische Fundament wurde eine Implementierung des Algorithmus in der Programmiersprache \Cpp{} entwickelt.
+Die zentralen Algorithmen und Datenstrukturen der Implementierung werden in dieser Arbeit präsentiert. 
+Die Implementierung wird experimentell evaluiert, indem die Laufzeit in Abhängigkeit der verschiedenen Eingabeparameter gemessen wird und die Lösungsqualität durch einen Vergleich mit den Graphpartitionierungsheuristiken METIS~\cite{KK98} und KaHIP~\cite{SS13} ermittelt wird.
+Zum Schluss wird die Praxistauglichkeit des Algorithmus anhand der Resultate der Experimente diskutiert.

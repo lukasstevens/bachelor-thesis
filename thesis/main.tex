@@ -27,6 +27,7 @@
 \newcommand{\weight}{\omega}
 \newcommand{\setunion}{\cup}
 \algnewcommand\Break{\textbf{break}}
+\newcommand{\Cpp}{C{}\texttt{++}}
 
 \begin{document}
 
@@ -39,14 +40,13 @@
 
 \input{pages/title}
 \input{pages/disclaimer}
-\input{pages/acknowledgements}
+%\input{pages/acknowledgements}
 \input{pages/abstract}
 
 \selectlanguage{ngerman}
 
 \microtypesetup{protrusion=false}
 \tableofcontents{}
-\listoftodos[Notizen]
 \microtypesetup{protrusion=true}
 
 \mainmatter{}
@@ -60,6 +60,31 @@
 \input{chapters/06_fazit}
 
 \appendix{}
+\chapter{Ausgelassene Ergebnisse zur Lösungsqualität auf Zufallsgraphen}\label{chapter:rapp}
+
+\begin{figure}
+    \centering
+    \includestandalone{figures/graphs/imbalance/edge_prob_rst}
+    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und RST in Abhängikeit von $\eps$}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includestandalone{figures/graphs/imbalance/edge_prob_mst}
+    \caption{Relative Lösungsqualität für das Erdős-Rényi-Modell und MST in Abhängikeit von $\eps$}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includestandalone{figures/graphs/imbalance/pref_attach_rst}
+    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und RST in Abhängikeit von $\eps$}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includestandalone{figures/graphs/imbalance/pref_attach_mst}
+    \caption{Relative Lösungsqualität für das Barabási-Albert-Modell und MST in Abhängikeit von $\eps$}
+\end{figure}
 
 \microtypesetup{protrusion=false}
 \listoffigures{}

@@ -1,2 +1,17 @@
 \chapter{Abstract}
+This thesis is concerned with the implementation of a bicriteria approximation algorithm for the $k$\hyp balanced partitioning problem by Feldmann and Foschini.~\cite{FF15}
+The $k$\hyp balanced partitioning problem asks to divide a graph into partitions of equal size and the objective is to minimize the total weight of edges cut by the partitioning.
+The aforementioned algorithm was implemented using the programming language \Cpp{} and afterwards the implementation was compared to the graph partitioning heuristics METIS~\cite{KK98} and KaHIP~\cite{SS13}.
+Evaluating the experiments shows that the algorithm is competitive with the heuristics in terms solution quality when considering small trees and graphs.
+The running time, on the other hand, is high even on relatively small instances.
+Additionally, the results confirm that KaHIP delivers high quality partitions.
 
+{\let\cleardoublepage\relax \chapter{Zusammenfassung}}
+Diese Bachelorarbeit beschäftigt sich mit der Implementierung eines bikriteriellen Approximationsalgorithmus für das $k$\hyp balancierte Partitionierungsproblem von Feldmann und Foschini.~\cite{FF15}
+Das $k$\hyp balancierte Partitionierungsproblem fragt nach einer Partitionierung eines Eingabegraphen in Partitionen mit gleicher Größe.
+Dabei minimiert eine Optimallösung dieses Problems das Gesamtgewicht der Kanten, die durch die Partitionierung geschnitten werden.
+Der genannte Algorithmus wurde in der Programmiersprache \Cpp{} implementiert.
+Die Implementierung wurde anschließend mit den Graphpartitionierungsheuristiken METIS~\cite{KK98} und KaHIP~\cite{SS13} verglichen.
+Die Experimente zeigen, dass der Algorithmus auf kleinen Bäumen und Graphen kompetitiv mit den Heuristiken im Bezug auf die Lösungsqualität ist.
+Dennoch ist die Laufzeit schon bei kleinen Probleminstanzen hoch.
+Zusätzlich bestätigen die Resultate, dass KaHIP Partitionierungen mit hoher Qualität liefert.
