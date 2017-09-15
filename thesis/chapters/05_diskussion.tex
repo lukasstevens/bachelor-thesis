@@ -169,7 +169,7 @@ In dieser Sektion werden einige Möglichkeiten beschrieben, welche zu einer Verb
 Die Berechnung der Signaturen in der Schnittphase macht einen großen Anteil der Laufzeit des Algorithmus aus.
 Für jeden Knoten wird dabei eine Menge an Signaturen berechnet, die sich im Wesentlichen durch die Kombination der Signaturen an den vorherigen Knoten ergibt.
 In Sektion~\ref{sec:sigimpl} wurde beschrieben, dass eine Menge von Signaturen mit den optimalen Schnittkosten für jede Signatur als Hashtabelle gespeichert wird.
-Dadurch kann effizient geprüft werden, ob eine Signatur bereits berechnet wurde und dementsprechend ein neuer Eintrag in der Tabelle erstellt werden beziehungsweise der bestehende Eintrag aktualisiert werden.
+Dadurch kann effizient geprüft werden, ob eine Signatur bereits berechnet wurde und dementsprechend kann ein neuer Eintrag in der Tabelle erstellt werden beziehungsweise der bestehende Eintrag aktualisiert werden.
 Wie in Listing~\ref{lst:hashing} zu sehen ist, verwendet die \Cpp{}\hyp Implementierung dieselbe Hashfunktion wie die weit verbeitete Softwarebibliothek Boost.
 
 Da die Performanz der Hashtabelle hauptsächlich von der gewählten Hashfunktion abhängt, wäre es sinnvoll, alternative Hashfunktionen zu evaluieren.
@@ -183,11 +183,11 @@ Zusätzlich zur Parallelisierung des Algorithmus durch Grafikkarten kann der Alg
 Zur Berechnung der Signaturen an einem Knoten $v$ benötigen wir die Signaturen am linken Geschwisterknoten $w$ und am rechtesten Kind $u$ des Knotens.
 Sei $T_x$ für einen Knoten $x$ des Baums der in $x$ gewurzelte Teilbaum.
 Dann gilt, dass die Teilbäume $T_v$ und $T_w$ disjunkt sind.
-Da $v$ ein Geschwisterknoten von $w$ ist, kann kein Knoten in $T_v$ -- außer $v$ -- einen linken Geschwisterknoten haben, der auch in $T_w$ liegt.
+Da $v$ ein Geschwisterknoten von $w$ ist, kann kein Knoten in $T_v$ -- außer $v$ -- einen linken Geschwisterknoten haben, der in $T_w$ liegt.
 Deshalb können die Signaturen an den Kindern von $v$ parallel zu den Signaturen des linken Geschwisterknotens $w$ berechnet werden.
 
 Es muss allerdings angemerkt werden, dass die obigen Vorschläge zwar das Potential haben die Berechnung der Signaturen zu beschleunigen, jedoch nicht die Anzahl der Signaturen verringern.
 Da die Anzahl der Signaturen proportional zu $n$ und $k$ wächst, wird bei größeren Werten für diese Parameter nicht nur die Laufzeit, sondern auch der Speicherbedarf problematisch.
 Es besteht die Möglichkeit die Anzahl der Signaturen zu verringern, indem der Graph zunächst mit einer Heuristik partitioniert wird und bei der Berechnung der Signaturen alle Signaturen frühzeitig herausgefiltert werden, deren Kosten höher sind als die durch die Heuristik berechneten Kosten.
 Außerdem kann auf eine ähnliche Weise eine Binärsuche auf den Kosten durchgeführt werden.
-Beide Vorschläge verbessern jedoch nicht die Laufzeit im schlimmsten Fall.
+Beide Vorschläge verringern jedoch nicht die Anzahl der Signaturen im schlimmsten Fall.
