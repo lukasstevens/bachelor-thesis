@@ -66,7 +66,7 @@ Für den Fall $\eps = 1$ sind bereits seit längerem Approximationsalgorithmen b
 Even et al.~\cite{ENR+97} benutzten Spreading Metriken, um einen Algorithmus mit Approximationsfaktor $\bigO(\log n)$ zu erhalten.
 Simon und Teng~\cite{ST97} verwendeten die bereits erwähnten Algorithmen~\cite{LR99, ARV09}, um rekursiv eine $(k, 2)$\hyp Partitionierung zu berechnen.
 Dabei sind die Schnittkosten höchstens um einen Faktor $\bigO(\log k \sqrt{\log n})$ von der Optimallösung entfernt.
-Krauthgamer, Naor und Schwartz~\cite{KNS09} konnten mit Hilfe einer semidefiniter Relaxierung den Approximationsfaktor weiter auf $\bigO(\sqrt{\log n \log k})$ verringern.
+Krauthgamer, Naor und Schwartz~\cite{KNS09} konnten mit Hilfe einer semidefiniten Relaxierung den Approximationsfaktor weiter auf $\bigO(\sqrt{\log n \log k})$ verringern.
 
 Einige der obigen Algorithmen teilen den Graphen zuerst in Partitionen, die kleiner oder gleich $\ceil{n/k}$ sind, und packen diese Teile anschließend in Behälter der Größe $2 \ceil{n/k}$, um die Größenbeschränkung von $2 \ceil{n/k}$ einzuhalten.
 In diesem Fall können die Teile greedy gepackt werden.
