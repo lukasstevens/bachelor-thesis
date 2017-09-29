@@ -1,7 +1,0 @@
-[package]
-name = "graph"
-version = "0.1.0"
-authors = ["Lukas Stevens <mail@lukas-stevens.de>"]
-
-[dependencies]
-indextree="1.0.0"
