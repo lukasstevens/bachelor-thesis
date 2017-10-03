@@ -1,0 +1,289 @@
+\subsection{Reale Daten}
+
+\begin{frame}{Reale Datensätze}
+\begin{table}
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        Datensatz & Knoten & Kanten & Anzahl der Dreiecke \\
+        \midrule
+        as19990829 & 103 & 248 & 228 \\
+        email-Eu-core & 1005 & 25571 & 105461 \\
+        ca-GrQc & 5242 & 14496 & 48260 \\
+        ego-Facebook & 4039 & 88234 & 1612010 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile]{as19990829}
+    \begin{center}
+        \begin{tikzpicture}[font=\footnotesize]
+            \renewcommand{\datadir}{data/graphs/data_sets/as}
+            \renewcommand{\datafile}[1]{\datadir/#1_as19990829.dat}
+
+            \pgfplotsset{
+                bar cycle list/.style={
+                    cycle list={{fill=TUMBlue}, {fill=TUMAccentOrange}, {fill=TUMAccentGreen}, {fill=TUMSecondaryBlue2}}
+                }
+            }
+
+            % https://tex.stackexchange.com/questions/208102/fix-group-bar-chart-spacing
+            % https://tex.stackexchange.com/questions/101320/grouped-bar-chart
+            \begin{groupplot}[
+                group style={
+                    group size=2 by 2,
+                    vertical sep=1.5cm,
+                    ylabels at=edge left
+                },
+                xticklabels={0.4,0.35,0.3,0.25},
+                ymajorgrids,
+                xtick pos=bottom,
+                xtick=data,
+                enlarge x limits=0.25,
+                width=0.5*\linewidth,
+                height=4cm,
+                ymax=1.9,
+                ytick distance=0.5,
+                major x tick style=transparent,
+                extra y ticks={1},
+                extra y tick style={grid=major},
+                ymin=0,
+                /pgf/bar width=2.5pt,
+            ]
+
+                \nextgroupplot[
+                    title=METIS recursive,
+                    legend to name=grouplegend,
+                    legend columns=2,
+                    legend style={/tikz/every even column/.append style={column sep=5pt}},
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4,6}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Recursive}};
+                \addlegendentry{{$k=#1$}}
+                }			
+
+                \nextgroupplot[
+                    title=METIS k-way,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4,6}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Kway}};
+                }			
+
+                \nextgroupplot[
+                    title=KaFFPa,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4,6}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
+                }			
+            \end{groupplot}
+            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{email-Eu-core}
+    \begin{center}
+        \begin{tikzpicture}[font=\footnotesize]
+            \renewcommand{\datadir}{data/graphs/data_sets/email}
+            \renewcommand{\datafile}[1]{\datadir/#1_email-Eu-core.dat}
+
+            \pgfplotsset{
+                bar cycle list/.style={
+                    cycle list={{fill=TUMBlue}, {fill=TUMAccentOrange}, {fill=TUMAccentGreen}, {fill=TUMSecondaryBlue2}}
+                }
+            }
+
+            % https://tex.stackexchange.com/questions/208102/fix-group-bar-chart-spacing
+            % https://tex.stackexchange.com/questions/101320/grouped-bar-chart
+            \begin{groupplot}[
+                group style={
+                    group size=2 by 2,
+                    vertical sep=1.5cm,
+                    ylabels at=edge left
+                },
+                xticklabels={0.4,0.35,0.3,0.25},
+                ymajorgrids,
+                xtick pos=bottom,
+                xtick=data,
+                enlarge x limits=0.25,
+                width=0.5*\linewidth,
+                height=4cm,
+                ymax=1.9,
+                ytick distance=0.5,
+                major x tick style=transparent,
+                ymin=0,
+                /pgf/bar width=2.5pt,
+            ]
+
+                \nextgroupplot[
+                    title=METIS recursive,
+                    legend to name=grouplegend,
+                    legend columns=2,
+                    legend style={/tikz/every even column/.append style={column sep=5pt}},
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4,6}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Recursive}};
+                \addlegendentry{{$k=#1$}}
+                }			
+
+                \nextgroupplot[
+                    title=METIS k-way,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4,6}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Kway}};
+                }			
+
+                \nextgroupplot[
+                    title=KaFFPa,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4,6}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
+                }			
+            \end{groupplot}
+            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{ca-GrQc}
+    \begin{center}
+        \begin{tikzpicture}[font=\footnotesize]
+            \renewcommand{\datadir}{data/graphs/data_sets/caGrQc}
+            \renewcommand{\datafile}[1]{\datadir/#1_ca-GrQc.dat}
+
+            \pgfplotsset{
+                bar cycle list/.style={
+                    cycle list={{fill=TUMBlue}, {fill=TUMAccentOrange}, {fill=TUMAccentGreen}}
+                }
+            }
+
+            % https://tex.stackexchange.com/questions/208102/fix-group-bar-chart-spacing
+            % https://tex.stackexchange.com/questions/101320/grouped-bar-chart
+            \begin{groupplot}[
+                group style={
+                    group size=2 by 2,
+                    vertical sep=1.5cm,
+                    ylabels at=edge left
+                },
+                xticklabels={0.4,0.35,0.3,0.25},
+                ymajorgrids,
+                xtick pos=bottom,
+                xtick=data,
+                enlarge x limits=0.25,
+                width=0.5*\linewidth,
+                height=4cm,
+                ymax=3.3,
+                ytick distance=1.0,
+                major x tick style=transparent,
+                ymin=0,
+                /pgf/bar width=2.5pt,
+            ]
+
+                \nextgroupplot[
+                    title=METIS recursive,
+                    legend to name=grouplegend,
+                    legend columns=2,
+                    legend style={/tikz/every even column/.append style={column sep=5pt}},
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Recursive}};
+                \addlegendentry{{$k=#1$}}
+                }			
+
+                \nextgroupplot[
+                    title=METIS k-way,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Kway}};
+                }			
+
+                \nextgroupplot[
+                    title=KaFFPa,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
+                }			
+            \end{groupplot}
+            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{ego-Facebook}
+    \begin{center}
+        \begin{tikzpicture}[font=\footnotesize]
+            \renewcommand{\datadir}{data/graphs/data_sets/facebook}
+            \renewcommand{\datafile}[1]{\datadir/#1_ego-Facebook.dat}
+
+            \pgfplotsset{
+                bar cycle list/.style={
+                    cycle list={{fill=TUMBlue}, {fill=TUMAccentOrange}, {fill=TUMAccentGreen}}
+                }
+            }
+
+            % https://tex.stackexchange.com/questions/208102/fix-group-bar-chart-spacing
+            % https://tex.stackexchange.com/questions/101320/grouped-bar-chart
+            \begin{groupplot}[
+                group style={
+                    group size=2 by 2,
+                    vertical sep=1.5cm,
+                    ylabels at=edge left
+                },
+                xticklabels={0.4,0.35,0.3,0.25},
+                ymajorgrids,
+                xtick pos=bottom,
+                xtick=data,
+                enlarge x limits=0.25,
+                width=0.5*\linewidth,
+                height=4cm,
+                ymax=12,
+                ytick distance=2.0,
+                major x tick style=transparent,
+                extra y ticks={1},
+                extra y tick labels={},
+                ymin=0,
+                /pgf/bar width=2.5pt,
+            ]
+
+                \nextgroupplot[
+                    title=METIS recursive,
+                    legend to name=grouplegend,
+                    legend columns=2,
+                    legend style={/tikz/every even column/.append style={column sep=5pt}},
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Recursive}};
+                \addlegendentry{{$k=#1$}}
+                }			
+
+                \nextgroupplot[
+                    title=METIS k-way,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{METIS_Kway}};
+                }			
+
+                \nextgroupplot[
+                    title=KaFFPa,
+                    ybar
+                ]
+                \pgfplotsinvokeforeach {2,3,4}{
+                    \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
+                }			
+            \end{groupplot}
+            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}

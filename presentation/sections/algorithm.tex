@@ -1,0 +1,614 @@
+\begin{frame}[fragile]{Zerlegung in Zusammenhangskomponenten}
+    \begin{center}
+        \begin{tikzpicture}[
+            randomdraw/.style={decoration={random steps, segment length=8pt, amplitude=3pt}},
+            every node/.style={scale=0.7},
+            ampersand replacement=\&
+        ]
+
+            \pgfmathsetseed{23654}
+            \coordinate (A) at (0.0,0.0);
+            \coordinate (B) at (2.0,0.0);
+            \coordinate (C) at (1.0,1.5);
+            \coordinate (D) at (0.0,3.0);
+            \coordinate (E) at (-1.0,1.5);
+            \coordinate (F) at (-2.0,0.0);
+
+            \node[align=left] at (1.75, 2.5) {$n=50$\\$k=4$\\$\ceil{n/k}=13$};
+                
+            \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+            \draw (B) -- coordinate[near end](BCM) (C);
+
+            \visible<2->{
+                \draw decorate[randomdraw]{(AB) -- (DE)};
+                \draw decorate[randomdraw]{(FA) -- (C)};
+            }
+            \visible<3->{
+                \draw decorate[randomdraw]{(EF) -- (A)};
+                \draw decorate[randomdraw]{(DE) -- (CD)};
+            }
+            \visible<4->{
+                \draw decorate[randomdraw]{(E) -- (C)};
+                \draw decorate[randomdraw]{(AB) -- (BC)};
+                \draw decorate[randomdraw]{(A) -- (BCM)};
+            }
+
+            \visible<5->{
+                \node at (0.0,2.5) {$6$};
+                \node at (0.25,1.75) {$7$};
+                \node at (0.25,1.25) {$4$};
+                \node at (0.75,1.0) {$3$};
+                \node at (1.0,0.6125) {$3$};
+                \node at (1.5,0.25) {$4$};
+                \node at (0.0,0.5) {$4$};
+                \node at (0.5,0.125) {$2$};
+                \node at (-0.5,0.125) {$2$};
+                \node at (-0.5,1.0) {$6$};
+                \node at (-1.25,0.5) {$7$};
+                \node at (-0.68,1.6125) {$2$};
+            }
+            
+            %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+            \visible<6->{
+		        \matrix[
+                    matrix of nodes,
+                    nodes={align=center,text width=0.4cm},
+                ] at (0.0, -1.0) (dict) {
+                    $1$ \& $2$ \& $3$ \& $4$ \& $5$ \& $6$ \& $7$ \& $8$ \& $9$ \& $10$ \& $11$ \& $12$ \& $13$ \\
+                    $0$ \& $3$ \& $2$ \& $3$ \& $0$ \& $2$ \& $2$ \& $0$ \& $0$ \& $0$ \& $0$ \& $0$ \& $0$ \\
+                };
+                \draw (dict-1-1.south west) -- (dict-1-13.south east);
+            }
+        
+
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Berechnung der Repräsentanten}
+    \begin{center}
+        \begin{tikzpicture}[
+            randomdraw/.style={decoration={random steps, segment length=8pt, amplitude=3pt}},
+            every node/.style={scale=0.7}
+        ]
+
+            \pgfmathsetseed{23654}
+            \begin{scope}[shift={(0.0,2.5)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.55}]
+                \coordinate (A) at (0.0,0.0);
+                \coordinate (B) at (2.0,0.0);
+                \coordinate (C) at (1.0,1.5);
+                \coordinate (D) at (0.0,3.0);
+                \coordinate (E) at (-1.0,1.5);
+                \coordinate (F) at (-2.0,0.0);
+
+                \node[align=left] at (1.75, 2.4) {$n=50$\\$k=4$\\$\ceil{n/k}=13$};
+
+                \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                    -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                    -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                \draw (B) -- coordinate[near end](BCM) (C);
+
+                \visible<2->{
+                    \draw[line width=1pt, TUMAccentOrange] (F) -- (B) -- (D) -- cycle;
+                    \path (F) -- node[font=\large, sloped, yshift=12pt, midway]{Minimale Schnittkosten} (D);
+                }
+
+
+                \draw decorate[randomdraw]{(AB) -- (DE)};
+                \draw decorate[randomdraw]{(FA) -- (C)};
+                \draw decorate[randomdraw]{(EF) -- (A)};
+                \draw decorate[randomdraw]{(DE) -- (CD)};
+                \draw decorate[randomdraw]{(E) -- (C)};
+                \draw decorate[randomdraw]{(AB) -- (BC)};
+                \draw decorate[randomdraw]{(A) -- (BCM)};
+
+                \node at (0.0,2.5) {$6$};
+                \node at (0.25,1.75) {$7$};
+                \node at (0.25,1.25) {$4$};
+                \node at (0.75,1.0) {$3$};
+                \node at (1.0,0.57) {$3$};
+                \node at (1.5,0.25) {$4$};
+                \node at (0.0,0.42) {$4$};
+                \node at (0.6,0.17) {$2$};
+                \node at (-0.5,0.17) {$2$};
+                \node at (-0.5,1.0) {$6$};
+                \node at (-1.25,0.5) {$7$};
+                \node at (-0.73,1.6125) {$2$};
+
+                %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                \matrix(dict)[
+                    matrix of nodes,
+                    nodes={align=center,text width=0.4cm},
+                ] at (0.0, -1.0) {
+                    $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$ & $9$ & $10$ & $11$ & $12$ & $13$ \\
+                    $0$ & $3$ & $2$ & $3$ & $0$ & $2$ & $2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+                };
+                \draw(dict-1-1.south west)--(dict-1-13.south east);
+            \end{scope}
+
+            \begin{scope}[shift={(-2.75,-0.75)}, xscale=-0.7, yscale=0.7, every node/.style={scale=0.4}]
+                \coordinate (A) at (0.0,0.0);
+                \coordinate (B) at (2.0,0.0);
+                \coordinate (C) at (1.0,1.5);
+                \coordinate (D) at (0.0,3.0);
+                \coordinate (E) at (-1.0,1.5);
+                \coordinate (F) at (-2.0,0.0);
+
+                \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                    -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                    -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                \draw (B) -- coordinate[near end](BCM) (C);
+
+                \draw decorate[randomdraw]{(AB) -- (DE)};
+                \draw decorate[randomdraw]{(FA) -- (C)};
+                \draw decorate[randomdraw]{(EF) -- (A)};
+                \draw decorate[randomdraw]{(DE) -- (CD)};
+                \draw decorate[randomdraw]{(E) -- (C)};
+                \draw decorate[randomdraw]{(AB) -- (BC)};
+                \draw decorate[randomdraw]{(A) -- (BCM)};
+
+                %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+            \end{scope}
+
+            \begin{scope}[shift={(2.75,-0.75)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.4}]
+                \coordinate (A) at (0.0,0.0);
+                \coordinate (B) at (2.0,0.0);
+                \coordinate (C) at (1.0,1.5);
+                \coordinate (D) at (0.0,3.0);
+                \coordinate (E) at (-1.0,1.5);
+                \coordinate (F) at (-2.0,0.0);
+
+                \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                    -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                    -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                \draw (B) -- coordinate[near end](BCM) (C);
+
+                \draw decorate[randomdraw]{(AB) -- (DE)};
+                \draw decorate[randomdraw]{(FA) -- (C)};
+                \draw decorate[randomdraw]{(EF) -- (A)};
+                \draw decorate[randomdraw]{(DE) -- (CD)};
+                \draw decorate[randomdraw]{(E) -- (C)};
+                \draw decorate[randomdraw]{(AB) -- (BC)};
+                \draw decorate[randomdraw]{(A) -- (BCM)};
+
+                %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+            \end{scope}
+
+            \draw [line width=1.0pt, black] (0.0,1.0) ellipse (5.2cm and 3.8cm);
+
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Unterteilung in Äquivalenzklassen}
+    \begin{center}
+        \begin{tikzpicture}[
+            randomdraw/.style={decoration={random steps, segment length=8pt, amplitude=3pt}},
+            every node/.style={scale=0.7}
+        ]
+            \pgfmathsetseed{23654}
+
+            \begin{scope}[shift={(0.0,3.5)}, xscale=0.5, yscale=0.5]
+                \begin{scope}[shift={(0.0,2.5)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.42}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    \draw[line width=1pt, TUMAccentOrange] (F) -- (B) -- (D) -- cycle;
+                    \path (F) -- node[sloped, yshift=9pt, xshift=-2pt, midway]{\footnotesize Minimale Schnittkosten} (D);
+
+
+                    \draw decorate[randomdraw]{(AB) -- (DE)};
+                    \draw decorate[randomdraw]{(FA) -- (C)};
+                    \draw decorate[randomdraw]{(EF) -- (A)};
+                    \draw decorate[randomdraw]{(DE) -- (CD)};
+                    \draw decorate[randomdraw]{(E) -- (C)};
+                    \draw decorate[randomdraw]{(AB) -- (BC)};
+                    \draw decorate[randomdraw]{(A) -- (BCM)};
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                    \matrix(dict)[
+                        matrix of nodes,
+                        nodes={align=center,text width=0.4cm},
+                    ] at (0.0, -1.0) {
+                        $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$ & $9$ & $10$ & $11$ & $12$ & $13$ \\
+                        $0$ & $3$ & $2$ & $3$ & $0$ & $2$ & $2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+                    };
+                    \draw(dict-1-1.south west)--(dict-1-13.south east);
+                \end{scope}
+
+                \begin{scope}[shift={(-2.75,-0.75)}, xscale=-0.7, yscale=0.7, every node/.style={scale=0.4}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    \draw decorate[randomdraw]{(AB) -- (DE)};
+                    \draw decorate[randomdraw]{(FA) -- (C)};
+                    \draw decorate[randomdraw]{(EF) -- (A)};
+                    \draw decorate[randomdraw]{(DE) -- (CD)};
+                    \draw decorate[randomdraw]{(E) -- (C)};
+                    \draw decorate[randomdraw]{(AB) -- (BC)};
+                    \draw decorate[randomdraw]{(A) -- (BCM)};
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                \end{scope}
+
+                \begin{scope}[shift={(2.75,-0.75)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.4}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    \draw decorate[randomdraw]{(AB) -- (DE)};
+                    \draw decorate[randomdraw]{(FA) -- (C)};
+                    \draw decorate[randomdraw]{(EF) -- (A)};
+                    \draw decorate[randomdraw]{(DE) -- (CD)};
+                    \draw decorate[randomdraw]{(E) -- (C)};
+                    \draw decorate[randomdraw]{(AB) -- (BC)};
+                    \draw decorate[randomdraw]{(A) -- (BCM)};
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                \end{scope}
+
+                \draw [line width=1.0pt, black] (0.0,1.0) ellipse (5.2cm and 3.8cm);
+            \end{scope}
+
+            % SECOND
+            \begin{scope}[shift={(-3.0,0.0)}, xscale=0.5, yscale=0.5]
+                \begin{scope}[shift={(0.0,2.5)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.42}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    \draw[line width=1pt, TUMAccentOrange] (F) -- (B) -- (D) -- cycle;
+                    \path (F) -- node[sloped, yshift=9pt, xshift=-2pt, midway]{\footnotesize Minimale Schnittkosten} (D);
+
+
+                    \draw decorate[randomdraw]{(AB) -- (DE)};
+                    \draw decorate[randomdraw]{(FA) -- (C)};
+                    \draw decorate[randomdraw]{(D) -- (A)};
+                    \draw decorate[randomdraw]{(A) -- (EF)};
+                    \draw decorate[randomdraw]{(EF) -- (FA)};
+                    \draw decorate[randomdraw]{(DE) -- (CD)};
+                    \draw decorate[randomdraw]{(CD) -- (EF)};
+                    \draw decorate[randomdraw]{(AB) -- (BC)};
+                    \draw decorate[randomdraw]{(A) -- (BCM)};
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                    \matrix(dict)[
+                        matrix of nodes,
+                        nodes={align=center,text width=0.4cm},
+                    ] at (0.0, -1.0) {
+                        $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$ & $9$ & $10$ & $11$ & $12$ & $13$ \\
+                        $0$ & $3$ & $2$ & $3$ & $0$ & $2$ & $2$ & $0$ & $0$ & $0$ & $0$ & $0$ & $0$ \\
+                    };
+                    \draw(dict-1-1.south west)--(dict-1-13.south east);
+                \end{scope}
+
+                \begin{scope}[shift={(-2.75,-0.75)}, xscale=-0.7, yscale=0.7, every node/.style={scale=0.4}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+                    \draw decorate[randomdraw]{(AB) -- (DE)};
+                    \draw decorate[randomdraw]{(FA) -- (C)};
+                    \draw decorate[randomdraw]{(EF) -- (A)};
+                    \draw decorate[randomdraw]{(EF) -- (FA)};
+                    \draw decorate[randomdraw]{(DE) -- (CD)};
+                    \draw decorate[randomdraw]{(E) -- (C)};
+                    \draw decorate[randomdraw]{(AB) -- (BC)};
+                    \draw decorate[randomdraw]{(A) -- (BCM)};
+                    \draw decorate[randomdraw]{(D) -- (A)};
+
+                \end{scope}
+
+                \begin{scope}[shift={(2.75,-0.75)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.4}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+                    \draw decorate[randomdraw]{(AB) -- (DE)};
+                    \draw decorate[randomdraw]{(FA) -- (C)};
+                    \draw decorate[randomdraw]{(EF) -- (A)};
+                    \draw decorate[randomdraw]{(EF) -- (FA)};
+                    \draw decorate[randomdraw]{(DE) -- (CD)};
+                    \draw decorate[randomdraw]{(D) -- (A)};
+                    \draw decorate[randomdraw]{(E) -- (C)};
+                    \draw decorate[randomdraw]{(AB) -- (BC)};
+                    \draw decorate[randomdraw]{(BCM) -- (A)};
+
+                \end{scope}
+
+                \draw [line width=1.0pt, black] (0.0,1.0) ellipse (5.2cm and 3.8cm);
+            \end{scope}
+
+            % THIRD
+            \begin{scope}[shift={(3.0,0.0)}, xscale=0.5, yscale=0.5]
+                \begin{scope}[shift={(0.0,2.5)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.42}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    \draw[line width=1pt, TUMAccentOrange] (F) -- (B) -- (D) -- cycle;
+                    \path (F) -- node[sloped, yshift=9pt, xshift=-2pt, midway]{\footnotesize Minimale Schnittkosten} (D);
+
+
+                    \draw decorate[randomdraw]{(F) -- (C)};
+                    \draw decorate[randomdraw]{(DE) -- (A)};
+                    \draw decorate[randomdraw]{(C) -- (A)};
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                    \matrix(dict)[
+                        matrix of nodes,
+                        nodes={align=center,text width=0.4cm},
+                    ] at (0.0, -1.0) {
+                        $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$ & $8$ & $9$ & $10$ & $11$ & $12$ & $13$ \\
+                        $3$ & $5$ & $4$ & $2$ & $2$ & $0$ & $1$ & $2$ & $1$ & $0$ & $0$ & $1$ & $1$ \\
+                    };
+                    \draw(dict-1-1.south west)--(dict-1-13.south east);
+                \end{scope}
+
+                \begin{scope}[shift={(-2.75,-0.75)}, xscale=-0.7, yscale=0.7, every node/.style={scale=0.4}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    \draw decorate[randomdraw]{(F) -- (C)};
+                    \draw decorate[randomdraw]{(DE) -- (A)};
+                    \draw decorate[randomdraw]{(C) -- (A)};
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                \end{scope}
+
+                \begin{scope}[shift={(2.75,-0.75)}, xscale=0.7, yscale=0.7, every node/.style={scale=0.4}]
+                    \coordinate (A) at (0.0,0.0);
+                    \coordinate (B) at (2.0,0.0);
+                    \coordinate (C) at (1.0,1.5);
+                    \coordinate (D) at (0.0,3.0);
+                    \coordinate (E) at (-1.0,1.5);
+                    \coordinate (F) at (-2.0,0.0);
+
+                    \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                        -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                        -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+                    \draw (B) -- coordinate[near end](BCM) (C);
+
+                    \draw decorate[randomdraw]{(C) -- (A)};
+                    \draw decorate[randomdraw]{(F) -- (C)};
+                    \draw decorate[randomdraw]{(A) -- (DE)};
+
+                    %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+                \end{scope}
+
+                \draw [line width=1.0pt, black] (0.0,1.0) ellipse (5.2cm and 3.8cm);
+            \end{scope}
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Packen der Zusammenhangskomponenten}
+    \begin{center}
+        \begin{tikzpicture}[
+            randomdraw/.style={decoration={random steps, segment length=8pt, amplitude=3pt}},
+            every node/.style={scale=0.8},
+            ampersand replacement=\&
+        ]
+
+            \pgfmathsetseed{23654}
+            \coordinate (A) at (0.0,0.0);
+            \coordinate (B) at (2.0,0.0);
+            \coordinate (C) at (1.0,1.5);
+            \coordinate (D) at (0.0,3.0);
+            \coordinate (E) at (-1.0,1.5);
+            \coordinate (F) at (-2.0,0.0);
+
+            \node[align=left] at (1.75, 2.5) {$n=50$};
+                
+            \draw (A) -- coordinate[midway](AB) (B) -- coordinate[midway](BC) (C)
+                -- coordinate[midway](CD) (D) -- coordinate[near end](DE) (E)
+                -- coordinate[near start](EF) (F) -- coordinate[midway](FA) (A);
+            \draw (B) -- coordinate[near end](BCM) (C);
+
+            \draw[name path=ABDE, save path=\pathABDE] decorate[randomdraw]{(AB) -- (DE)};
+            \draw[name path=FAC, save path=\pathFAC] decorate[randomdraw]{(FA) -- (C)};
+            \draw[name path=EFA, save path=\pathEFA] decorate[randomdraw]{(EF) -- (A)};
+            \draw[name path=DECD, save path=\pathDECD] decorate[randomdraw]{(DE) -- (CD)};
+            \draw[name path=EC, save path=\pathEC] decorate[randomdraw]{(E) -- (C)};
+            \draw[name path=ABBC, save path=\pathABBC] decorate[randomdraw]{(AB) -- (BC)};
+            \draw[name path=ABCM, save path=\pathABCM] decorate[randomdraw]{(A) -- (BCM)};
+
+            \path[name path=ECABDERTWO]
+                [intersection segments={of=EC and ABDE, sequence={R1}}];
+            \path[name path=EFAFACRTWO]
+                [intersection segments={of=EFA and FAC, sequence={R2}}];
+            \path[name path=PREVLONE]
+                [intersection segments={of=ECABDERTWO and EFAFACRTWO, sequence={L1}}];
+
+            \begin{scope}[on background layer]
+                \fill[fill=TUMAccentOrange, intersection segments={
+                    of=ABDE and EC, sequence=L2--R1}];
+                \fill[fill=TUMAccentOrange, intersection segments={
+                    of=FAC and EFA, sequence={L1--R2}}] -- cycle;
+                \fill[fill=TUMAccentBlue, intersection segments={
+                    of=ABCM and ABDE, sequence={R1--L1[reverse]}}] -- cycle;
+                \fill[fill=TUMAccentGreen, intersection segments={
+                    of=EFA and FAC, sequence={L1--R1[reverse]}}] -- (F) -- cycle;
+
+                \fill[fill=TUMAccentGreen]
+                    [intersection segments={of=EC and ABDE, sequence={L1}}]
+                    [intersection segments={of=ECABDERTWO and EFAFACRTWO, sequence={L2[reverse] -- R1[reverse]}}] -- (E)
+                    [intersection segments={of=EFA and FAC, sequence={L1[reverse]}}] -- (E)
+                    ;
+                
+                \fill[fill=TUMAccentBlue]
+                    [intersection segments={of=ECABDERTWO and EFAFACRTWO, sequence={L2[reverse]--R2}}]
+                    [intersection segments={of=ABDE and EC, sequence={R2[reverse]}}]
+                    ;
+
+                \fill[fill=TUMAccentOrange]
+                    [intersection segments={of=ECABDERTWO and EFAFACRTWO, sequence={R1}}] -- (A)
+                    [intersection segments={of=PREVLONE and ABCM, sequence={L2[reverse]--R1[reverse]}}]
+                    [intersection segments={of=FAC and EFA, sequence={R2[reverse]}}]
+                    ;
+
+                \fill[fill=TUMAccentBlue]
+                    [intersection segments={of=PREVLONE and ABCM, sequence={R2[reverse]--L2}}]
+                    [intersection segments={of=ECABDERTWO and EFAFACRTWO, sequence={R2}}] -- (BCM)
+                    ;
+
+                \fill[fill=TUMAccentBlue]
+                    [intersection segments={of=ABBC and ABBC, sequence={L*[reverse]}}]
+                    [intersection segments={of=ECABDERTWO and ABCM, sequence={L1--R2}}] -- (BC);
+
+                \fill[fill=TUMGray]
+                    [intersection segments={of=EC and ABDE, sequence={L2[reverse] -- R2}}]
+                    [intersection segments={of=DECD and DECD, sequence={L*}}] -- (C);
+
+                \makeatletter
+                \pgfsyssoftpath@setcurrentpath{\pathDECD} \filldraw[draw, fill=TUMGray] -- (D) -- cycle;
+                \pgfsyssoftpath@setcurrentpath{\pathABBC} \filldraw[draw, fill=TUMAccentOrange] -- (B) -- cycle;
+                \makeatother
+            \end{scope}
+
+            \node at (0.0,2.5) {$6$};
+            \node at (0.25,1.75) {$7$};
+            \node at (0.25,1.25) {$4$};
+            \node at (0.75,1.0) {$3$};
+            \node at (1.0,0.6125) {$3$};
+            \node at (1.5,0.25) {$4$};
+            \node at (0.0,0.5) {$4$};
+            \node at (0.5,0.125) {$2$};
+            \node at (-0.5,0.125) {$2$};
+            \node at (-0.5,1.0) {$6$};
+            \node at (-1.25,0.5) {$7$};
+            \node at (-0.68,1.6125) {$2$};
+            
+            %\draw[help lines] (F) grid[step=0.25] (2.0,3.0);
+
+		    \matrix[
+                matrix of nodes,
+                nodes={align=center,text width=0.4cm},
+            ] at (-5.5, 4.0) (dict) {
+                $1$ \& $2$ \& $3$ \& $4$ \& $5$ \& $6$ \& $7$ \& $8$ \& $9$ \& $10$ \& $11$ \& $12$ \& $13$ \\
+                $0$ \& $3$ \& $2$ \& $3$ \& $0$ \& $2$ \& $2$ \& $0$ \& $0$ \& $0$ \& $0$ \& $0$ \& $0$ \\
+            };
+            \draw (dict-1-1.south west) -- (dict-1-13.south east);
+			
+			\foreach \bin/\x in {ONE/-8.5,TWO/-7,THREE/-5.5,FOUR/-4}{
+				\coordinate (\bin{}BL) at (\x,0);
+				\coordinate (\bin{}BR) at ($ (\x,0) + (0.9,0.0) $);
+				\coordinate (\bin{}TL) at ($ (\x,0) + (0.0,2.6) $);
+				\coordinate (\bin{}TR) at ($ (\x,0) + (0.9,2.6) $);
+
+                \draw[line width=1pt] (\bin{}TL) -- (\bin{}BL) -- (\bin{}BR) -- (\bin{}TR);
+			}
+
+            \begin{scope}[on background layer]
+                \foreach \bin/\y/\s in {ONE/0/0.4,ONE/0.4/0.6,ONE/1.0/0.6,ONE/1.6/0.8}{
+                    \filldraw[draw=white, fill=TUMAccentBlue] ($ (\bin{}BL) + (0.0,\y) $) rectangle ($ (\bin{}BL) + (0.9,\y+\s) $);
+			    }
+
+                \foreach \bin/\y/\s in {TWO/0/0.4,TWO/0.4/0.4,TWO/0.8/0.8,TWO/1.6/0.8}{
+                    \filldraw[draw=white, fill=TUMAccentOrange] ($ (\bin{}BL) + (0.0,\y) $) rectangle ($ (\bin{}BL) + (0.9,\y+\s) $);
+			    }
+
+                \foreach \bin/\y/\s in {THREE/0/1.2,THREE/1.2/1.4}{
+                    \filldraw[draw=white, fill=TUMAccentGreen] ($ (\bin{}BL) + (0.0,\y) $) rectangle ($ (\bin{}BL) + (0.9,\y+\s) $);
+			    }
+
+                \foreach \bin/\y/\s in {FOUR/0/1.2,FOUR/1.2/1.4}{
+                    \filldraw[draw=white, fill=TUMGray] ($ (\bin{}BL) + (0.0,\y) $) rectangle ($ (\bin{}BL) + (0.9,\y+\s) $);
+			    }
+            \end{scope}
+
+            \foreach \bin in {ONE,TWO,THREE,FOUR}{ 
+                \path (\bin{}TL) -- node[midway] (\bin{}TM) {} (\bin{}TR);
+            }
+
+            \foreach \bin/\s in {ONE/2,ONE/3,ONE/3,ONE/4,TWO/4,TWO/4,TWO/2,TWO/2,THREE/7,THREE/6,FOUR/7,FOUR/6}{
+                \draw (dict-2-\s.south) edge[->, line width=1pt, out=270, in=90] (\bin{}TM.north);
+            }
+
+            \path (TWO{}BR.south) -- node[midway, yshift=-0.5cm] {$k=4$} (THREE{}BL.south);
+            \draw[<-, line width=1pt] ($ (FOUR{}TR.east) + (0.1,0.0) $) -- ($ (FOUR{}TR.east) + (0.5,0.0) $) node[xshift=1cm] {$\ceil{n/k}=13$};
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
