@@ -1,4 +1,0 @@
-\select@language {ngerman}
-\beamer@sectionintoc {1}{Das Problem}{3}{0}{1}
-\beamer@sectionintoc {2}{Ein Bikriterieller Algorithmus}{4}{0}{2}
-\beamer@sectionintoc {3}{Experimentelle Evaluation}{15}{0}{3}
