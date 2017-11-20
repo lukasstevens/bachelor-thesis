@@ -1,7 +1,28 @@
+\newcommand{\drawgraph}{%
+    \draw [rotate around={-3.5:(-2.7,4.0)},line width=1.pt, dashed, TUMSecondaryBlue] (-2.7,4.0) ellipse (2.1cm and 1.6cm);
+    \draw [rotate around={45.:(-6.1,1.0)},line width=1.pt, dashed, TUMAccentOrange] (-5.6,1.25) ellipse (1.8cm and 2.0cm);
+    \draw [rotate around={38.40:(-1.5,-0.1)},line width=1.pt, dashed, TUMAccentGreen] (-1.4,0.0) ellipse (1.7cm and 1.9cm);
+    \draw (-4.0,4.3) node[fill=TUMSecondaryBlue] (A) {};
+    \draw (-2.6,3.9) node[fill=TUMSecondaryBlue] (B) {};
+    \draw (-1.8,3.1) node[fill=TUMSecondaryBlue] (C) {};
+    \draw (-1.2,4.1) node[fill=TUMSecondaryBlue] (D) {};
+    \draw (-5.4,1.9) node[fill=TUMAccentOrange] (E) {};
+    \draw (-6.2,2.8) node[fill=TUMAccentOrange] (F) {};
+    \draw (-6.2,1.0) node[fill=TUMAccentOrange] (G) {};
+    \draw (-4.8,0.6) node[fill=TUMAccentOrange] (H) {};
+    \draw (-0.5,0.7) node[fill=TUMAccentGreen] (I) {};
+    \draw (-2.1,-0.4) node[fill=TUMAccentGreen] (J) {};
+    \draw (-0.4,-0.3) node[fill=TUMAccentGreen] (K) {};
+    \draw (-2.2,1.1) node[fill=TUMAccentGreen] (L) {};
+    \draw[line width=0.8pt] (C) -- (B) -- (D) -- (C) -- (L) -- (J) -- (K) -- (L) -- (I) -- (L) -- (H) -- (G) -- (E) -- (F) -- (G);
+    \draw[line width=0.8pt] (F) -- (A);
+    \draw[line width=0.8pt] (E) -- (L);
+}
+
 \begin{frame}[fragile]{$k$\hyp balancierte Partitionierung}
     \begin{columns}[onlytextwidth]
         \begin{column}{0.5\textwidth}
-            Partitioniere Knoten in Mengen $V_1, \ldots, V_k$ mit
+            \visible<+(1)->{Partitioniere Knoten in Mengen $V_1, \ldots, V_k$ mit}
             \begin{itemize}[<+(1)->]
                 \item $\card{V_i} \leq \ceil{n/k}$ und
                 \item Schnittkosten $C^*$ optimal. 
@@ -9,24 +30,7 @@
         \end{column}
         \begin{column}{0.5\textwidth}
             \begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6, circle}]
-                \draw [rotate around={-3.5:(-2.7,4.0)},line width=1.pt, dashed, TUMSecondaryBlue] (-2.7,4.0) ellipse (2.1cm and 1.6cm);
-                \draw [rotate around={45.:(-6.1,1.0)},line width=1.pt, dashed, TUMAccentOrange] (-5.6,1.25) ellipse (1.8cm and 2.0cm);
-                \draw [rotate around={38.40:(-1.5,-0.1)},line width=1.pt, dashed, TUMAccentGreen] (-1.4,0.0) ellipse (1.7cm and 1.9cm);
-                \draw (-4.0,4.3) node[fill=TUMSecondaryBlue] (A) {$A$};
-                \draw (-2.6,3.9) node[fill=TUMSecondaryBlue] (B) {$B$};
-                \draw (-1.8,3.1) node[fill=TUMSecondaryBlue] (C) {$C$};
-                \draw (-1.2,4.1) node[fill=TUMSecondaryBlue] (D) {$D$};
-                \draw (-5.4,1.9) node[fill=TUMAccentOrange] (E) {$E$};
-                \draw (-6.2,2.8) node[fill=TUMAccentOrange] (F) {$F$};
-                \draw (-6.2,1.0) node[fill=TUMAccentOrange] (G) {$G$};
-                \draw (-4.8,0.6) node[fill=TUMAccentOrange] (H) {$H$};
-                \draw (-0.5,0.7) node[fill=TUMAccentGreen] (I) {$I$};
-                \draw (-2.1,-0.4) node[fill=TUMAccentGreen] (J) {$J$};
-                \draw (-0.4,-0.3) node[fill=TUMAccentGreen] (K) {$K$};
-                \draw (-2.2,1.1) node[fill=TUMAccentGreen] (L) {$L$};
-                \draw[line width=0.8pt] (C) -- (B) -- (D) -- (C) -- (L) -- (J) -- (K) -- (L) -- (I) -- (L) -- (H) -- (G) -- (E) -- (F) -- (G);
-                \draw[line width=0.8pt] (F) -- (A);
-                \draw[line width=0.8pt] (E) -- (L);
+                \drawgraph
             \end{tikzpicture}	
         \end{column}
     \end{columns}
@@ -42,24 +46,7 @@
         \end{column}
         \begin{column}{0.5\textwidth}
             \begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6, circle}]
-                \draw [rotate around={-3.5:(-2.7,4.0)},line width=1.pt, dashed, TUMSecondaryBlue] (-2.7,4.0) ellipse (2.1cm and 1.6cm);
-                \draw [rotate around={45.:(-6.1,1.0)},line width=1.pt, dashed, TUMAccentOrange] (-5.6,1.25) ellipse (1.8cm and 2.0cm);
-                \draw [rotate around={38.40:(-1.5,-0.1)},line width=1.pt, dashed, TUMAccentGreen] (-1.4,0.0) ellipse (1.7cm and 1.9cm);
-                \draw (-4.0,4.3) node[fill=TUMSecondaryBlue] (A) {$A$};
-                \draw (-2.6,3.9) node[fill=TUMSecondaryBlue] (B) {$B$};
-                \draw (-1.8,3.1) node[fill=TUMSecondaryBlue] (C) {$C$};
-                \draw (-1.2,4.1) node[fill=TUMSecondaryBlue] (D) {$D$};
-                \draw (-5.4,1.9) node[fill=TUMAccentOrange] (E) {$E$};
-                \draw (-6.2,2.8) node[fill=TUMAccentOrange] (F) {$F$};
-                \draw (-6.2,1.0) node[fill=TUMAccentOrange] (G) {$G$};
-                \draw (-4.8,0.6) node[fill=TUMAccentOrange] (H) {$H$};
-                \draw (-0.5,0.7) node[fill=TUMAccentGreen] (I) {$I$};
-                \draw (-2.1,-0.4) node[fill=TUMAccentGreen] (J) {$J$};
-                \draw (-0.4,-0.3) node[fill=TUMAccentGreen] (K) {$K$};
-                \draw (-2.2,1.1) node[fill=TUMAccentGreen] (L) {$L$};
-                \draw[line width=0.8pt] (C) -- (B) -- (D) -- (C) -- (L) -- (J) -- (K) -- (L) -- (I) -- (L) -- (H) -- (G) -- (E) -- (F) -- (G);
-                \draw[line width=0.8pt] (F) -- (A);
-                \draw[line width=0.8pt] (E) -- (L);
+                \drawgraph
             \end{tikzpicture}	
         \end{column}
     \end{columns}
@@ -88,24 +75,7 @@
         \begin{column}{0.5\textwidth}
             \only<1-2>{
                 \begin{tikzpicture}[scale=0.6, every node/.style={scale=0.6, circle}]
-                    \draw [rotate around={-3.5:(-2.7,4.0)},line width=1.pt, dashed, TUMSecondaryBlue] (-2.7,4.0) ellipse (2.1cm and 1.6cm);
-                    \draw [rotate around={45.:(-6.1,1.0)},line width=1.pt, dashed, TUMAccentOrange] (-5.6,1.25) ellipse (1.8cm and 2.0cm);
-                    \draw [rotate around={38.40:(-1.5,-0.1)},line width=1.pt, dashed, TUMAccentGreen] (-1.4,0.0) ellipse (1.7cm and 1.9cm);
-                    \draw (-4.0,4.3) node[fill=TUMSecondaryBlue] (A) {$A$};
-                    \draw (-2.6,3.9) node[fill=TUMSecondaryBlue] (B) {$B$};
-                    \draw (-1.8,3.1) node[fill=TUMSecondaryBlue] (C) {$C$};
-                    \draw (-1.2,4.1) node[fill=TUMSecondaryBlue] (D) {$D$};
-                    \draw (-5.4,1.9) node[fill=TUMAccentOrange] (E) {$E$};
-                    \draw (-6.2,2.8) node[fill=TUMAccentOrange] (F) {$F$};
-                    \draw (-6.2,1.0) node[fill=TUMAccentOrange] (G) {$G$};
-                    \draw (-4.8,0.6) node[fill=TUMAccentOrange] (H) {$H$};
-                    \draw (-0.5,0.7) node[fill=TUMAccentGreen] (I) {$I$};
-                    \draw (-2.1,-0.4) node[fill=TUMAccentGreen] (J) {$J$};
-                    \draw (-0.4,-0.3) node[fill=TUMAccentGreen] (K) {$K$};
-                    \draw (-2.2,1.1) node[fill=TUMAccentGreen] (L) {$L$};
-                    \draw[line width=0.8pt] (C) -- (B) -- (D) -- (C) -- (L) -- (J) -- (K) -- (L) -- (I) -- (L) -- (H) -- (G) -- (E) -- (F) -- (G);
-                    \draw[line width=0.8pt] (F) -- (A);
-                    \draw[line width=0.8pt] (E) -- (L);
+                    \drawgraph
                 \end{tikzpicture}	
             }
             \only<3->{
@@ -113,18 +83,18 @@
                     \draw [rotate around={25:(-1.8,3.5)},line width=1.pt, dashed, TUMSecondaryBlue] (-1.8,3.7) ellipse (1.2cm and 1.1cm);
                     \draw [rotate around={-15:(-6.0,2.8)},line width=1.pt, dashed, TUMAccentOrange] (-5.0,2.8) ellipse (1.8cm and 2.7cm);
                     \draw [rotate around={38.40:(-1.5,-0.1)},line width=1.pt, dashed, TUMAccentGreen] (-1.4,0.0) ellipse (1.7cm and 1.9cm);
-                    \draw (-4.0,4.3) node[fill=TUMAccentOrange] (A) {$A$};
-                    \draw (-2.6,3.9) node[fill=TUMSecondaryBlue] (B) {$B$};
-                    \draw (-1.8,3.1) node[fill=TUMSecondaryBlue] (C) {$C$};
-                    \draw (-1.2,4.1) node[fill=TUMSecondaryBlue] (D) {$D$};
-                    \draw (-5.4,1.9) node[fill=TUMAccentOrange] (E) {$E$};
-                    \draw (-6.2,2.8) node[fill=TUMAccentOrange] (F) {$F$};
-                    \draw (-6.2,1.0) node[fill=TUMAccentOrange] (G) {$G$};
-                    \draw (-4.8,0.6) node[fill=TUMAccentOrange] (H) {$H$};
-                    \draw (-0.5,0.7) node[fill=TUMAccentGreen] (I) {$I$};
-                    \draw (-2.1,-0.4) node[fill=TUMAccentGreen] (J) {$J$};
-                    \draw (-0.4,-0.3) node[fill=TUMAccentGreen] (K) {$K$};
-                    \draw (-2.2,1.1) node[fill=TUMAccentGreen] (L) {$L$};
+                    \draw (-4.0,4.3) node[fill=TUMAccentOrange] (A) {};
+                    \draw (-2.6,3.9) node[fill=TUMSecondaryBlue] (B) {};
+                    \draw (-1.8,3.1) node[fill=TUMSecondaryBlue] (C) {};
+                    \draw (-1.2,4.1) node[fill=TUMSecondaryBlue] (D) {};
+                    \draw (-5.4,1.9) node[fill=TUMAccentOrange] (E) {};
+                    \draw (-6.2,2.8) node[fill=TUMAccentOrange] (F) {};
+                    \draw (-6.2,1.0) node[fill=TUMAccentOrange] (G) {};
+                    \draw (-4.8,0.6) node[fill=TUMAccentOrange] (H) {};
+                    \draw (-0.5,0.7) node[fill=TUMAccentGreen] (I) {};
+                    \draw (-2.1,-0.4) node[fill=TUMAccentGreen] (J) {};
+                    \draw (-0.4,-0.3) node[fill=TUMAccentGreen] (K) {};
+                    \draw (-2.2,1.1) node[fill=TUMAccentGreen] (L) {};
                     \draw[line width=0.8pt] (C) -- (B) -- (D) -- (C) -- (L) -- (J) -- (K) -- (L) -- (I) -- (L) -- (H) -- (G) -- (E) -- (F) -- (G);
                     \draw[line width=0.8pt] (F) -- (A);
                     \draw[line width=0.8pt] (E) -- (L);

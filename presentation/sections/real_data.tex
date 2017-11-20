@@ -1,19 +1,29 @@
 \subsection{Reale Daten}
 
-\begin{frame}{Reale Datensätze}
-\begin{table}
-    \centering
-    \begin{tabular}{lccc}
-        \toprule
-        Datensatz & Knoten & Kanten & Anzahl der Dreiecke \\
-        \midrule
-        as19990829 & 103 & 248 & 228 \\
-        email-Eu-core & 1005 & 25571 & 105461 \\
-        ca-GrQc & 5242 & 14496 & 48260 \\
-        ego-Facebook & 4039 & 88234 & 1612010 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+\begin{frame}{Umwandlung der Graphen in Bäume}
+    \begin{itemize}[<+(1)->]
+        \item Hierarchische Dekomposition mit $\alpha=\bigO(\log^4 n)$
+        \item Nur ein Baum
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Verkleinerung der Graphen}
+\end{frame}
+
+\begin{frame}{Reale Graphdaten}
+    \begin{table}
+        \centering
+        \begin{tabular}{lccc}
+            \toprule
+            Datensatz & Knoten & Kanten & Anzahl der Dreiecke \\
+            \midrule
+            as19990829 & 103 & 248 & 228 \\
+            email-Eu-core & 1005 & 25571 & 105461 \\
+            ca-GrQc & 5242 & 14496 & 48260 \\
+            ego-Facebook & 4039 & 88234 & 1612010 \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
 \end{frame}
 
 \begin{frame}[fragile]{as19990829}
@@ -80,7 +90,8 @@
                     \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
                 }			
             \end{groupplot}
-            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \path (group c1r2.east) -- node[xshift=0.27*\linewidth, yshift=0.1*\textheight] (L) {\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \node at ($ (L.south) + (0,-1.0) $) [font=\small, rectangle, draw, align=left] {Knoten: $103$\\Kanten: $248$\\Dreiecke: $228$};
         \end{tikzpicture}
     \end{center}
 \end{frame}
@@ -147,7 +158,8 @@
                     \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
                 }			
             \end{groupplot}
-            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \path (group c1r2.east) -- node[xshift=0.27*\linewidth, yshift=0.1*\textheight] (L) {\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \node at ($ (L.south) + (0,-1.0) $) [font=\small, rectangle, draw, align=left] {Knoten: $1005$\\Kanten: $25571$\\Dreiecke: $105461$};
         \end{tikzpicture}
     \end{center}
 \end{frame}
@@ -214,7 +226,8 @@
                     \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
                 }			
             \end{groupplot}
-            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \path (group c1r2.east) -- node[xshift=0.27*\linewidth, yshift=0.1*\textheight] (L) {\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \node at ($ (L.south) + (0,-1.0) $) [font=\small, rectangle, draw, align=left] {Knoten: $5242$\\Kanten: $14496$\\Dreiecke: $48260$};
         \end{tikzpicture}
     \end{center}
 \end{frame}
@@ -283,7 +296,8 @@
                     \addplot+ table [x expr=\coordindex, y=#1] {\datafile{KaFFPa}};
                 }			
             \end{groupplot}
-            \path (group c1r2.east) -- node[xshift=0.25*\linewidth]{\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \path (group c1r2.east) -- node[xshift=0.27*\linewidth, yshift=0.1*\textheight] (L) {\small \pgfplotslegendfromname{grouplegend}} (group c1r2.east);
+            \node at ($ (L.south) + (0,-1.0) $) [font=\small, rectangle, draw, align=left] {Knoten: $4039$\\Kanten: $88234$\\Dreiecke: $1612010$};
         \end{tikzpicture}
     \end{center}
 \end{frame}

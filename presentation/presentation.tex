@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[12pt]{beamer}
 \usetheme{metropolis}
 
 \makeatletter
@@ -34,7 +34,14 @@
 \usepackage{tikz}
 \usepackage{spath3}
 \usepackage{pgfplots}
-\usetikzlibrary{decorations.pathmorphing, intersections, matrix, backgrounds, calc}
+\usetikzlibrary{
+    decorations.pathmorphing,
+    decorations.pathreplacing,
+    intersections,
+    matrix,
+    backgrounds,
+    calc
+}
 \usepgfplotslibrary{statistics, groupplots, fillbetween}
 % Settings for pgfplots
 \pgfplotsset{
@@ -61,7 +68,6 @@
 \newcommand{\datafile}[1]{}
 \newcommand{\plotdata}[2]{}
 
-
 \title{Bachelorarbeit}
 \subtitle{Eine experimentelle Evaluation von theoretisch fundierten Graphpartitionierungsalgorithmen}
 \date{\today}
@@ -72,20 +78,35 @@
 
 \maketitle
 
-\begin{frame}{Table of contents}
+\begin{frame}{Inhalt}
   \setbeamertemplate{section in toc}[sections numbered]
   \tableofcontents[hideallsubsections]
 \end{frame}
 
 \section{Das Problem}
-%\input{sections/problem}
+\input{sections/problem}
 
 \section{Ein Bikriterieller Algorithmus}
 \input{sections/algorithm}
 
+\section{Implementierung}
+\input{sections/implementation}
+
 \section{Experimentelle Evaluation}
-%\input{sections/running_time}
-%\input{sections/quality_trees}
-%\input{sections/real_data}
+\input{sections/running_time}
+\input{sections/quality_trees}
+\input{sections/real_data}
+
+\begin{frame}{Fazit}
+    \begin{itemize}[<+(1)->]
+        \item Hohe Laufzeit selbst bei kleinen Graphen
+        \item Gute Lösungsqualität
+        \item Aber: KaFFPa trotzdem kompetitiv
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[standout]
+    \LARGE Fragen?
+\end{frame}
 
 \end{document}

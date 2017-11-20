@@ -1,6 +1,6 @@
 file := presentation
 out  := build
-options := -xelatex -bibtex -interaction=nonstopmode -halt-on-error -pdf -pdflatex="pdflatex -shell-escape %O %S"
+options :=-bibtex -interaction=nonstopmode -halt-on-error -pdf -pdflatex="xelatex %O %S"
 
 .PHONY: pdf
 pdf:
