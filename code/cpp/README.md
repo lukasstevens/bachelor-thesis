@@ -62,3 +62,5 @@ Furthermore, do not hesistate to open an issue if something is not working.
 
 ## License
 The code is licensed under the GPLv2. For the license see the LICENSE file.
+If you require a more permissive license you can fork the project and remove the dependencies to KaHIP.
+I would be willing to license the modified code under the MIT license.
